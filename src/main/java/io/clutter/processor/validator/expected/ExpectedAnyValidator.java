@@ -1,6 +1,7 @@
 package io.clutter.processor.validator.expected;
 
 import io.clutter.processor.extractor.TypeExtractor;
+import io.clutter.filter.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
@@ -21,7 +22,8 @@ final public class ExpectedAnyValidator implements TypeValidator {
     public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
         boolean constraintViolated = annotations
                 .stream()
-                .map(typeExtractor::extractAnnotatedElements)
+                .map(Filters::annotated)
+                .map(typeExtractor::extractElements)
                 .allMatch(List::isEmpty);
 
         if (constraintViolated) {

@@ -1,6 +1,7 @@
 package io.clutter.processor.validator.required;
 
 import io.clutter.processor.extractor.TypeExtractor;
+import io.clutter.filter.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
@@ -21,7 +22,7 @@ final public class RequiredValidator implements TypeValidator {
     public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
         return annotations
                 .stream()
-                .filter(annotation -> typeExtractor.extractAnnotatedElements(annotation).isEmpty())
+                .filter(annotation -> typeExtractor.extractElements(Filters.annotated(annotation)).isEmpty())
                 .map(RequiredFormatter::format)
                 .collect(Collectors.toList());
     }

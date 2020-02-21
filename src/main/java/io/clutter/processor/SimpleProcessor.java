@@ -6,6 +6,7 @@ import io.clutter.processor.validator.ValidationOutput;
 import io.clutter.processor.validator.exception.ValidationFailed;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;

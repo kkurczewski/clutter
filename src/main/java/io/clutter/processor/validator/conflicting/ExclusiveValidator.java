@@ -26,7 +26,7 @@ final public class ExclusiveValidator implements TypeValidator {
 
     @Override
     public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
-        Map<Element, Set<Annotation>> conflicts = typeExtractor
+        var conflicts = typeExtractor
                 .extractElements()
                 .stream()
                 .collect(toMap(Function.identity(), this::collectElementAnnotations));

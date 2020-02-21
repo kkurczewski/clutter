@@ -1,6 +1,7 @@
 package io.clutter.processor.validator.unique;
 
 import io.clutter.processor.extractor.TypeExtractor;
+import io.clutter.filter.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
@@ -8,10 +9,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 final public class UniquenessValidator implements TypeValidator {
 
@@ -23,26 +25,24 @@ final public class UniquenessValidator implements TypeValidator {
 
     @Override
     public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
-        Map<Class<? extends Annotation>, List<Element>> conflicts = annotations
-                .stream()
-                .collect(Collectors.toMap(Function.identity(), typeExtractor::extractAnnotatedElements));
 
-        TypeElement rootElement = typeExtractor.extractRootElement();
-        annotations
+        TypeElement classType = typeExtractor.extractRootElement();
+        List<Element> elements = typeExtractor.extractElements();
+        elements.add(classType);
+
+        var conflicts = annotations
                 .stream()
-                .filter(typeExtractor::isClassAnnotated)
-                .forEach(s -> conflicts.merge(s, List.of(rootElement), this::concat));
+                .collect(toMap(
+                        Function.identity(),
+                        annotation -> elements.stream()
+                                .filter(Filters.annotated(annotation))
+                                .collect(toList())));
 
         return conflicts
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().size() > 1)
                 .map(entry -> UniquenessFormatter.format(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
-
-    private List<Element> concat(List<Element> first, List<Element> second) {
-        first.addAll(second);
-        return first;
+                .collect(toList());
     }
 }

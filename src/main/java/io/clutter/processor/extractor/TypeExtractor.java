@@ -1,9 +1,19 @@
 package io.clutter.processor.extractor;
 
-import javax.lang.model.element.*;
-import java.lang.annotation.Annotation;
+import io.clutter.filter.ElementFilter;
+import io.clutter.filter.MethodFilter;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.clutter.filter.Filters.FIELD;
+import static io.clutter.filter.Filters.METHOD;
 
 final public class TypeExtractor {
 
@@ -15,56 +25,46 @@ final public class TypeExtractor {
         this.rootElement = rootElement;
     }
 
-    public List<VariableElement> extractFields() {
-        return extractElements()
-                .stream()
-                .filter(element -> element.getKind() == ElementKind.FIELD)
-                .map(VariableElement.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    public List<VariableElement> extractAnnotatedFields(Class<? extends Annotation> annotation) {
-        return extractFields()
-                .stream()
-                .filter(element -> element.getAnnotation(annotation) != null)
-                .collect(Collectors.toList());
-    }
-
-    public List<ExecutableElement> extractMethods() {
-        return extractElements()
-                .stream()
-                .filter(element -> element.getKind() == ElementKind.METHOD)
-                .map(ExecutableElement.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    public List<ExecutableElement> extractAnnotatedMethods(Class<? extends Annotation> annotation) {
-        return extractMethods()
-                .stream()
-                .filter(element -> element.getAnnotation(annotation) != null)
-                .collect(Collectors.toList());
-    }
-
-    public List<? extends Element> extractElements() {
-        return rootElement.getEnclosedElements();
-    }
-
-    public List<Element> extractAnnotatedElements(Class<? extends Annotation> annotation) {
-        return extractElements()
-                .stream()
-                .filter(element -> element.getAnnotation(annotation) != null)
-                .collect(Collectors.toList());
-    }
-
     public TypeElement extractRootElement() {
         return rootElement;
     }
 
-    public boolean isClassAnnotated(Class<? extends Annotation> annotation) {
-        return rootElement.getAnnotation(annotation) != null;
+    public List<Element> extractElements(ElementFilter... elementFilters) {
+        Predicate<Element> composedFilter = composeFilters(elementFilters);
+        return rootElement
+                .getEnclosedElements()
+                .stream()
+                .filter(composedFilter)
+                .collect(Collectors.toList());
+    }
+
+    public List<VariableElement> extractFields(ElementFilter... fieldFilters) {
+        Predicate<Element> composedFilter = composeFilters(fieldFilters);
+        return extractElements()
+                .stream()
+                .filter(FIELD)
+                .map(VariableElement.class::cast)
+                .filter(composedFilter)
+                .collect(Collectors.toList());
+    }
+
+    public List<ExecutableElement> extractMethods(MethodFilter... methodFilters) {
+        Predicate<ExecutableElement> composedFilter = composeFilters(methodFilters);
+        return extractElements()
+                .stream()
+                .filter(METHOD)
+                .map(ExecutableElement.class::cast)
+                .filter(composedFilter)
+                .collect(Collectors.toList());
     }
 
     public String getTypeQualifiedName() {
         return typeQualifiedName;
+    }
+
+    private <T extends Element> Predicate<T> composeFilters(Predicate<T>[] filters) {
+        return Stream.of(filters)
+                .reduce(Predicate::and)
+                .orElse((executableElement) -> true);
     }
 }
