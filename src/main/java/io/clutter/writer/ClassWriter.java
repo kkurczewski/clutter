@@ -1,11 +1,11 @@
 package io.clutter.writer;
 
-import io.clutter.writer.annotation.AnnotationType;
-import io.clutter.writer.classtype.ClassType;
-import io.clutter.writer.constructor.Constructor;
-import io.clutter.writer.field.Field;
-import io.clutter.writer.method.Method;
-import io.clutter.writer.param.Params;
+import io.clutter.writer.model.annotation.AnnotationType;
+import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.writer.model.constructor.Constructor;
+import io.clutter.writer.model.field.Field;
+import io.clutter.writer.model.method.Method;
+import io.clutter.writer.model.param.Params;
 
 import java.util.LinkedList;
 import java.util.List;
