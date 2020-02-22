@@ -1,4 +1,4 @@
-package io.clutter.filter;
+package io.clutter.javax.filter;
 
 import javax.lang.model.element.Element;
 import java.util.function.Predicate;

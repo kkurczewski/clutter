@@ -1,6 +1,6 @@
 package io.clutter.javax.factory;
 
-import io.clutter.filter.Filters;
+import io.clutter.javax.filter.Filters;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.modifiers.ClassModifiers;
 import io.clutter.writer.model.classtype.modifiers.ClassTrait;
@@ -32,7 +32,7 @@ final public class ClassTypeFactory {
             throw new IllegalArgumentException("TypeElement is not element or interface");
         }
 
-        return classType;
+        return classType.setClassModifiers(modifiers(typeElement.getModifiers()));
     }
 
     /**
@@ -51,7 +51,7 @@ final public class ClassTypeFactory {
             throw new IllegalArgumentException("TypeElement is not element or interface");
         }
 
-        return classType;
+        return classType.setClassModifiers(modifiers(typeElement.getModifiers()));
     }
 
     private static ClassModifiers modifiers(Set<Modifier> javaxModifiers) {

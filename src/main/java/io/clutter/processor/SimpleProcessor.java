@@ -1,20 +1,21 @@
 package io.clutter.processor;
 
-import io.clutter.processor.extractor.TypeExtractor;
 import io.clutter.processor.validator.TypeValidator;
-import io.clutter.processor.validator.ValidationOutput;
 import io.clutter.processor.validator.exception.ValidationFailed;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -103,16 +104,15 @@ public class SimpleProcessor extends AbstractProcessor {
             return;
         }
 
-        Map<String, List<ValidationOutput>> violations = annotations
+        var violations = annotations
                 .stream()
                 .map(roundEnv::getElementsAnnotatedWith)
                 .flatMap(Collection::stream)
                 .filter(TypeElement.class::isInstance)
                 .map(TypeElement.class::cast)
-                .map(TypeExtractor::new)
-                .collect(toMap(TypeExtractor::getTypeQualifiedName, validator::validate));
+                .collect(toMap(type -> valueOf(type.getQualifiedName()), validator::validate));
 
-        Map<String, List<ValidationOutput>> nonEmptyViolations = violations
+        var nonEmptyViolations = violations
                 .entrySet()
                 .stream()
                 .filter(entry -> !entry.getValue().isEmpty())

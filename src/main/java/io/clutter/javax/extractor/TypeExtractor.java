@@ -1,7 +1,7 @@
-package io.clutter.processor.extractor;
+package io.clutter.javax.extractor;
 
-import io.clutter.filter.ElementFilter;
-import io.clutter.filter.MethodFilter;
+import io.clutter.javax.filter.ElementFilter;
+import io.clutter.javax.filter.MethodFilter;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -12,21 +12,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.clutter.filter.Filters.FIELD;
-import static io.clutter.filter.Filters.METHOD;
+import static io.clutter.javax.filter.Filters.FIELD;
+import static io.clutter.javax.filter.Filters.METHOD;
 
+/**
+ * Provides simplified API to extract {@link Element} types from {@link TypeElement}
+ *
+ * @see VariableElement
+ * @see ExecutableElement
+ * @see io.clutter.javax.filter.Filters
+ */
 final public class TypeExtractor {
 
-    private final String typeQualifiedName;
     private final TypeElement rootElement;
 
     public TypeExtractor(TypeElement rootElement) {
-        this.typeQualifiedName = rootElement.getQualifiedName().toString();
         this.rootElement = rootElement;
-    }
-
-    public TypeElement extractRootElement() {
-        return rootElement;
     }
 
     public List<Element> extractElements(ElementFilter... elementFilters) {
@@ -56,10 +57,6 @@ final public class TypeExtractor {
                 .map(ExecutableElement.class::cast)
                 .filter(composedFilter)
                 .collect(Collectors.toList());
-    }
-
-    public String getTypeQualifiedName() {
-        return typeQualifiedName;
     }
 
     private <T extends Element> Predicate<T> composeFilters(Predicate<T>[] filters) {

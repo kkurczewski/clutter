@@ -1,17 +1,19 @@
 package io.clutter.processor.validator;
 
-import io.clutter.processor.extractor.TypeExtractor;
-
+import javax.lang.model.element.TypeElement;
 import java.util.List;
 
 @FunctionalInterface
 public interface TypeValidator {
-    List<ValidationOutput> validate(TypeExtractor typeExtractor);
+    /**
+     * Returns validation messages for given class or interface
+     */
+    List<ValidationOutput> validate(TypeElement type);
 
     default TypeValidator compose(TypeValidator other) {
-        return typeExtractor -> {
-            List<ValidationOutput> failures = this.validate(typeExtractor);
-            failures.addAll(other.validate(typeExtractor));
+        return type -> {
+            List<ValidationOutput> failures = this.validate(type);
+            failures.addAll(other.validate(type));
             return failures;
         };
     }

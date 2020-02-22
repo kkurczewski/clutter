@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static io.clutter.processor.validator.ValidationOutput.violation;
 
-class UniquenessFormatter {
+final class UniquenessFormatter {
 
     public static ValidationOutput format(Class<? extends Annotation> nonUniqueAnnotation, List<Element> elements) {
         return violation(String.format("Expected annotation %s to be unique but following elements were annotated:", nonUniqueAnnotation.getCanonicalName()),

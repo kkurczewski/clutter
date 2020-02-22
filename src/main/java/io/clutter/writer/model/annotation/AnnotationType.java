@@ -20,6 +20,10 @@ final public class AnnotationType {
         this.values = values;
     }
 
+    public AnnotationType(Class<? extends Annotation> type) {
+        this(type.getCanonicalName(), AnnotationParams.empty());
+    }
+
     public AnnotationType(Class<? extends Annotation> type, AnnotationParams values) {
         this(type.getCanonicalName(), values);
     }

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static io.clutter.processor.validator.ValidationOutput.*;
 
-class ExclusiveFormatter {
+final class ExclusiveFormatter {
     public static ValidationOutput format(Element element, Set<Annotation> conflictedAnnotations) {
         return violation(String.format("%s %s has exclusive annotations:",
                 toWordCase(element.getKind()),

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import static io.clutter.processor.validator.ValidationOutput.violation;
 
-class ExpectedAnyFormatter {
+final class ExpectedAnyFormatter {
     public static ValidationOutput format(Set<Class<? extends Annotation>> annotations) {
         return violation("Expected one of the following annotations:",
                 annotations

@@ -14,7 +14,7 @@ import javax.lang.model.element.VariableElement;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static io.clutter.filter.Filters.*;
+import static io.clutter.javax.filter.Filters.*;
 import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toSet;
 
@@ -27,7 +27,7 @@ final public class MethodFactory {
         if (!ABSTRACT.test(executableElement)) {
             throw new IllegalArgumentException("ExecutableElement is not abstract");
         }
-        return build(executableElement, body);
+        return build(executableElement, body).setAnnotations(new AnnotationType(Override.class));
     }
 
     /**
@@ -37,7 +37,7 @@ final public class MethodFactory {
         if (FINAL.test(executableElement)) {
             throw new IllegalArgumentException("ExecutableElement is final");
         }
-        return build(executableElement, body);
+        return build(executableElement, body).setAnnotations(new AnnotationType(Override.class));
     }
 
     /**

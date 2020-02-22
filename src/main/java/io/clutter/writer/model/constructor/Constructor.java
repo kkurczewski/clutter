@@ -16,10 +16,16 @@ final public class Constructor {
 
     private ConstructorVisibility visibility;
 
+    /**
+     * Creates public no arg constructor
+     */
     public Constructor() {
-        this.params = new Params();
+        this(new Params());
     }
 
+    /**
+     * Creates public constructor with given params
+     */
     public Constructor(Params params) {
         this.params = params;
         this.visibility = PUBLIC;

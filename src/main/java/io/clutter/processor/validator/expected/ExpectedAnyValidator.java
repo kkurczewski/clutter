@@ -1,10 +1,11 @@
 package io.clutter.processor.validator.expected;
 
-import io.clutter.processor.extractor.TypeExtractor;
-import io.clutter.filter.Filters;
+import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.javax.filter.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
+import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,11 @@ final public class ExpectedAnyValidator implements TypeValidator {
     }
 
     @Override
-    public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
+    public List<ValidationOutput> validate(TypeElement type) {
+        TypeExtractor typeExtractor = new TypeExtractor(type);
         boolean constraintViolated = annotations
                 .stream()
-                .map(Filters::annotated)
+                .map(Filters::isAnnotated)
                 .map(typeExtractor::extractElements)
                 .allMatch(List::isEmpty);
 

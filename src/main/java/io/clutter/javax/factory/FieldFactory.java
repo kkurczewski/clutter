@@ -6,7 +6,7 @@ import io.clutter.writer.model.field.Field;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
-import static io.clutter.filter.Filters.*;
+import static io.clutter.javax.filter.Filters.*;
 
 final public class FieldFactory {
 

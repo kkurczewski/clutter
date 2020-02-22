@@ -1,6 +1,6 @@
 package io.clutter.processor.validator.conflicting;
 
-import io.clutter.processor.extractor.TypeExtractor;
+import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
@@ -24,14 +24,14 @@ final public class ExclusiveValidator implements TypeValidator {
     }
 
     @Override
-    public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
+    public List<ValidationOutput> validate(TypeElement type) {
+        TypeExtractor typeExtractor = new TypeExtractor(type);
         var conflicts = typeExtractor
                 .extractElements()
                 .stream()
                 .collect(toMap(Function.identity(), this::collectElementAnnotations));
 
-        TypeElement rootElement = typeExtractor.extractRootElement();
-        conflicts.put(rootElement, collectElementAnnotations(rootElement));
+        conflicts.put(type, collectElementAnnotations(type));
 
         return conflicts.entrySet()
                 .stream()

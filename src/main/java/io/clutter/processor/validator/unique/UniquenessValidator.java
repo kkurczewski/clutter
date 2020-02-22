@@ -1,7 +1,7 @@
 package io.clutter.processor.validator.unique;
 
-import io.clutter.processor.extractor.TypeExtractor;
-import io.clutter.filter.Filters;
+import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.javax.filter.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 
@@ -24,18 +24,17 @@ final public class UniquenessValidator implements TypeValidator {
     }
 
     @Override
-    public List<ValidationOutput> validate(TypeExtractor typeExtractor) {
-
-        TypeElement classType = typeExtractor.extractRootElement();
+    public List<ValidationOutput> validate(TypeElement type) {
+        TypeExtractor typeExtractor = new TypeExtractor(type);
         List<Element> elements = typeExtractor.extractElements();
-        elements.add(classType);
+        elements.add(type);
 
         var conflicts = annotations
                 .stream()
                 .collect(toMap(
                         Function.identity(),
                         annotation -> elements.stream()
-                                .filter(Filters.annotated(annotation))
+                                .filter(Filters.isAnnotated(annotation))
                                 .collect(toList())));
 
         return conflicts
