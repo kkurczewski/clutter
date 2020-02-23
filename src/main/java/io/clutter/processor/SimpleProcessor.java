@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.lang.String.valueOf;
@@ -50,9 +49,9 @@ public class SimpleProcessor extends AbstractProcessor {
     /**
      * Provides map with annotated classes for processing
      *
-     * @see javax.annotation.processing.Processor#process(Set, RoundEnvironment)
+     * This method provides default implementation for {@link javax.annotation.processing.Processor#process(Set, RoundEnvironment)}
      */
-    protected void process(Map<TypeElement, Set<TypeElement>> rootElements) {
+    public void process(ProcessorAggregate elements) {
     }
 
     /**
@@ -71,13 +70,8 @@ public class SimpleProcessor extends AbstractProcessor {
         }
 
         validate(annotations, roundEnv);
-
-        Map<TypeElement, Set<TypeElement>> types = annotations
-                .stream()
-                .collect(toMap(Function.identity(), getAnnotatedClasses(roundEnv)));
-
-        process(types);
-        return types.isEmpty() || claim();
+        process(new ProcessorAggregate(annotations, roundEnv));
+        return claim();
     }
 
     @Override
@@ -88,15 +82,6 @@ public class SimpleProcessor extends AbstractProcessor {
     @Override
     final public SourceVersion getSupportedSourceVersion() {
         return sourceVersion;
-    }
-
-    private Function<TypeElement, Set<TypeElement>> getAnnotatedClasses(RoundEnvironment roundEnv) {
-        return annotation -> roundEnv
-                .getElementsAnnotatedWith(annotation)
-                .stream()
-                .filter(TypeElement.class::isInstance)
-                .map(TypeElement.class::cast)
-                .collect(toSet());
     }
 
     private void validate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

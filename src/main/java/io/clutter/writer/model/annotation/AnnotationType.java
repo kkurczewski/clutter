@@ -1,13 +1,11 @@
 package io.clutter.writer.model.annotation;
 
-import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.annotation.param.AnnotationParams;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.util.Objects;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.joining;
 
 final public class AnnotationType {
@@ -37,15 +35,24 @@ final public class AnnotationType {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnnotationType that = (AnnotationType) o;
+        return type.equals(that.type) && values.equals(that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, values);
+    }
+
+    @Override
     public String toString() {
         return "@" + type + (getValues().isEmpty() ? "" : getValues()
                 .entrySet()
                 .stream()
-                .map(param -> {
-                    AnnotationParam[] params = param.getValue();
-                    String stringParams = (params.length > 1) ? Arrays.toString(params) : valueOf(params[0]);
-                    return format("%s = %s", param.getKey(), stringParams);
-                })
+                .map(param -> format("%s = %s", param.getKey(), param.getValue()))
                 .collect(joining(", ", "(", ")")));
     }
 }

@@ -1,6 +1,6 @@
 package io.clutter.writer.model.annotation.param;
 
-import io.clutter.writer.model.annotation.AnnotationType;
+import java.util.Objects;
 
 import static java.lang.String.valueOf;
 
@@ -13,7 +13,7 @@ final public class AnnotationParam {
     }
 
     public static AnnotationParam ofClass(Class<?> type) {
-        return new AnnotationParam(type.getCanonicalName());
+        return new AnnotationParam(type.getCanonicalName() + ".class");
     }
 
     public static AnnotationParam ofRawValue(Object type) {
@@ -24,8 +24,17 @@ final public class AnnotationParam {
         return new AnnotationParam("\"" + type + "\"");
     }
 
-    public static AnnotationParam ofAnnotation(AnnotationType type) {
-        return new AnnotationParam(valueOf(type));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnnotationParam that = (AnnotationParam) o;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     @Override

@@ -39,4 +39,18 @@ public class TestAnnotations {
 
     }
 
+    public @interface Aggregate {
+        int intValue();
+
+        String stringValue();
+
+        Class<?> classValue();
+
+        int[] intArray();
+
+        String[] stringArray();
+
+        Class<?>[] classArray();
+    }
+
 }
