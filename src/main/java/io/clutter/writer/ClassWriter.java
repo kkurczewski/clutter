@@ -2,6 +2,7 @@ package io.clutter.writer;
 
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
@@ -28,7 +29,7 @@ final public class ClassWriter {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(classType.getAnnotations()));
-        lines.add(format("%s class %s %s {", classType.getClassModifiers(), className, superClasses(classType)));
+        lines.add(format("%s class %s %s {", classType.getClassModifiers(), className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())));
         lines.add("");
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
@@ -38,17 +39,32 @@ final public class ClassWriter {
         return lines;
     }
 
-    private static String superClasses(ClassType classType) {
-        return classType.getParentClass()
-                .map(" extends "::concat)
-                .orElse("")
-                .concat(
-                        classType.getInterfaces().isEmpty()
-                                ? "" : " implements "
-                                .concat(classType.getInterfaces()
-                                        .stream()
-                                        .map(String::valueOf)
-                                        .collect(joining(", "))));
+    public static List<String> lines(InterfaceType interfaceType) {
+        String qualifiedName = interfaceType.getFullQualifiedName();
+        int classNameIndex = qualifiedName.lastIndexOf('.');
+        String packageName = qualifiedName.substring(0, classNameIndex);
+        String className = qualifiedName.substring(classNameIndex + 1);
+
+        List<String> lines = new LinkedList<>();
+        lines.add(format("package %s;", packageName));
+        lines.add("");
+        lines.addAll(annotations(interfaceType.getAnnotations()));
+        lines.add(format("%s interface %s %s {", interfaceType.getClassModifiers(), className, extendedInterfaces(interfaceType.getInterfaces())));
+        lines.add("");
+        lines.addAll(tabbed(methods(interfaceType.getMethods())));
+        lines.add("}");
+
+        return lines;
+    }
+
+    private static String extendedInterfaces(Set<String> interfaces) {
+        if (interfaces.isEmpty()) {
+            return "";
+        }
+        return " implements " + interfaces
+                .stream()
+                .map(String::valueOf)
+                .collect(joining(", "));
     }
 
     private static List<String> constructors(Set<Constructor> constructors, String className) {
@@ -76,6 +92,10 @@ final public class ClassWriter {
     private static List<String> methods(Set<Method> methods) {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
+            if (method.getModifiers().isAbstract()) {
+                lines.add(format("%s %s %s(%s);", method.getModifiers(), method.getReturnType(), method.getName(), params(method.getParams())));
+                return;
+            }
             lines.addAll(annotations(method.getAnnotations()));
             lines.add(format("%s %s %s(%s) {", method.getModifiers(), method.getReturnType(), method.getName(), params(method.getParams())));
             lines.addAll(tabbed(method.getBody()));

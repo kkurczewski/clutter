@@ -15,11 +15,13 @@ import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodModifiers;
 import io.clutter.writer.model.param.Params;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestAnnotations.BarClass;

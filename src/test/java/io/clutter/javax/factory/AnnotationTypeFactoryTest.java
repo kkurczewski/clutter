@@ -14,6 +14,7 @@ import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -49,7 +50,7 @@ class AnnotationTypeFactoryTest {
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         AnnotationType[] inputAnnotation = new AnnotationType[]{
-                new AnnotationType(TestAnnotations.BarClass.class, empty()),
+                new AnnotationType(TestAnnotations.BarClass.class),
                 new AnnotationType(TestAnnotations.Aggregate.class,
                         new AnnotationParams()
                                 .add("intValue", ofRawValue(123))
