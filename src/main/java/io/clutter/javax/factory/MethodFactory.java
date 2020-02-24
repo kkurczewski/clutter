@@ -4,7 +4,6 @@ import io.clutter.writer.common.PojoNamingConvention;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodModifiers;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Params;
 
@@ -12,11 +11,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static io.clutter.javax.filter.Filters.*;
 import static java.lang.String.valueOf;
-import static java.util.stream.Collectors.toSet;
 
 final public class MethodFactory {
 
@@ -41,7 +38,7 @@ final public class MethodFactory {
     }
 
     /**
-     * Returns public getter implementation
+     * Returns public getter implementation using abstract method
      *
      * @throws IllegalArgumentException when given {@link ExecutableElement} is not abstract
      */
@@ -69,7 +66,7 @@ final public class MethodFactory {
     }
 
     /**
-     * Returns simplest public setter implementation with void return type
+     * Returns simplest public setter implementation with void return type using abstract method
      *
      * @throws IllegalArgumentException when given {@link ExecutableElement} is not abstract
      */
@@ -131,22 +128,11 @@ final public class MethodFactory {
         } else if (javaxModifiers.contains(Modifier.PROTECTED)) {
             visibility = MethodVisibility.PROTECTED;
         } else if (javaxModifiers.contains(Modifier.PRIVATE)) {
-            visibility = MethodVisibility.PRIVATE;
+            throw new IllegalArgumentException("Trying to implement private method");
         } else {
             visibility = MethodVisibility.PACKAGE_PRIVATE;
         }
-        Set<String> traitsValues = Stream.of(MethodTrait.values())
-                .map(String::valueOf)
-                .collect(toSet());
 
-        MethodTrait[] traits = javaxModifiers
-                .stream()
-                .map(String::valueOf)
-                .map(String::toLowerCase)
-                .filter(traitsValues::contains)
-                .map(MethodTrait::valueOf)
-                .toArray(MethodTrait[]::new);
-
-        return new MethodModifiers(visibility, traits);
+        return new MethodModifiers(visibility);
     }
 }

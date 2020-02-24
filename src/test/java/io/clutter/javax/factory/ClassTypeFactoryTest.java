@@ -11,8 +11,6 @@ import io.clutter.writer.ClassWriter;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.InterfaceType;
-import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.param.Params;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
