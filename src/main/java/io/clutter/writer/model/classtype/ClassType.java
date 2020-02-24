@@ -1,7 +1,8 @@
 package io.clutter.writer.model.classtype;
 
 import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.classtype.modifiers.ClassModifiers;
+import io.clutter.writer.model.classtype.modifiers.ClassTrait;
+import io.clutter.writer.model.classtype.modifiers.ClassVisibility;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
@@ -11,18 +12,19 @@ import java.util.*;
 final public class ClassType {
 
     private final String fullQualifiedName;
+
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Constructor> constructors = new LinkedHashSet<>();
     private final LinkedHashSet<Field> fields = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-
+    private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
     private String parentClass;
-    private ClassModifiers classModifiers;
+    private ClassVisibility visibility;
 
     public ClassType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
-        this.classModifiers = ClassModifiers.PUBLIC;
+        this.visibility = ClassVisibility.PUBLIC;
     }
 
     public ClassType setParentClass(String parentClass) {
@@ -42,8 +44,14 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setClassModifiers(ClassModifiers classModifiers) {
-        this.classModifiers = classModifiers;
+    public ClassType setVisibility(ClassVisibility visibility) {
+        this.visibility = visibility;
+        return this;
+    }
+
+    public ClassType setTraits(ClassTrait... traits) {
+        this.traits.clear();
+        Collections.addAll(this.traits, traits);
         return this;
     }
 
@@ -81,8 +89,12 @@ final public class ClassType {
         return annotations;
     }
 
-    public ClassModifiers getClassModifiers() {
-        return classModifiers;
+    public ClassVisibility getVisibility() {
+        return visibility;
+    }
+
+    public LinkedHashSet<ClassTrait> getTraits() {
+        return traits;
     }
 
     public Set<Constructor> getConstructors() {

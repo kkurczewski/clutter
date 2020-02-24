@@ -25,12 +25,13 @@ final public class ClassWriter {
         int classNameIndex = qualifiedName.lastIndexOf('.');
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
+        String traits = classType.getTraits().stream().map(String::valueOf).collect(joining(" "));
 
         List<String> lines = new LinkedList<>();
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(classType.getAnnotations()));
-        lines.add(format("%s class %s %s {", classType.getClassModifiers(), className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())));
+        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())));
         lines.add("");
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
@@ -50,7 +51,7 @@ final public class ClassWriter {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
-        lines.add(format("%s interface %s %s {", interfaceType.getClassModifiers(), className, extendedInterfaces(interfaceType.getInterfaces())));
+        lines.add(format("%s interface %s %s {", interfaceType.getVisibility(), className, extendedInterfaces(interfaceType.getInterfaces())));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
         lines.add("}");

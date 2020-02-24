@@ -12,9 +12,7 @@ import io.clutter.writer.ClassWriter;
 import io.clutter.writer.common.PojoNamingConventions;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
-import io.clutter.writer.model.classtype.modifiers.ClassModifiers;
 import io.clutter.writer.model.classtype.modifiers.ClassTrait;
-import io.clutter.writer.model.classtype.modifiers.ClassVisibility;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.field.modifiers.FieldModifiers;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
@@ -56,9 +54,10 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(new Method("greeter", Param.of("name", "int")).setTraits(MethodTrait.ABSTRACT)))
+                        .setMethods(new Method("greeter", Param.of("name", "int")).setTraits(MethodTrait.ABSTRACT))
+                )
         );
 
         Compilation compilation = compiler.compile(files);
@@ -87,9 +86,10 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(new Method("greeter", Param.of("name", "int"))))
+                        .setMethods(new Method("greeter", Param.of("name", "int")))
+                )
         );
 
         Compilation compilation = compiler.compile(files);
@@ -118,9 +118,10 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(new Method("getFoo").setTraits(MethodTrait.ABSTRACT)))
+                        .setMethods(new Method("getFoo").setTraits(MethodTrait.ABSTRACT))
+                )
         );
 
         Compilation compilation = compiler.compile(files);
@@ -149,7 +150,7 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setFields(new Field("foo", "int").setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
                 )
@@ -181,9 +182,10 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(new Method("setFoo", Param.of("foo", "int"))))
+                        .setMethods(new Method("setFoo", Param.of("foo", "int")))
+                )
         );
 
         Compilation compilation = compiler.compile(files);
@@ -212,7 +214,7 @@ class MethodTypeFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
+                        .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setFields(new Field("foo", "int").setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
                 )

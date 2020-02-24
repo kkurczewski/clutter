@@ -58,16 +58,16 @@ final public class Method {
         return this;
     }
 
-    public Set<MethodTrait> getTraits() {
-        return traits;
-    }
-
     public String getName() {
         return name;
     }
 
     public MethodVisibility getVisibility() {
         return visibility;
+    }
+
+    public Set<MethodTrait> getTraits() {
+        return traits;
     }
 
     public String getReturnType() {
