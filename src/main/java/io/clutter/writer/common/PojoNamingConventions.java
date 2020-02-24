@@ -4,6 +4,9 @@ import static java.lang.String.format;
 
 final public class PojoNamingConventions {
 
+    public static PojoNamingConvention GET = prefix("get");
+    public static PojoNamingConvention SET = prefix("set");
+
     public static PojoNamingConvention prefix(String prefix) {
         return new PojoNamingConvention() {
             @Override
@@ -11,7 +14,7 @@ final public class PojoNamingConventions {
                 if (!methodName.startsWith(prefix)) {
                     throw new IllegalArgumentException(format("Expected method to start with `%s` prefix", prefix));
                 }
-                return StringUtils.toLowerWordCase(methodName.substring(methodName.length()));
+                return StringUtils.toLowerWordCase(methodName.substring(prefix.length()));
             }
 
             @Override
