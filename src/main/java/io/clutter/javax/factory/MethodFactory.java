@@ -10,6 +10,7 @@ import io.clutter.writer.model.param.Params;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static io.clutter.javax.filter.Filters.*;
@@ -18,6 +19,8 @@ import static java.lang.String.valueOf;
 final public class MethodFactory {
 
     /**
+     * Overrides abstract method in given {@link ExecutableElement}
+     *
      * @throws IllegalArgumentException when given {@link ExecutableElement} is not abstract
      */
     public static Method implement(ExecutableElement executableElement, String... body) {
@@ -28,7 +31,11 @@ final public class MethodFactory {
     }
 
     /**
-     * @throws IllegalArgumentException when given {@link ExecutableElement} is not final
+     * Overrides non final method in given {@link ExecutableElement}
+     * <p>
+     * Prefer {@link MethodFactory#implement(ExecutableElement, String...)} to avoid accidentally overrides
+     *
+     * @throws IllegalArgumentException when given {@link ExecutableElement} is final
      */
     public static Method override(ExecutableElement executableElement, String... body) {
         if (FINAL.test(executableElement)) {
@@ -62,7 +69,7 @@ final public class MethodFactory {
         return new Method(convention.method(valueOf(field.getSimpleName())), new Params())
                 .setModifiers(MethodModifiers.PUBLIC)
                 .setReturnType(valueOf(field.asType()))
-                .setBody("return this." + convention.variable(valueOf(field.getSimpleName())) + ";");
+                .setBody("return this." + field.getSimpleName() + ";");
     }
 
     /**
@@ -88,8 +95,8 @@ final public class MethodFactory {
         if (PRIVATE.test(field)) {
             throw new IllegalArgumentException("VariableElement is private");
         }
-        String variable = valueOf(field.getSimpleName());
         Params params = new Params();
+        String variable = valueOf(field.getSimpleName());
         params.add(variable, valueOf(field.asType()));
 
         return new Method(convention.method(variable), params)
@@ -108,7 +115,7 @@ final public class MethodFactory {
         method.getParameters()
                 .forEach(param -> params.add(valueOf(param.getSimpleName()), valueOf(param.asType())));
 
-        Set<Modifier> javaxModifiers = method.getModifiers();
+        LinkedHashSet<Modifier> javaxModifiers = new LinkedHashSet<>(method.getModifiers());
         javaxModifiers.remove(Modifier.ABSTRACT);
 
         return new Method(valueOf(method.getSimpleName()), params)

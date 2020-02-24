@@ -47,4 +47,9 @@ final public class Params {
     public int hashCode() {
         return Objects.hash(map);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(map);
+    }
 }

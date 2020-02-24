@@ -72,6 +72,7 @@ final public class Method {
         return body;
     }
 
+    // TODO add returnType to equals and add final modifier
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,5 +84,14 @@ final public class Method {
     @Override
     public int hashCode() {
         return Objects.hash(name, params);
+    }
+
+    /**
+     * Method should be used only for diagnostic
+     */
+    @Deprecated
+    @Override
+    public String toString() {
+        return name + params;
     }
 }

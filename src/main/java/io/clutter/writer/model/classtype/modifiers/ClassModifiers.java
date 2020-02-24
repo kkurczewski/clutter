@@ -18,7 +18,7 @@ final public class ClassModifiers {
 
     @Override
     public String toString() {
-        return visibility.toString() + (trait.isEmpty() ? "" : trait.stream()
+        return visibility.toString() + " " + (trait.isEmpty() ? "" : trait.stream()
                 .map(ClassTrait::toString).collect(joining(" ")));
     }
 }
