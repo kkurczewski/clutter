@@ -10,8 +10,6 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
-import io.clutter.writer.model.field.modifiers.FieldModifiers;
-import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 import org.junit.jupiter.api.Test;
@@ -42,8 +40,7 @@ class ClassWriterTest {
                                 new AnnotationType(BarClass.class, empty()),
                                 new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
                         )
-                        .setFields(new Field("someField", "java.util.List<String>")
-                                .setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
+                        .setFields(new Field("someField", "java.util.List<String>"))
                         .setConstructors(new Constructor(Param.of("name", "String")))
                         .setMethods(
                                 new Method("foo"),

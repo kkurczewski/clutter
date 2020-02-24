@@ -85,7 +85,7 @@ final public class ClassWriter {
         List<String> lines = new LinkedList<>();
         fields.forEach(field -> {
             lines.addAll(annotations(field.getAnnotations()));
-            lines.add(format("%s %s %s;", field.getModifiers(), field.getType(), field.getName()));
+            lines.add(format("%s %s %s;", field.getVisibility(), field.getType(), field.getName()));
             lines.add("");
         });
         return lines;

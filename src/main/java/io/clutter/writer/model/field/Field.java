@@ -1,22 +1,21 @@
 package io.clutter.writer.model.field;
 
 import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.field.modifiers.FieldModifiers;
+import io.clutter.writer.model.field.modifiers.FieldTrait;
+import io.clutter.writer.model.field.modifiers.FieldVisibility;
+import io.clutter.writer.model.method.Method;
+import io.clutter.writer.model.method.modifiers.MethodTrait;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-
-import static io.clutter.writer.model.field.modifiers.FieldModifiers.PRIVATE;
+import java.util.*;
 
 final public class Field {
 
     private final String name;
     private final String type;
-    private final List<AnnotationType> annotations = new LinkedList<>();
 
-    private FieldModifiers modifiers;
+    private final List<AnnotationType> annotations = new LinkedList<>();
+    private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
+    private FieldVisibility visibility;
 
     /**
      * Creates field with default private visibility
@@ -24,11 +23,17 @@ final public class Field {
     public Field(String name, String type) {
         this.name = name;
         this.type = type;
-        this.modifiers = PRIVATE;
+        this.visibility = FieldVisibility.PRIVATE;
     }
 
-    public Field setModifiers(FieldModifiers modifiers) {
-        this.modifiers = modifiers;
+    public Field setVisibility(FieldVisibility visibility) {
+        this.visibility = visibility;
+        return this;
+    }
+
+    public Field setTraits(FieldTrait... traits) {
+        this.traits.clear();
+        Collections.addAll(this.traits, traits);
         return this;
     }
 
@@ -46,8 +51,12 @@ final public class Field {
         return type;
     }
 
-    public FieldModifiers getModifiers() {
-        return modifiers;
+    public FieldVisibility getVisibility() {
+        return visibility;
+    }
+
+    public LinkedHashSet<FieldTrait> getTraits() {
+        return traits;
     }
 
     public List<AnnotationType> getAnnotations() {

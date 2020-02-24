@@ -14,7 +14,6 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.modifiers.ClassTrait;
 import io.clutter.writer.model.field.Field;
-import io.clutter.writer.model.field.modifiers.FieldModifiers;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
@@ -152,7 +151,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setFields(new Field("foo", "int").setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
+                        .setFields(new Field("foo", "int").setVisibility(FieldVisibility.PROTECTED))
                 )
         );
 
@@ -216,7 +215,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setFields(new Field("foo", "int").setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
+                        .setFields(new Field("foo", "int").setVisibility(FieldVisibility.PROTECTED))
                 )
         );
 
