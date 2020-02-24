@@ -1,38 +1,48 @@
 package io.clutter.writer.model.method;
 
 import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.method.modifiers.MethodModifiers;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.method.modifiers.MethodTrait;
+import io.clutter.writer.model.method.modifiers.MethodVisibility;
+import io.clutter.writer.model.param.Param;
 
 import java.util.*;
 
 final public class Method {
 
     private final String name;
-    private final Params params;
+    private final LinkedHashSet<Param> params = new LinkedHashSet<>();
+    private final String returnType;
+
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
+    private final LinkedHashSet<MethodTrait> traits = new LinkedHashSet<>();
+    private MethodVisibility visibility;
 
-    private MethodModifiers modifiers;
-    private String returnType;
+    /**
+     * Creates method with default public visibility
+     */
+    public Method(String name, String returnType, Param... params) {
+        this.name = name;
+        this.returnType = returnType;
+        this.visibility = MethodVisibility.PUBLIC;
+        Collections.addAll(this.params, params);
+    }
 
     /**
      * Creates method with default void return type and public visibility
      */
-    public Method(String name, Params params) {
-        this.name = name;
-        this.params = params;
-        this.modifiers = MethodModifiers.PUBLIC;
-        this.returnType = "void";
+    public Method(String name, Param... params) {
+        this(name, "void", params);
     }
 
-    public Method setModifiers(MethodModifiers modifiers) {
-        this.modifiers = modifiers;
+    public Method setVisibility(MethodVisibility visibility) {
+        this.visibility = visibility;
         return this;
     }
 
-    public Method setReturnType(String returnType) {
-        this.returnType = returnType;
+    public Method setTraits(MethodTrait... traits) {
+        this.traits.clear();
+        Collections.addAll(this.traits, traits);
         return this;
     }
 
@@ -48,12 +58,16 @@ final public class Method {
         return this;
     }
 
+    public Set<MethodTrait> getTraits() {
+        return traits;
+    }
+
     public String getName() {
         return name;
     }
 
-    public MethodModifiers getModifiers() {
-        return modifiers;
+    public MethodVisibility getVisibility() {
+        return visibility;
     }
 
     public String getReturnType() {
@@ -64,7 +78,7 @@ final public class Method {
         return annotations;
     }
 
-    public Params getParams() {
+    public Set<Param> getParams() {
         return params;
     }
 
@@ -72,26 +86,27 @@ final public class Method {
         return body;
     }
 
-    // TODO add returnType to equals and add final modifier
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Method method = (Method) o;
-        return name.equals(method.name) && params.equals(method.params);
+        return name.equals(method.name) &&
+                params.equals(method.params) &&
+                returnType.equals(method.returnType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, params);
+        return Objects.hash(name, params, returnType);
     }
 
-    /**
-     * Method should be used only for diagnostic
-     */
-    @Deprecated
     @Override
     public String toString() {
-        return name + params;
+        return "Method{" +
+                "name='" + name + '\'' +
+                ", params=" + params +
+                ", returnType='" + returnType + '\'' +
+                '}';
     }
 }

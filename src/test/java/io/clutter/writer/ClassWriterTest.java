@@ -13,15 +13,12 @@ import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.field.modifiers.FieldModifiers;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodModifiers;
-import io.clutter.writer.model.param.Params;
-import org.junit.jupiter.api.BeforeAll;
+import io.clutter.writer.model.param.Param;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestAnnotations.BarClass;
@@ -47,16 +44,14 @@ class ClassWriterTest {
                         )
                         .setFields(new Field("someField", "java.util.List<String>")
                                 .setModifiers(new FieldModifiers(FieldVisibility.PROTECTED)))
-                        .setConstructors(new Constructor(Params.just("name", "String")))
+                        .setConstructors(new Constructor(Param.of("name", "String")))
                         .setMethods(
-                                new Method("foo", Params.empty()),
-                                new Method("bar", new Params()
-                                        .add("A", "int")
-                                        .add("B", "long")
-                                        .add("C", long.class.getSimpleName()))
-                                        .setReturnType(Boolean.class.getSimpleName())
+                                new Method("foo"),
+                                new Method("bar", Boolean.class.getSimpleName(), Param.of("A", "int"),
+                                        Param.of("B", "long"),
+                                        Param.of("C", long.class.getSimpleName()))
                                         .setBody("return true;")
-                                        .setModifiers(new MethodModifiers(PRIVATE))
+                                        .setVisibility(PRIVATE)
                                         .setAnnotations(new AnnotationType(FooMethod.class, empty()))
                         )
                 )

@@ -3,14 +3,12 @@ package io.clutter.javax.factory;
 import io.clutter.writer.common.PojoNamingConvention;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodModifiers;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.param.Param;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static io.clutter.javax.filter.Filters.*;
@@ -66,9 +64,7 @@ final public class MethodFactory {
         if (PRIVATE.test(field)) {
             throw new IllegalArgumentException("VariableElement is private");
         }
-        return new Method(convention.method(valueOf(field.getSimpleName())), new Params())
-                .setModifiers(MethodModifiers.PUBLIC)
-                .setReturnType(valueOf(field.asType()))
+        return new Method(convention.method(valueOf(field.getSimpleName())), valueOf(field.asType()))
                 .setBody("return this." + field.getSimpleName() + ";");
     }
 
@@ -95,12 +91,8 @@ final public class MethodFactory {
         if (PRIVATE.test(field)) {
             throw new IllegalArgumentException("VariableElement is private");
         }
-        Params params = new Params();
         String variable = valueOf(field.getSimpleName());
-        params.add(variable, valueOf(field.asType()));
-
-        return new Method(convention.method(variable), params)
-                .setModifiers(MethodModifiers.PUBLIC)
+        return new Method(convention.method(variable), new Param(variable, valueOf(field.asType())))
                 .setBody("this." + variable + " = " + variable + ";");
     }
 
@@ -111,35 +103,31 @@ final public class MethodFactory {
         if (!METHOD.test(method)) {
             throw new IllegalArgumentException("ExecutableElement is not method");
         }
-        Params params = new Params();
-        method.getParameters()
-                .forEach(param -> params.add(valueOf(param.getSimpleName()), valueOf(param.asType())));
 
-        LinkedHashSet<Modifier> javaxModifiers = new LinkedHashSet<>(method.getModifiers());
-        javaxModifiers.remove(Modifier.ABSTRACT);
+        Param[] params = method.getParameters()
+                .stream()
+                .map(javaxParam -> new Param(valueOf(javaxParam.getSimpleName()), valueOf(javaxParam.asType())))
+                .toArray(Param[]::new);
+        AnnotationType[] annotations = method.getAnnotationMirrors()
+                .stream()
+                .map(AnnotationTypeFactory::from)
+                .toArray(AnnotationType[]::new);
 
-        return new Method(valueOf(method.getSimpleName()), params)
-                .setModifiers(modifiers(javaxModifiers))
-                .setReturnType(valueOf(method.getReturnType()))
-                .setAnnotations(method.getAnnotationMirrors()
-                        .stream()
-                        .map(AnnotationTypeFactory::from)
-                        .toArray(AnnotationType[]::new))
+        return new Method(valueOf(method.getSimpleName()), valueOf(method.getReturnType()), params)
+                .setVisibility(visibility(method.getModifiers()))
+                .setAnnotations(annotations)
                 .setBody(body);
     }
 
-    private static MethodModifiers modifiers(Set<Modifier> javaxModifiers) {
-        final MethodVisibility visibility;
+    private static MethodVisibility visibility(Set<Modifier> javaxModifiers) {
         if (javaxModifiers.contains(Modifier.PUBLIC)) {
-            visibility = MethodVisibility.PUBLIC;
+            return MethodVisibility.PUBLIC;
         } else if (javaxModifiers.contains(Modifier.PROTECTED)) {
-            visibility = MethodVisibility.PROTECTED;
+            return MethodVisibility.PROTECTED;
         } else if (javaxModifiers.contains(Modifier.PRIVATE)) {
             throw new IllegalArgumentException("Trying to implement private method");
         } else {
-            visibility = MethodVisibility.PACKAGE_PRIVATE;
+            return MethodVisibility.PACKAGE_PRIVATE;
         }
-
-        return new MethodModifiers(visibility);
     }
 }

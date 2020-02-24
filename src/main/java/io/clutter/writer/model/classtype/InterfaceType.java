@@ -3,7 +3,6 @@ package io.clutter.writer.model.classtype;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.modifiers.ClassModifiers;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodModifiers;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 
 import java.util.*;
@@ -49,7 +48,7 @@ final public class InterfaceType {
     public InterfaceType setMethods(Method... methods) {
         this.methods.clear();
         // TODO handle redundant interface traits
-        Arrays.asList(methods).forEach(method -> method.getModifiers().addTrait(MethodTrait.ABSTRACT));
+        Arrays.asList(methods).forEach(method -> method.getTraits().add(MethodTrait.ABSTRACT));
         Collections.addAll(this.methods, methods);
         return this;
     }

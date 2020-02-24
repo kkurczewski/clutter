@@ -3,7 +3,7 @@ package io.clutter.javax.factory;
 import io.clutter.javax.filter.Filters;
 import io.clutter.writer.common.PojoNamingConvention;
 import io.clutter.writer.model.constructor.Constructor;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.param.Param;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -14,23 +14,23 @@ import static java.lang.String.valueOf;
 final public class ConstructorFactory {
 
     public static Constructor fromVariableElements(VariableElement... fields) {
-        Params params = new Params();
-        Stream.of(fields).forEach(field -> params.add(
-                valueOf(field.getSimpleName()),
-                valueOf(field.asType()))
-        );
+        Param[] params = Stream.of(fields)
+                .map(field -> new Param(
+                        valueOf(field.getSimpleName()),
+                        valueOf(field.asType())))
+                .toArray(Param[]::new);
+
         return new Constructor(params);
     }
 
     public static Constructor fromGetters(PojoNamingConvention namingConvention, ExecutableElement... methods) {
-        Params params = new Params();
-        Stream.of(methods)
+        Param[] params = Stream.of(methods)
                 .filter(Filters.METHOD)
                 .filter(Filters.ACCESSOR)
-                .forEach(getter -> params.add(
+                .map(getter -> new Param(
                         namingConvention.variable(valueOf(getter.getSimpleName())),
-                        valueOf(getter.getReturnType()))
-                );
+                        valueOf(getter.getReturnType())))
+                .toArray(Param[]::new);
         return new Constructor(params);
     }
 }

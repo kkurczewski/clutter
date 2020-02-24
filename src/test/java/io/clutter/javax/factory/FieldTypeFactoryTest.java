@@ -14,7 +14,6 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.param.Params;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -51,8 +50,8 @@ class FieldTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setMethods(
-                                new Method("getFoo", Params.empty()).setReturnType("int").setBody("return 0;"),
-                                new Method("getBar", Params.empty()).setReturnType("long").setBody("return 0;")
+                                new Method("getFoo", "int").setBody("return 0;"),
+                                new Method("getBar", "long").setBody("return 0;")
                         ))
         );
 

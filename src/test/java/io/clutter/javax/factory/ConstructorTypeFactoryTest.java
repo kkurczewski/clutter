@@ -14,7 +14,7 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.param.Param;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,8 +24,6 @@ import org.mockito.MockitoAnnotations;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
@@ -72,15 +70,12 @@ class ConstructorTypeFactoryTest {
                 .map(ConstructorFactory::fromVariableElements)
                 .collect(toList()))
                 .hasOnlyOneElementSatisfying(constructorType -> {
-                    Map<String, String> expected = new LinkedHashMap<>();
-                    expected.put("foo", "int");
-                    expected.put("bar", "long");
-
                     assertThat(constructorType
-                            .getParams()
-                            .entrySet()
-                            .stream())
-                            .containsExactlyElementsOf(expected.entrySet());
+                            .getParams())
+                            .containsExactly(
+                                    Param.of("foo", "int"),
+                                    Param.of("bar", "long")
+                            );
                 });
     }
 
@@ -93,11 +88,9 @@ class ConstructorTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setMethods(
-                                new Method("getFoo", Params.empty())
-                                        .setReturnType("int")
+                                new Method("getFoo", "int")
                                         .setBody("return 0;"),
-                                new Method("getBar", Params.empty())
-                                        .setReturnType("long")
+                                new Method("getBar", "long")
                                         .setBody("return 0;")
                         ))
         );
@@ -114,15 +107,12 @@ class ConstructorTypeFactoryTest {
                 .map(methods -> methods.toArray(ExecutableElement[]::new))
                 .map(methods -> ConstructorFactory.fromGetters(PojoNamingConventions.GET, methods)))
                 .hasOnlyOneElementSatisfying(constructorType -> {
-                    Map<String, String> expected = new LinkedHashMap<>();
-                    expected.put("foo", "int");
-                    expected.put("bar", "long");
-
                     assertThat(constructorType
-                            .getParams()
-                            .entrySet()
-                            .stream())
-                            .containsExactlyElementsOf(expected.entrySet());
+                            .getParams())
+                            .containsExactly(
+                                    Param.of("foo", "int"),
+                                    Param.of("bar", "long")
+                            );
                 });
     }
 

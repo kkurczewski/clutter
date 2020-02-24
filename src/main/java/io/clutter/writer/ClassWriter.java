@@ -6,7 +6,8 @@ import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.method.modifiers.MethodTrait;
+import io.clutter.writer.model.param.Param;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -92,24 +93,24 @@ final public class ClassWriter {
     private static List<String> methods(Set<Method> methods) {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
-            if (method.getModifiers().isAbstract()) {
-                lines.add(format("%s %s %s(%s);", method.getModifiers(), method.getReturnType(), method.getName(), params(method.getParams())));
-                return;
+            String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
+            if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
+                lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())));
+            } else {
+                lines.addAll(annotations(method.getAnnotations()));
+                lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())));
+                lines.addAll(tabbed(method.getBody()));
+                lines.add("}");
+                lines.add("");
             }
-            lines.addAll(annotations(method.getAnnotations()));
-            lines.add(format("%s %s %s(%s) {", method.getModifiers(), method.getReturnType(), method.getName(), params(method.getParams())));
-            lines.addAll(tabbed(method.getBody()));
-            lines.add("}");
-            lines.add("");
         });
         return lines;
     }
 
-    private static String params(Params params) {
+    private static String params(Set<Param> params) {
         return params
-                .entrySet()
                 .stream()
-                .map(param -> format("%s %s", param.getValue(), param.getKey())) // order is: arg_type arg_name
+                .map(param -> format("%s %s", param.getValue(), param.getName())) // order is: arg_type arg_name
                 .collect(joining(", "));
     }
 

@@ -2,7 +2,7 @@ package io.clutter.writer.model.constructor;
 
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.constructor.modifiers.ConstructorVisibility;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.param.Param;
 
 import java.util.*;
 
@@ -10,24 +10,14 @@ import static io.clutter.writer.model.constructor.modifiers.ConstructorVisibilit
 
 final public class Constructor {
 
-    private final Params params;
+    private final LinkedHashSet<Param> params = new LinkedHashSet<>();
+
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
-
     private ConstructorVisibility visibility;
 
-    /**
-     * Creates public no arg constructor
-     */
-    public Constructor() {
-        this(new Params());
-    }
-
-    /**
-     * Creates public constructor with given params
-     */
-    public Constructor(Params params) {
-        this.params = params;
+    public Constructor(Param... params) {
+        Collections.addAll(this.params, params);
         this.visibility = PUBLIC;
     }
 
@@ -56,7 +46,7 @@ final public class Constructor {
         return annotations;
     }
 
-    public Params getParams() {
+    public Set<Param> getParams() {
         return params;
     }
 

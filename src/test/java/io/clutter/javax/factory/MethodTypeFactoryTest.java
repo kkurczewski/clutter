@@ -19,10 +19,8 @@ import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.field.modifiers.FieldModifiers;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodModifiers;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
-import io.clutter.writer.model.method.modifiers.MethodVisibility;
-import io.clutter.writer.model.param.Params;
+import io.clutter.writer.model.param.Param;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -60,10 +58,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(
-                                new Method("greeter", Params.just("name", "int"))
-                                        .setModifiers(new MethodModifiers(MethodVisibility.PROTECTED, MethodTrait.ABSTRACT))
-                        ))
+                        .setMethods(new Method("greeter", Param.of("name", "int")).setTraits(MethodTrait.ABSTRACT)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -80,9 +75,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("greeter", Params.just("name", "int")))
+                .isEqualTo(new Method("greeter", Param.of("name", "int")))
                 .matches(method -> method.getBody().equals(List.of("return 0;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     @Test
@@ -94,10 +89,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(
-                                new Method("greeter", Params.just("name", "int"))
-                                        .setModifiers(new MethodModifiers(MethodVisibility.PROTECTED))
-                        ))
+                        .setMethods(new Method("greeter", Param.of("name", "int"))))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -114,9 +106,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("greeter", Params.just("name", "int")))
+                .isEqualTo(new Method("greeter", Param.of("name", "int")))
                 .matches(method -> method.getBody().equals(List.of("return 0;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     @Test
@@ -128,10 +120,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(
-                                new Method("getFoo", Params.empty())
-                                        .setModifiers(new MethodModifiers(MethodVisibility.PUBLIC, MethodTrait.ABSTRACT))
-                        ))
+                        .setMethods(new Method("getFoo").setTraits(MethodTrait.ABSTRACT)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -148,9 +137,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("getFoo", Params.empty()))
+                .isEqualTo(new Method("getFoo"))
                 .matches(method -> method.getBody().equals(List.of("return this.foo;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     @Test
@@ -180,9 +169,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("getFoo", Params.empty()))
+                .isEqualTo(new Method("getFoo", "int"))
                 .matches(method -> method.getBody().equals(List.of("return this.foo;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     @Test
@@ -194,9 +183,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setClassModifiers(new ClassModifiers(ClassVisibility.PUBLIC, ClassTrait.ABSTRACT))
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
-                        .setMethods(new Method("setFoo", Params.just("foo", "int"))
-                                .setModifiers(new MethodModifiers(MethodVisibility.PUBLIC)))
-                )
+                        .setMethods(new Method("setFoo", Param.of("foo", "int"))))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -213,9 +200,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("setFoo", Params.just("foo", "int")))
+                .isEqualTo(new Method("setFoo", Param.of("foo", "int")))
                 .matches(method -> method.getBody().equals(List.of("this.foo = foo;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     @Test
@@ -245,9 +232,9 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("setFoo", Params.just("foo", "int")))
+                .isEqualTo(new Method("setFoo", Param.of("foo", "int")))
                 .matches(method -> method.getBody().equals(List.of("this.foo = foo;")))
-                .matches(method -> !method.getModifiers().isAbstract());
+                .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
 
     private JavaFileObject javaFile(ClassType classType) {
