@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.testing.compile.Compiler.javac;
-import static io.clutter.writer.model.annotation.param.AnnotationParam.*;
+import static io.clutter.writer.model.annotation.param.AnnotationAttribute.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;

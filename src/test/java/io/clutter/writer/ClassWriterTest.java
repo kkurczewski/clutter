@@ -21,7 +21,7 @@ import java.util.Set;
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestAnnotations.BarClass;
 import static io.clutter.TestAnnotations.FooMethod;
-import static io.clutter.writer.model.annotation.param.AnnotationParam.ofString;
+import static io.clutter.writer.model.annotation.param.AnnotationAttribute.ofString;
 import static io.clutter.writer.model.annotation.param.AnnotationParams.empty;
 import static io.clutter.writer.model.annotation.param.AnnotationParams.just;
 import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;

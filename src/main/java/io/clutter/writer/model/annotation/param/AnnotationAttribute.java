@@ -4,31 +4,31 @@ import java.util.Objects;
 
 import static java.lang.String.valueOf;
 
-final public class AnnotationParam {
+final public class AnnotationAttribute {
 
     private final String value;
 
-    private AnnotationParam(String value) {
+    private AnnotationAttribute(String value) {
         this.value = value;
     }
 
-    public static AnnotationParam ofClass(Class<?> type) {
-        return new AnnotationParam(type.getCanonicalName() + ".class");
+    public static AnnotationAttribute ofClass(Class<?> type) {
+        return new AnnotationAttribute(type.getCanonicalName() + ".class");
     }
 
-    public static AnnotationParam ofRawValue(Object type) {
-        return new AnnotationParam(valueOf(type));
+    public static AnnotationAttribute ofRawValue(Object type) {
+        return new AnnotationAttribute(valueOf(type));
     }
 
-    public static AnnotationParam ofString(Object type) {
-        return new AnnotationParam("\"" + type + "\"");
+    public static AnnotationAttribute ofString(String type) {
+        return new AnnotationAttribute("\"" + type + "\"");
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AnnotationParam that = (AnnotationParam) o;
+        AnnotationAttribute that = (AnnotationAttribute) o;
         return value.equals(that.value);
     }
 

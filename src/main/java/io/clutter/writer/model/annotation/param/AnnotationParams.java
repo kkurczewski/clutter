@@ -21,7 +21,7 @@ final public class AnnotationParams {
         return new AnnotationParams();
     }
 
-    public static AnnotationParams just(String name, AnnotationParam param) {
+    public static AnnotationParams just(String name, AnnotationAttribute param) {
         return new AnnotationParams().add(name, param);
     }
 

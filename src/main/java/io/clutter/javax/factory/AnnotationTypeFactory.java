@@ -5,7 +5,7 @@ import io.clutter.writer.model.annotation.param.AnnotationParams;
 
 import javax.lang.model.element.AnnotationMirror;
 
-import static io.clutter.writer.model.annotation.param.AnnotationParam.ofRawValue;
+import static io.clutter.writer.model.annotation.param.AnnotationAttribute.ofRawValue;
 
 final public class AnnotationTypeFactory {
 
