@@ -48,7 +48,7 @@ public class ClassWriterTest {
                         .setFields(
                                 new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
                                 new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED),
-                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC) // FIXME missing final static modifiers
+                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC).setValue("123")
                         )
                         .setConstructors(
                                 new Constructor().setAnnotations(new AnnotationType(Nonnull.class)),

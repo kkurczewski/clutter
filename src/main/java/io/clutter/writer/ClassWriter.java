@@ -85,10 +85,12 @@ final public class ClassWriter {
     private static List<String> fields(Set<Field> fields) {
         List<String> lines = new LinkedList<>();
         fields.forEach(field -> {
+            String traits = field.getTraits().stream().map(String::valueOf).collect(joining(" "));
+
             lines.addAll(annotations(field.getAnnotations()));
-            lines.add(format("%s %s %s;", field.getVisibility(), field.getType(), field.getName()).replaceAll("\\s+", " "));
-            lines.add("");
+            lines.add(format("%s %s %s %s%s;", field.getVisibility(), traits, field.getType(), field.getName(), field.getValue().map(" = "::concat).orElse("")).replaceAll("\\s+", " "));
         });
+        lines.add("");
         return lines;
     }
 
@@ -103,8 +105,8 @@ final public class ClassWriter {
                 lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
                 lines.addAll(tabbed(method.getBody()));
                 lines.add("}");
-                lines.add("");
             }
+            lines.add("");
         });
         return lines;
     }

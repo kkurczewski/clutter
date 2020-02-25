@@ -11,10 +11,11 @@ final public class Field {
 
     private final String name;
     private final Type type;
-    // TODO default value
+
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
     private FieldVisibility visibility;
+    private String value;
 
     /**
      * Creates field with default private visibility
@@ -42,6 +43,11 @@ final public class Field {
         return this;
     }
 
+    public Field setValue(String value) {
+        this.value = value;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -60,6 +66,10 @@ final public class Field {
 
     public List<AnnotationType> getAnnotations() {
         return annotations;
+    }
+
+    public Optional<String> getValue() {
+        return Optional.ofNullable(value);
     }
 
     @Override
