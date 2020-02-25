@@ -32,11 +32,12 @@ final public class ClassWriter {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(classType.getAnnotations()));
-        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())));
+        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
         lines.addAll(tabbed(methods(classType.getMethods())));
+        lines.remove(lines.size() - 1); // remove trailing space
         lines.add("}");
 
         return lines;
@@ -52,9 +53,10 @@ final public class ClassWriter {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
-        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces())));
+        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces())).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
+        lines.remove(lines.size() - 1); // remove trailing space
         lines.add("}");
 
         return lines;
@@ -74,7 +76,7 @@ final public class ClassWriter {
         List<String> lines = new LinkedList<>();
         constructors.forEach(constructor -> {
             lines.addAll(annotations(constructor.getAnnotations()));
-            lines.add(format("%s %s(%s) {", constructor.getVisibility(), className, params(constructor.getParams())));
+            lines.add(format("%s %s(%s) {", constructor.getVisibility(), className, params(constructor.getParams())).replaceAll("\\s+", " "));
             lines.addAll(tabbed(constructor.getBody()));
             lines.add("}");
             lines.add("");
@@ -86,7 +88,7 @@ final public class ClassWriter {
         List<String> lines = new LinkedList<>();
         fields.forEach(field -> {
             lines.addAll(annotations(field.getAnnotations()));
-            lines.add(format("%s %s %s;", field.getVisibility(), field.getType(), field.getName()));
+            lines.add(format("%s %s %s;", field.getVisibility(), field.getType(), field.getName()).replaceAll("\\s+", " "));
             lines.add("");
         });
         return lines;
@@ -97,10 +99,10 @@ final public class ClassWriter {
         methods.forEach(method -> {
             String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
             if (method.getTraits().contains(ABSTRACT) || method.getTraits().contains(INTERFACE_ABSTRACT)) {
-                lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())));
+                lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
             } else {
                 lines.addAll(annotations(method.getAnnotations()));
-                lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())));
+                lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
                 lines.addAll(tabbed(method.getBody()));
                 lines.add("}");
                 lines.add("");
