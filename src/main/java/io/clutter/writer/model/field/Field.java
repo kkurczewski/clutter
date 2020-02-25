@@ -3,8 +3,6 @@ package io.clutter.writer.model.field;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.field.modifiers.FieldTrait;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
-import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
 
 import java.util.*;
 

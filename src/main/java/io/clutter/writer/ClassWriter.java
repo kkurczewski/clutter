@@ -6,7 +6,6 @@ import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.param.Param;
 
 import java.util.LinkedList;
@@ -14,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.clutter.writer.model.method.modifiers.MethodTrait.ABSTRACT;
+import static io.clutter.writer.model.method.modifiers.MethodTrait.INTERFACE_ABSTRACT;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -51,7 +52,7 @@ final public class ClassWriter {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
-        lines.add(format("%s interface %s %s {", interfaceType.getVisibility(), className, extendedInterfaces(interfaceType.getInterfaces())));
+        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces())));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
         lines.add("}");
@@ -95,7 +96,7 @@ final public class ClassWriter {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
             String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
-            if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
+            if (method.getTraits().contains(ABSTRACT) || method.getTraits().contains(INTERFACE_ABSTRACT)) {
                 lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())));
             } else {
                 lines.addAll(annotations(method.getAnnotations()));

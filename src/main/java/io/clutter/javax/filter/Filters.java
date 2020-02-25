@@ -29,6 +29,6 @@ final public class Filters {
     }
 
     public static MethodFilter methodFilter(MethodFilter methodFilter) {
-        return (element) -> METHOD.test(element) && methodFilter.test(element);
+        return element -> METHOD.test(element) && methodFilter.test(element);
     }
 }
