@@ -12,6 +12,7 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.annotation.param.AnnotationParams;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
+import io.clutter.writer.model.type.Type;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class AnnotationTypeFactoryTest {
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(inputAnnotation)
-                        .setFields(new Field("a", "int"), new Field("b", "int")))
+                        .setFields(new Field("a", Type.INT), new Field("b", Type.INT)))
         );
 
         Compilation compilation = compiler.compile(files);

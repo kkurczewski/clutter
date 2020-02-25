@@ -4,6 +4,7 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Param;
+import io.clutter.writer.model.type.Type;
 
 import java.util.*;
 
@@ -11,7 +12,7 @@ final public class Method {
 
     private final String name;
     private final LinkedHashSet<Param> params = new LinkedHashSet<>();
-    private final String returnType;
+    private final Type returnType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
@@ -21,7 +22,7 @@ final public class Method {
     /**
      * Creates method with default public visibility
      */
-    public Method(String name, String returnType, Param... params) {
+    public Method(String name, Type returnType, Param... params) {
         this.name = name;
         this.returnType = returnType;
         this.visibility = MethodVisibility.PUBLIC;
@@ -32,7 +33,7 @@ final public class Method {
      * Creates method with default void return type and public visibility
      */
     public Method(String name, Param... params) {
-        this(name, "void", params);
+        this(name, Type.VOID, params);
     }
 
     public Method setVisibility(MethodVisibility visibility) {
@@ -70,7 +71,7 @@ final public class Method {
         return traits;
     }
 
-    public String getReturnType() {
+    public Type getReturnType() {
         return returnType;
     }
 

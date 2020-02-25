@@ -1,8 +1,10 @@
 package io.clutter.writer.model.param;
 
+import io.clutter.writer.model.type.Type;
+
 import java.util.Objects;
 
-import static java.lang.String.*;
+import static java.lang.String.valueOf;
 
 final public class Param {
 
@@ -14,7 +16,7 @@ final public class Param {
         this.value = value;
     }
 
-    public static Param of(String name, Object value) {
+    public static Param of(String name, Type value) {
         return new Param(name, valueOf(value));
     }
 

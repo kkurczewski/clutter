@@ -22,6 +22,6 @@ final public class FieldFactory {
             throw new IllegalArgumentException("ExecutableElement is not getter");
         }
 
-        return new Field(namingConvention.variable(valueOf(method.getSimpleName())), valueOf(method.getReturnType()));
+        return new Field(namingConvention.variable(valueOf(method.getSimpleName())), TypeFactory.of(method.getReturnType()));
     }
 }

@@ -5,6 +5,7 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Param;
+import io.clutter.writer.model.type.Type;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -64,7 +65,7 @@ final public class MethodFactory {
         if (PRIVATE.test(field)) {
             throw new IllegalArgumentException("VariableElement is private");
         }
-        return new Method(convention.method(valueOf(field.getSimpleName())), valueOf(field.asType()))
+        return new Method(convention.method(valueOf(field.getSimpleName())), TypeFactory.of(field.asType()))
                 .setBody("return this." + field.getSimpleName() + ";");
     }
 
@@ -113,7 +114,7 @@ final public class MethodFactory {
                 .map(AnnotationTypeFactory::from)
                 .toArray(AnnotationType[]::new);
 
-        return new Method(valueOf(method.getSimpleName()), valueOf(method.getReturnType()), params)
+        return new Method(valueOf(method.getSimpleName()), TypeFactory.of(method.getReturnType()), params)
                 .setVisibility(visibility(method.getModifiers()))
                 .setAnnotations(annotations)
                 .setBody(body);

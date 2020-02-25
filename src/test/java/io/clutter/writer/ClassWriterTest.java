@@ -12,6 +12,7 @@ import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
+import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -40,13 +41,13 @@ class ClassWriterTest {
                                 new AnnotationType(BarClass.class, empty()),
                                 new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
                         )
-                        .setFields(new Field("someField", "java.util.List<String>"))
-                        .setConstructors(new Constructor(Param.of("name", "String")))
+                        .setFields(new Field("someField", Type.listOf(Type.STRING)))
+                        .setConstructors(new Constructor(Param.of("name", Type.STRING)))
                         .setMethods(
                                 new Method("foo"),
-                                new Method("bar", Boolean.class.getSimpleName(), Param.of("A", "int"),
-                                        Param.of("B", "long"),
-                                        Param.of("C", long.class.getSimpleName()))
+                                new Method("bar", Type.BOOLEAN, Param.of("A", Type.INT),
+                                        Param.of("B", Type.LONG),
+                                        Param.of("C", Type.LONG))
                                         .setBody("return true;")
                                         .setVisibility(PRIVATE)
                                         .setAnnotations(new AnnotationType(FooMethod.class, empty()))

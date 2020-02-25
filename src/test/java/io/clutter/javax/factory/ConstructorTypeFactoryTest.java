@@ -15,6 +15,7 @@ import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
+import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,8 +53,8 @@ class ConstructorTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setFields(
-                                new Field("foo", "int"),
-                                new Field("bar", "long")
+                                new Field("foo", Type.INT),
+                                new Field("bar", Type.LONG)
                         ))
         );
 
@@ -73,8 +74,8 @@ class ConstructorTypeFactoryTest {
                     assertThat(constructorType
                             .getParams())
                             .containsExactly(
-                                    Param.of("foo", "int"),
-                                    Param.of("bar", "long")
+                                    Param.of("foo", Type.INT),
+                                    Param.of("bar", Type.LONG)
                             );
                 });
     }
@@ -88,10 +89,8 @@ class ConstructorTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
                         .setMethods(
-                                new Method("getFoo", "int")
-                                        .setBody("return 0;"),
-                                new Method("getBar", "long")
-                                        .setBody("return 0;")
+                                new Method("getFoo", Type.INT).setBody("return 0;"),
+                                new Method("getBar", Type.LONG).setBody("return 0;")
                         ))
         );
 
@@ -110,8 +109,8 @@ class ConstructorTypeFactoryTest {
                     assertThat(constructorType
                             .getParams())
                             .containsExactly(
-                                    Param.of("foo", "int"),
-                                    Param.of("bar", "long")
+                                    Param.of("foo", Type.INT),
+                                    Param.of("bar", Type.LONG)
                             );
                 });
     }

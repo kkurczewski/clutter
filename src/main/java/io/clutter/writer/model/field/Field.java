@@ -3,13 +3,14 @@ package io.clutter.writer.model.field;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.field.modifiers.FieldTrait;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
+import io.clutter.writer.model.type.Type;
 
 import java.util.*;
 
 final public class Field {
 
     private final String name;
-    private final String type;
+    private final Type type;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
@@ -18,7 +19,7 @@ final public class Field {
     /**
      * Creates field with default private visibility
      */
-    public Field(String name, String type) {
+    public Field(String name, Type type) {
         this.name = name;
         this.type = type;
         this.visibility = FieldVisibility.PRIVATE;
@@ -45,7 +46,7 @@ final public class Field {
         return name;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
