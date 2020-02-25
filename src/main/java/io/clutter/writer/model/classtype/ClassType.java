@@ -27,6 +27,10 @@ final public class ClassType {
         this.visibility = ClassVisibility.PUBLIC;
     }
 
+    public ClassType setParentClass(Class<?> parentClass) {
+        return setParentClass(parentClass.getCanonicalName());
+    }
+
     public ClassType setParentClass(String parentClass) {
         this.parentClass = parentClass;
         return this;

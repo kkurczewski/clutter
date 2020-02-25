@@ -10,11 +10,14 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
+import io.clutter.writer.model.field.modifiers.FieldTrait;
+import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nonnull;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Set;
@@ -28,7 +31,7 @@ import static io.clutter.writer.model.annotation.param.AnnotationParams.just;
 import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 
-class ClassWriterTest {
+public class ClassWriterTest {
 
     @Test
     void shouldCompileWriterClass() {
@@ -37,20 +40,30 @@ class ClassWriterTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
+                        .setParentClass(ClassWriterTest.class)
                         .setAnnotations(
-                                new AnnotationType(BarClass.class, empty()),
+                                new AnnotationType(BarClass.class),
                                 new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
                         )
-                        .setFields(new Field("someField", Type.listOf(Type.STRING)))
-                        .setConstructors(new Constructor(Param.of("name", Type.STRING)))
+                        .setFields(
+                                new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
+                                new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED),
+                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC) // FIXME missing final static modifiers
+                        )
+                        .setConstructors(
+                                new Constructor().setAnnotations(new AnnotationType(Nonnull.class)),
+                                new Constructor(Param.of("name", Type.STRING)).setBody("this.list.add(name);")
+                        )
                         .setMethods(
-                                new Method("foo"),
-                                new Method("bar", Type.BOOLEAN, Param.of("A", Type.INT),
+                                new Method("init"),
+                                new Method("test", Type.BOOLEAN,
+                                        Param.of("A", Type.INT),
                                         Param.of("B", Type.LONG),
-                                        Param.of("C", Type.LONG))
+                                        Param.of("C", Type.LONG)
+                                )
                                         .setBody("return true;")
                                         .setVisibility(PRIVATE)
-                                        .setAnnotations(new AnnotationType(FooMethod.class, empty()))
+                                        .setAnnotations(new AnnotationType(FooMethod.class))
                         )
                 )
         );

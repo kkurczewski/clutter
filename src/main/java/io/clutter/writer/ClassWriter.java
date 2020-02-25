@@ -37,7 +37,6 @@ final public class ClassWriter {
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
         lines.addAll(tabbed(methods(classType.getMethods())));
-        lines.remove(lines.size() - 1); // remove trailing space
         lines.add("}");
 
         return lines;
@@ -56,7 +55,6 @@ final public class ClassWriter {
         lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces())).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
-        lines.remove(lines.size() - 1); // remove trailing space
         lines.add("}");
 
         return lines;

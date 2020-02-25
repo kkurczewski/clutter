@@ -11,7 +11,7 @@ final public class Field {
 
     private final String name;
     private final Type type;
-
+    // TODO default value
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
     private FieldVisibility visibility;
