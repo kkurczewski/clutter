@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,7 +80,7 @@ final public class JavaFileFactory {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(classType.getAnnotations()));
-        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces())).replaceAll("\\s+", " "));
+        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces()).map(" implements "::concat).orElse("")).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
@@ -99,7 +100,7 @@ final public class JavaFileFactory {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
-        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces())).replaceAll("\\s+", " "));
+        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces()).map(" extends "::concat).orElse("")).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
         lines.add("}");
@@ -107,14 +108,14 @@ final public class JavaFileFactory {
         return lines;
     }
 
-    private static String extendedInterfaces(Set<String> interfaces) {
+    private static Optional<String> extendedInterfaces(Set<String> interfaces) {
         if (interfaces.isEmpty()) {
-            return "";
+            return Optional.empty();
         }
-        return " implements " + interfaces
+        return Optional.of(interfaces
                 .stream()
                 .map(String::valueOf)
-                .collect(joining(", "));
+                .collect(joining(", ")));
     }
 
     private static List<String> constructors(Set<Constructor> constructors, String className) {
@@ -145,10 +146,10 @@ final public class JavaFileFactory {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
             String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
+            lines.addAll(annotations(method.getAnnotations()));
             if (method.getTraits().contains(ABSTRACT) || method.getTraits().contains(INTERFACE_ABSTRACT)) {
                 lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
             } else {
-                lines.addAll(annotations(method.getAnnotations()));
                 lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
                 lines.addAll(tabbed(method.getBody()));
                 lines.add("}");

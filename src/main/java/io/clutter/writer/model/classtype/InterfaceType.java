@@ -5,6 +5,7 @@ import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 // TODO generics
 
@@ -24,6 +25,10 @@ final public class InterfaceType {
         this.interfaces.clear();
         Collections.addAll(this.interfaces, interfaces);
         return this;
+    }
+
+    public InterfaceType setInterfaces(Class<?>... interfaces) {
+        return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
     }
 
     public InterfaceType setAnnotations(AnnotationType... annotations) {

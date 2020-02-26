@@ -8,6 +8,7 @@ import java.util.*;
 
 import static java.lang.String.format;
 
+@Deprecated
 public class SimpleClassBuilder {
 
     private final String fullyQualifiedName;

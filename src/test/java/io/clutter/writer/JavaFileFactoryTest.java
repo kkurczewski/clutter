@@ -11,6 +11,7 @@ import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.field.modifiers.FieldTrait;
@@ -24,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Set;
 
@@ -48,6 +50,7 @@ public class JavaFileFactoryTest {
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setParentClass(JavaFileFactoryTest.class)
+                        .setInterfaces(Closeable.class)
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
                                 new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
@@ -70,7 +73,39 @@ public class JavaFileFactoryTest {
                                 )
                                         .setBody("return true;")
                                         .setVisibility(PRIVATE)
-                                        .setAnnotations(new AnnotationType(FooMethod.class))
+                                        .setAnnotations(new AnnotationType(FooMethod.class)),
+                                new Method("close")
+                        )
+                )
+        );
+
+        Compilation compilation = compiler.compile(files);
+        CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
+        print(compilation.sourceFiles());
+    }
+
+    @Test
+    void shouldCompileComplexInterface() {
+        SimpleProcessor simpleProcessor = new SimpleProcessor(RELEASE_11, BarClass.class);
+        Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
+
+        Set<JavaFileObject> files = Set.of(
+                javaFile(new InterfaceType("test.foo.bar.TestInterface")
+                        .setAnnotations(
+                                new AnnotationType(BarClass.class),
+                                new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
+                        )
+                        .setInterfaces(Closeable.class)
+                        .setMethods(
+                                new Method("init"),
+                                new Method("test", Type.BOOLEAN,
+                                        Param.of("A", Type.INT),
+                                        Param.of("B", Type.LONG),
+                                        Param.of("C", Type.LONG)
+                                )
+                                        .setBody("return true;")
+                                        .setAnnotations(new AnnotationType(FooMethod.class)),
+                                new Method("close")
                         )
                 )
         );
@@ -127,6 +162,10 @@ public class JavaFileFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+    }
+
+    private JavaFileObject javaFile(InterfaceType classType) {
         return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
     }
 }

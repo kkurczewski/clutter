@@ -8,6 +8,7 @@ import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 final public class ClassType {
 
@@ -34,6 +35,10 @@ final public class ClassType {
     public ClassType setParentClass(String parentClass) {
         this.parentClass = parentClass;
         return this;
+    }
+
+    public ClassType setInterfaces(Class<?>... interfaces) {
+        return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
     }
 
     public ClassType setInterfaces(String... interfaces) {
