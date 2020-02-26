@@ -4,7 +4,9 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.constructor.modifiers.ConstructorVisibility;
 import io.clutter.writer.model.param.Param;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static io.clutter.writer.model.constructor.modifiers.ConstructorVisibility.PUBLIC;
 
@@ -32,6 +34,11 @@ final public class Constructor {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
         return this;
+    }
+
+    @SafeVarargs
+    final public Constructor setAnnotations(Class<? extends Annotation>... annotations) {
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public Constructor setBody(String... body) {

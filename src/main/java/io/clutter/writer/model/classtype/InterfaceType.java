@@ -4,6 +4,7 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -35,6 +36,11 @@ final public class InterfaceType {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
         return this;
+    }
+
+    @SafeVarargs
+    final public InterfaceType setAnnotations(Class<? extends Annotation>... annotations) {
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public InterfaceType setMethods(Method... methods) {

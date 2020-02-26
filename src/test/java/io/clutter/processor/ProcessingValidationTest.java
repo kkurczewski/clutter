@@ -3,10 +3,15 @@ package io.clutter.processor;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.SimpleClassBuilder;
+import com.google.testing.compile.JavaFileObjects;
 import io.clutter.processor.validator.AnnotationValidatorBuilder;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.exception.ValidationFailed;
+import io.clutter.writer.JavaFileFactory;
+import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.writer.model.field.Field;
+import io.clutter.writer.model.method.Method;
+import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -18,6 +23,8 @@ import static java.util.Set.of;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+// TODO strict mode
+
 class ProcessingValidationTest {
 
     @Test
@@ -27,11 +34,10 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder
-                .newClass("io.clutter.TestClass", BarClass.class)
-                .addField("str", BarElement.class)
-                .addMethod("fun", BarElement.class)
-                .build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
+                .setAnnotations(BarClass.class)
+                .setFields(new Field("str", Type.STRING).setAnnotations(BarElement.class))
+                .setMethods(new Method("fun", Type.INT).setAnnotations(BarElement.class)));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -50,7 +56,7 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder.newClass("io.clutter.TestClass", BarClass.class).build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass").setAnnotations(BarClass.class));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -67,7 +73,7 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder.newClass("io.clutter.TestClass", BarClass.class).build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass").setAnnotations(BarClass.class));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -86,9 +92,8 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder
-                .newClass("io.clutter.TestClass", FooClass.class, BarClass.class)
-                .build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
+                .setAnnotations(FooClass.class, BarClass.class));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -106,10 +111,9 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder
-                .newClass("io.clutter.TestClass", BarClass.class)
-                .addField("str", FooField.class, BarField.class)
-                .build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
+                .setAnnotations(BarClass.class)
+                .setFields(new Field("str", Type.STRING).setAnnotations(FooField.class, BarField.class)));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -127,10 +131,9 @@ class ProcessingValidationTest {
                 .build();
         Compiler compiler = javac().withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)));
 
-        JavaFileObject javaFile = SimpleClassBuilder
-                .newClass("io.clutter.TestClass", BarClass.class)
-                .addMethod("fun", FooMethod.class, BarMethod.class)
-                .build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
+                .setAnnotations(BarClass.class)
+                .setMethods(new Method("fun").setAnnotations(FooMethod.class, BarMethod.class)));
 
         assertThatThrownBy(() -> compiler.compile(javaFile))
                 .hasRootCauseExactlyInstanceOf(ValidationFailed.class)
@@ -147,7 +150,7 @@ class ProcessingValidationTest {
                 .required(Set.of(FooField.class))
                 .build();
 
-        JavaFileObject javaFile = SimpleClassBuilder.newClass("io.clutter.PlainClass").build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.PlainClass"));
 
         Compilation compilation = javac()
                 .withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)))
@@ -162,7 +165,7 @@ class ProcessingValidationTest {
                 .required(Set.of(FooField.class))
                 .build();
 
-        JavaFileObject javaFile = SimpleClassBuilder.newClass("io.clutter.PlainClass", FooClass.class).build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.PlainClass").setAnnotations(FooClass.class));
 
         Compilation compilation = javac()
                 .withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)))
@@ -177,16 +180,19 @@ class ProcessingValidationTest {
                 .required(Set.of(FooField.class))
                 .build();
 
-        JavaFileObject javaFile = SimpleClassBuilder
-                .newClass("io.clutter.PlainClass", BarClass.class)
-                .addField("str", FooField.class)
-                .build();
+        JavaFileObject javaFile = javaFile(new ClassType("io.clutter.PlainClass")
+                .setAnnotations(BarClass.class)
+                .setFields(new Field("foo", Type.INT).setAnnotations(FooField.class)));
 
         Compilation compilation = javac()
                 .withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)))
                 .compile(javaFile);
 
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
+    }
+
+    private JavaFileObject javaFile(ClassType classType) {
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
     }
 
 }

@@ -3,8 +3,12 @@ package io.clutter.processor;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.SimpleClassBuilder;
+import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestAnnotations;
+import io.clutter.writer.JavaFileFactory;
+import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.writer.model.field.Field;
+import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,10 +41,10 @@ class BasicProcessingTest {
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
-                SimpleClassBuilder.newClass("io.clutter.FirstBarClass", TestAnnotations.BarClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.SecondBarClass", TestAnnotations.BarClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.SomeFooClass", TestAnnotations.FooClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.PlainClass").build()
+                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestAnnotations.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestAnnotations.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestAnnotations.FooClass.class)),
+                javaFile(new ClassType("io.clutter.PlainClass"))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -61,10 +65,10 @@ class BasicProcessingTest {
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor)); // annotation wildcard
 
         Set<JavaFileObject> files = Set.of(
-                SimpleClassBuilder.newClass("io.clutter.FirstBarClass", TestAnnotations.BarClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.SecondBarClass", TestAnnotations.BarClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.SomeFooClass", TestAnnotations.FooClass.class).build(),
-                SimpleClassBuilder.newClass("io.clutter.PlainClass").build()
+                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestAnnotations.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestAnnotations.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestAnnotations.FooClass.class)),
+                javaFile(new ClassType("io.clutter.PlainClass"))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -89,10 +93,8 @@ class BasicProcessingTest {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarElement.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
-        JavaFileObject testFile = SimpleClassBuilder
-                .newClass("io.clutter.TestClass")
-                .addField("str", TestAnnotations.BarElement.class)
-                .build();
+        JavaFileObject testFile = javaFile(new ClassType("io.clutter.TestClass")
+                .setFields(new Field("foo", Type.INT).setAnnotations(TestAnnotations.BarElement.class)));
 
         Compilation compilation = compiler.compile(testFile);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
@@ -101,4 +103,9 @@ class BasicProcessingTest {
 
         assertThat(captor.getValue().get(TestAnnotations.BarElement.class)).isEmpty();
     }
+
+    private JavaFileObject javaFile(ClassType classType) {
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+    }
+
 }

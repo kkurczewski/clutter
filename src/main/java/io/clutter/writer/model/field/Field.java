@@ -5,7 +5,9 @@ import io.clutter.writer.model.field.modifiers.FieldTrait;
 import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.type.Type;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.stream.Stream;
 
 final public class Field {
 
@@ -41,6 +43,11 @@ final public class Field {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
         return this;
+    }
+
+    @SafeVarargs
+    final public Field setAnnotations(Class<? extends Annotation>... annotations) {
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public Field setValue(String value) {

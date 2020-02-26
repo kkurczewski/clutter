@@ -7,6 +7,7 @@ import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -51,6 +52,11 @@ final public class ClassType {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
         return this;
+    }
+
+    @SafeVarargs
+    final public ClassType setAnnotations(Class<? extends Annotation>... annotations) {
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public ClassType setVisibility(ClassVisibility visibility) {

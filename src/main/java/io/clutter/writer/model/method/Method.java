@@ -6,7 +6,9 @@ import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.stream.Stream;
 
 final public class Method {
 
@@ -57,6 +59,11 @@ final public class Method {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
         return this;
+    }
+
+    @SafeVarargs
+    final public Method setAnnotations(Class<? extends Annotation>... annotations) {
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public String getName() {
