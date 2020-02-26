@@ -5,7 +5,6 @@ import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Param;
-import io.clutter.writer.model.type.Type;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;

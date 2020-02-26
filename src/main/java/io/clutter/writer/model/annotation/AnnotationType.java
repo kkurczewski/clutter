@@ -1,28 +1,24 @@
 package io.clutter.writer.model.annotation;
 
-import io.clutter.writer.model.annotation.param.AnnotationParams;
+import io.clutter.writer.model.annotation.param.AnnotationParam;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Objects;
-
-import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
+import java.util.Set;
 
 final public class AnnotationType {
 
     private final String type;
-    private final AnnotationParams values;
+    private final LinkedHashSet<AnnotationParam> values = new LinkedHashSet<>();
 
-    public AnnotationType(String type, AnnotationParams values) {
+    public AnnotationType(String type, AnnotationParam... values) {
         this.type = type;
-        this.values = values;
+        Collections.addAll(this.values, values);
     }
 
-    public AnnotationType(Class<? extends Annotation> type) {
-        this(type.getCanonicalName(), AnnotationParams.empty());
-    }
-
-    public AnnotationType(Class<? extends Annotation> type, AnnotationParams values) {
+    public AnnotationType(Class<? extends Annotation> type, AnnotationParam... values) {
         this(type.getCanonicalName(), values);
     }
 
@@ -30,7 +26,7 @@ final public class AnnotationType {
         return type;
     }
 
-    public AnnotationParams getValues() {
+    public Set<AnnotationParam> getParams() {
         return values;
     }
 
@@ -45,14 +41,5 @@ final public class AnnotationType {
     @Override
     public int hashCode() {
         return Objects.hash(type, values);
-    }
-
-    @Override
-    public String toString() {
-        return "@" + type + (getValues().isEmpty() ? "" : getValues()
-                .entrySet()
-                .stream()
-                .map(param -> format("%s = %s", param.getKey(), param.getValue()))
-                .collect(joining(", ", "(", ")")));
     }
 }

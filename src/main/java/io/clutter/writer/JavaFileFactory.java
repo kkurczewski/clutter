@@ -2,11 +2,13 @@ package io.clutter.writer;
 
 import io.clutter.processor.JavaFile;
 import io.clutter.writer.model.annotation.AnnotationType;
+import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
+import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.param.Param;
 
 import java.io.IOException;
@@ -96,6 +98,10 @@ final public class JavaFileFactory {
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
 
+        interfaceType.getMethods().forEach(method -> {
+            method.getTraits().add(MethodTrait.INTERFACE_ABSTRACT);
+        });
+
         List<String> lines = new LinkedList<>();
         lines.add(format("package %s;", packageName));
         lines.add("");
@@ -172,7 +178,13 @@ final public class JavaFileFactory {
 
     private static List<String> annotations(List<AnnotationType> annotations) {
         return annotations.stream()
-                .map(AnnotationType::toString)
+                .map(annotationType -> {
+                    Set<AnnotationParam> params = annotationType.getParams();
+                    return "@" + annotationType.getType() + (!params.isEmpty() ? params
+                            .stream()
+                            .map(entry -> entry.getKey() + " = " + entry.getValue())
+                            .collect(joining(", ", "(", ")")) : "");
+                })
                 .collect(Collectors.toList());
     }
 }

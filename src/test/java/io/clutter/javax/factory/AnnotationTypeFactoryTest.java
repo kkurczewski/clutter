@@ -9,7 +9,7 @@ import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.JavaFileFactory;
 import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.annotation.param.AnnotationParams;
+import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.type.Type;
@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.testing.compile.Compiler.javac;
-import static io.clutter.writer.model.annotation.param.AnnotationAttribute.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
@@ -52,15 +51,14 @@ class AnnotationTypeFactoryTest {
         AnnotationType[] inputAnnotation = new AnnotationType[]{
                 new AnnotationType(TestAnnotations.BarClass.class),
                 new AnnotationType(TestAnnotations.Aggregate.class,
-                        new AnnotationParams()
-                                .add("intValue", ofRawValue(123))
-                                .add("stringValue", ofString("foo"))
-                                .add("classValue", ofClass(TestAnnotations.BarElement.class))
-                                .add("intArray", ofRawValue(456), ofRawValue(789))
-                                .add("stringArray", ofString("bar"), ofString("baz"))
-                                .add("classArray",
-                                        ofClass(TestAnnotations.BarElement.class),
-                                        ofClass(Nonnull.class)))
+                        AnnotationParam.ofPrimitive("intValue", 123),
+                        AnnotationParam.ofString("stringValue", "foo"),
+                        AnnotationParam.ofClass("classValue", TestAnnotations.BarElement.class),
+                        AnnotationParam.ofEnum("enumValue", TestAnnotations.TestEnum.FOO),
+                        AnnotationParam.ofPrimitiveArray("intArray", 456, 789),
+                        AnnotationParam.ofStringArray("stringArray", "bar", "baz"),
+                        AnnotationParam.ofClassArray("classArray", TestAnnotations.BarElement.class, Nonnull.class),
+                        AnnotationParam.ofEnumArray("enumArray", TestAnnotations.TestEnum.FOO, TestAnnotations.TestEnum.BAR))
         };
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")

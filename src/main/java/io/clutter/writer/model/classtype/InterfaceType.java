@@ -45,7 +45,6 @@ final public class InterfaceType {
 
     public InterfaceType setMethods(Method... methods) {
         this.methods.clear();
-        Arrays.asList(methods).forEach(method -> method.getTraits().add(MethodTrait.INTERFACE_ABSTRACT));
         Collections.addAll(this.methods, methods);
         return this;
     }

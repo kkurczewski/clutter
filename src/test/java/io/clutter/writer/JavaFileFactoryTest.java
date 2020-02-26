@@ -10,6 +10,7 @@ import io.clutter.processor.FileGenerator;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.model.annotation.AnnotationType;
+import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.InterfaceType;
 import io.clutter.writer.model.constructor.Constructor;
@@ -32,8 +33,6 @@ import java.util.Set;
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestAnnotations.BarClass;
 import static io.clutter.TestAnnotations.FooMethod;
-import static io.clutter.writer.model.annotation.param.AnnotationAttribute.ofString;
-import static io.clutter.writer.model.annotation.param.AnnotationParams.just;
 import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +52,7 @@ public class JavaFileFactoryTest {
                         .setInterfaces(Closeable.class)
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
-                                new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
+                                new AnnotationType(SuppressWarnings.class, AnnotationParam.ofString("value", "test"))
                         )
                         .setFields(
                                 new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
@@ -93,7 +92,7 @@ public class JavaFileFactoryTest {
                 javaFile(new InterfaceType("test.foo.bar.TestInterface")
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
-                                new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
+                                new AnnotationType(SuppressWarnings.class, AnnotationParam.ofString("value", "test"))
                         )
                         .setInterfaces(Closeable.class)
                         .setMethods(

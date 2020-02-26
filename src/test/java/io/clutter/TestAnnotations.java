@@ -39,6 +39,10 @@ public class TestAnnotations {
 
     }
 
+    public enum TestEnum {
+        FOO, BAR, BAZ
+    }
+
     public @interface Aggregate {
         int intValue();
 
@@ -46,11 +50,14 @@ public class TestAnnotations {
 
         Class<?> classValue();
 
+        TestEnum enumValue();
+
         int[] intArray();
 
         String[] stringArray();
 
         Class<?>[] classArray();
-    }
 
+        TestEnum[] enumArray();
+    }
 }

@@ -23,8 +23,6 @@ import static java.util.Set.of;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-// TODO strict mode
-
 class ProcessingValidationTest {
 
     @Test
