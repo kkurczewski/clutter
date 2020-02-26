@@ -17,6 +17,7 @@ import java.util.Set;
 import static com.google.testing.compile.Compiler.javac;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -45,7 +46,7 @@ class BasicProcessingTest {
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
 
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -69,7 +70,7 @@ class BasicProcessingTest {
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
 
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -96,7 +97,7 @@ class BasicProcessingTest {
         Compilation compilation = compiler.compile(testFile);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
 
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue().get(TestAnnotations.BarElement.class)).isEmpty();
     }

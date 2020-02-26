@@ -5,6 +5,9 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
+import io.clutter.TestAnnotations;
+import io.clutter.processor.FileGenerator;
+import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
@@ -16,8 +19,10 @@ import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import javax.annotation.Nonnull;
+import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Set;
@@ -26,29 +31,31 @@ import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestAnnotations.BarClass;
 import static io.clutter.TestAnnotations.FooMethod;
 import static io.clutter.writer.model.annotation.param.AnnotationAttribute.ofString;
-import static io.clutter.writer.model.annotation.param.AnnotationParams.empty;
 import static io.clutter.writer.model.annotation.param.AnnotationParams.just;
 import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;
 import static javax.lang.model.SourceVersion.RELEASE_11;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-public class ClassWriterTest {
+public class JavaFileFactoryTest {
 
     @Test
-    void shouldCompileWriterClass() {
+    void shouldCompileComplexClass() {
         SimpleProcessor simpleProcessor = new SimpleProcessor(RELEASE_11, BarClass.class);
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setParentClass(ClassWriterTest.class)
+                        .setParentClass(JavaFileFactoryTest.class)
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
                                 new AnnotationType(SuppressWarnings.class, just("value", ofString("test")))
                         )
                         .setFields(
                                 new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
-                                new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED),
-                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC).setValue("123")
+                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC).setValue("123"),
+                                new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED)
                         )
                         .setConstructors(
                                 new Constructor().setAnnotations(new AnnotationType(Nonnull.class)),
@@ -73,6 +80,41 @@ public class ClassWriterTest {
         print(compilation.sourceFiles());
     }
 
+    @Test
+    void annotationProcessorShouldProcessGeneratedClasses() {
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.FooClass.class) {
+
+            @Override
+            public void process(ProcessorAggregate elements, FileGenerator fileGenerator) {
+                elements.getAll()
+                        .stream()
+                        .filter(typeElement -> !typeElement.getQualifiedName().toString().contains("Generated"))
+                        .map(typeElement -> JavaFileFactory.generate(new ClassType("io.gen.GeneratedClass")
+                                .setAnnotations(new AnnotationType(TestAnnotations.FooClass.class)))
+                        )
+                        .forEach(fileGenerator::createSourceFile);
+            }
+        });
+        Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
+
+        Set<JavaFileObject> files = Set.of(
+                javaFile(new ClassType("io.clutter.BlueprintClass")
+                        .setAnnotations(new AnnotationType(TestAnnotations.FooClass.class)))
+        );
+
+        Compilation compilation = compiler.compile(files);
+        CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
+
+        ArgumentCaptor<ProcessorAggregate> captor = ArgumentCaptor.forClass(ProcessorAggregate.class);
+
+        verify(simpleProcessor, times(2)).process(captor.capture(), any());
+        assertThat(captor.getAllValues())
+                .flatExtracting(ProcessorAggregate::getAll)
+                .extracting(TypeElement::getQualifiedName)
+                .extracting(String::valueOf)
+                .containsExactly("io.clutter.BlueprintClass", "io.gen.GeneratedClass");
+    }
+
     private void print(ImmutableList<JavaFileObject> sourceFiles) {
         sourceFiles.forEach(sourceFile -> {
             try {
@@ -85,6 +127,6 @@ public class ClassWriterTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), ClassWriter.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
     }
 }

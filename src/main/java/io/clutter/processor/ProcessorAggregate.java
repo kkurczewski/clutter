@@ -3,6 +3,7 @@ package io.clutter.processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Aggregates map with annotated {@link TypeElement}
  */
-public class ProcessorAggregate {
+final public class ProcessorAggregate {
 
     private final Map<String, Set<TypeElement>> annotatedElements;
 
@@ -32,5 +33,14 @@ public class ProcessorAggregate {
 
     public Set<TypeElement> get(Class<? extends Annotation> annotation) {
         return annotatedElements.get(annotation.getCanonicalName());
+    }
+
+    public Set<TypeElement> getAll() {
+        return annotatedElements.values()
+                .stream()
+                .reduce(new HashSet<>(), (first, second) -> {
+                    first.addAll(second);
+                    return first;
+                });
     }
 }

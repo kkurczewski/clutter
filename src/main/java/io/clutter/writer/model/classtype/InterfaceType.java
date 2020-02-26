@@ -6,6 +6,8 @@ import io.clutter.writer.model.method.modifiers.MethodTrait;
 
 import java.util.*;
 
+// TODO generics
+
 final public class InterfaceType {
 
     private final String fullQualifiedName;
@@ -13,7 +15,7 @@ final public class InterfaceType {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-    // TODO generics
+
     public InterfaceType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
     }

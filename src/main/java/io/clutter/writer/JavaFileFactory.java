@@ -1,5 +1,6 @@
 package io.clutter.writer;
 
+import io.clutter.processor.JavaFile;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.InterfaceType;
@@ -8,6 +9,8 @@ import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +22,51 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
-final public class ClassWriter {
+final public class JavaFileFactory {
+
+    public static JavaFile generate(ClassType classType) {
+        return new JavaFile() {
+
+            @Override
+            public String getFullQualifiedName() {
+                return classType.getFullQualifiedName();
+            }
+
+            @Override
+            public void writeTo(Writer writer) {
+                lines(classType).forEach(line -> {
+                    try {
+                        writer.write(line);
+                        writer.write(System.lineSeparator());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        };
+    }
+
+    public static JavaFile generate(InterfaceType interfaceType) {
+        return new JavaFile() {
+
+            @Override
+            public String getFullQualifiedName() {
+                return interfaceType.getFullQualifiedName();
+            }
+
+            @Override
+            public void writeTo(Writer writer) {
+                lines(interfaceType).forEach(line -> {
+                    try {
+                        writer.write(line);
+                        writer.write(System.lineSeparator());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        };
+    }
 
     public static List<String> lines(ClassType classType) {
         String qualifiedName = classType.getFullQualifiedName();

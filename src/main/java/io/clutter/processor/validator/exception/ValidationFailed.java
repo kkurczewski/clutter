@@ -10,7 +10,7 @@ import static io.clutter.processor.validator.ValidationOutput.violation;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
-public class ValidationFailed extends AnnotationProcessorException {
+final public class ValidationFailed extends AnnotationProcessorException {
 
     public ValidationFailed(Map<String, List<ValidationOutput>> classViolations) {
         super(composeMessage(classViolations));

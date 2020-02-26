@@ -47,11 +47,12 @@ public class SimpleProcessor extends AbstractProcessor {
     }
 
     /**
-     * Provides map with annotated classes for processing
-     *
+     * Provides {@link ProcessorAggregate} with annotated classes for processing
+     * and {@link FileGenerator} for generating new files
+     * <p>
      * This method provides default implementation for {@link javax.annotation.processing.Processor#process(Set, RoundEnvironment)}
      */
-    public void process(ProcessorAggregate elements) {
+    public void process(ProcessorAggregate elements, FileGenerator fileGenerator) {
     }
 
     /**
@@ -70,7 +71,7 @@ public class SimpleProcessor extends AbstractProcessor {
         }
 
         validate(annotations, roundEnv);
-        process(new ProcessorAggregate(annotations, roundEnv));
+        process(new ProcessorAggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
         return claim();
     }
 

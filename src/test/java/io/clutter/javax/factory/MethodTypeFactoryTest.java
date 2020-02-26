@@ -8,7 +8,7 @@ import io.clutter.TestAnnotations;
 import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.ClassWriter;
+import io.clutter.writer.JavaFileFactory;
 import io.clutter.writer.common.PojoNamingConventions;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
@@ -34,6 +34,7 @@ import static com.google.testing.compile.Compiler.javac;
 import static java.util.stream.Collectors.toList;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -62,7 +63,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -94,7 +95,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -126,7 +127,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -158,7 +159,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -190,7 +191,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -222,7 +223,7 @@ class MethodTypeFactoryTest {
 
         Compilation compilation = compiler.compile(files);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture());
+        verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
                 .get(TestAnnotations.BarClass.class)
@@ -240,6 +241,6 @@ class MethodTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), ClassWriter.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
     }
 }

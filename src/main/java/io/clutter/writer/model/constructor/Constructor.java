@@ -8,6 +8,8 @@ import java.util.*;
 
 import static io.clutter.writer.model.constructor.modifiers.ConstructorVisibility.PUBLIC;
 
+// TODO generics
+
 final public class Constructor {
 
     private final LinkedHashSet<Param> params = new LinkedHashSet<>();
@@ -15,7 +17,7 @@ final public class Constructor {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
     private ConstructorVisibility visibility;
-    // TODO generics
+
     public Constructor(Param... params) {
         Collections.addAll(this.params, params);
         this.visibility = PUBLIC;
