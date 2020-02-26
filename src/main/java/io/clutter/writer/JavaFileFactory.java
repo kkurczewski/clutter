@@ -82,7 +82,7 @@ final public class JavaFileFactory {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(classType.getAnnotations()));
-        lines.add(format("%s %s class %s %s {", classType.getVisibility(), traits, className, classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces()).map(" implements "::concat).orElse("")).replaceAll("\\s+", " "));
+        lines.add(format("%s %s class %s%s %s {", classType.getVisibility(), traits, className, classType.getGenericType().map(type -> "<" + type + ">").orElse(""), classType.getParentClass().map(" extends "::concat).orElse("") + extendedInterfaces(classType.getInterfaces()).map(" implements "::concat).orElse("")).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(fields(classType.getFields())));
         lines.addAll(tabbed(constructors(classType.getConstructors(), className)));
@@ -106,7 +106,7 @@ final public class JavaFileFactory {
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
-        lines.add(format("public interface %s %s {", className, extendedInterfaces(interfaceType.getInterfaces()).map(" extends "::concat).orElse("")).replaceAll("\\s+", " "));
+        lines.add(format("public interface %s%s %s {", className, interfaceType.getGenericType().map(type -> "<" + type + ">").orElse(""), extendedInterfaces(interfaceType.getInterfaces()).map(" extends "::concat).orElse("")).replaceAll("\\s+", " "));
         lines.add("");
         lines.addAll(tabbed(methods(interfaceType.getMethods())));
         lines.add("}");
@@ -128,7 +128,8 @@ final public class JavaFileFactory {
         List<String> lines = new LinkedList<>();
         constructors.forEach(constructor -> {
             lines.addAll(annotations(constructor.getAnnotations()));
-            lines.add(format("%s %s(%s) {", constructor.getVisibility(), className, params(constructor.getParams())).replaceAll("\\s+", " "));
+            lines.add(format("%s %s %s(%s) {", constructor.getVisibility(), constructor
+                    .getGenericType().map(type -> "<" + type + ">").orElse(""), className, params(constructor.getParams())).replaceAll("\\s+", " "));
             lines.addAll(tabbed(constructor.getBody()));
             lines.add("}");
             lines.add("");
@@ -154,7 +155,8 @@ final public class JavaFileFactory {
             String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
             lines.addAll(annotations(method.getAnnotations()));
             if (method.getTraits().contains(ABSTRACT) || method.getTraits().contains(INTERFACE_ABSTRACT)) {
-                lines.add(format("%s %s %s %s(%s);", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
+                lines.add(format("%s %s %s %s %s(%s);", method.getVisibility(), traits, method
+                        .getGenericType().map(type -> "<" + type + ">").orElse(""), method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
             } else {
                 lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
                 lines.addAll(tabbed(method.getBody()));

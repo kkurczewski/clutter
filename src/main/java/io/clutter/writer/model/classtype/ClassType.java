@@ -6,6 +6,9 @@ import io.clutter.writer.model.classtype.modifiers.ClassVisibility;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
+import io.clutter.writer.model.type.Type;
+import io.clutter.writer.model.type.WildcardType;
+import io.clutter.writer.model.type.WrappedType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -23,6 +26,7 @@ final public class ClassType {
     private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
     private String parentClass;
     private ClassVisibility visibility;
+    private WildcardType genericType;
 
     public ClassType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
@@ -40,6 +44,10 @@ final public class ClassType {
 
     public ClassType setInterfaces(Class<?>... interfaces) {
         return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
+    }
+
+    public ClassType setInterfaces(WrappedType... interfaces) {
+        return setInterfaces(Stream.of(interfaces).map(Type::toString).toArray(String[]::new));
     }
 
     public ClassType setInterfaces(String... interfaces) {
@@ -88,6 +96,11 @@ final public class ClassType {
         return this;
     }
 
+    public ClassType setGenericType(WildcardType genericType) {
+        this.genericType = genericType;
+        return this;
+    }
+
     public String getFullQualifiedName() {
         return fullQualifiedName;
     }
@@ -108,7 +121,7 @@ final public class ClassType {
         return visibility;
     }
 
-    public LinkedHashSet<ClassTrait> getTraits() {
+    public Set<ClassTrait> getTraits() {
         return traits;
     }
 
@@ -122,5 +135,9 @@ final public class ClassType {
 
     public Set<Method> getMethods() {
         return methods;
+    }
+
+    public Optional<WildcardType> getGenericType() {
+        return Optional.ofNullable(genericType);
     }
 }
