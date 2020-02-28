@@ -19,8 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.clutter.writer.model.method.modifiers.MethodTrait.ABSTRACT;
-import static io.clutter.writer.model.method.modifiers.MethodTrait.INTERFACE_ABSTRACT;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -98,17 +96,13 @@ final public class JavaFileFactory {
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
 
-        interfaceType.getMethods().forEach(method -> {
-            method.getTraits().add(MethodTrait.INTERFACE_ABSTRACT);
-        });
-
         List<String> lines = new LinkedList<>();
         lines.add(format("package %s;", packageName));
         lines.add("");
         lines.addAll(annotations(interfaceType.getAnnotations()));
         lines.add(format("public interface %s%s %s {", className, interfaceType.getGenericType().map(type -> "<" + type + ">").orElse(""), extendedInterfaces(interfaceType.getInterfaces()).map(" extends "::concat).orElse("")).replaceAll("\\s+", " "));
         lines.add("");
-        lines.addAll(tabbed(methods(interfaceType.getMethods())));
+        lines.addAll(tabbed(interfaceMethods(interfaceType.getMethods())));
         lines.add("}");
 
         return lines;
@@ -154,14 +148,27 @@ final public class JavaFileFactory {
         methods.forEach(method -> {
             String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
             lines.addAll(annotations(method.getAnnotations()));
-            if (method.getTraits().contains(ABSTRACT) || method.getTraits().contains(INTERFACE_ABSTRACT)) {
+            if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
                 lines.add(format("%s %s %s %s %s(%s);", method.getVisibility(), traits, method
                         .getGenericType().map(type -> "<" + type + ">").orElse(""), method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
             } else {
-                lines.add(format("%s %s %s %s(%s) {", method.getVisibility(), traits, method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
+                lines.add(format("%s %s %s %s %s(%s) {", method.getVisibility(), traits, method
+                        .getGenericType().map(type -> "<" + type + ">").orElse(""), method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " "));
                 lines.addAll(tabbed(method.getBody()));
                 lines.add("}");
             }
+            lines.add("");
+        });
+        return lines;
+    }
+
+    private static List<String> interfaceMethods(Set<Method> methods) {
+        List<String> lines = new LinkedList<>();
+        methods.forEach(method -> {
+            String traits = method.getTraits().stream().map(String::valueOf).collect(joining(" "));
+            lines.addAll(annotations(method.getAnnotations()));
+            lines.add(format("%s %s %s %s(%s);", traits, method
+                    .getGenericType().map(type -> "<" + type + ">").orElse(""), method.getReturnType(), method.getName(), params(method.getParams())).replaceAll("\\s+", " ").strip());
             lines.add("");
         });
         return lines;
