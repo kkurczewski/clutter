@@ -7,7 +7,7 @@ import com.google.testing.compile.JavaFileObjects;
 import io.clutter.processor.validator.AnnotationValidatorBuilder;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.exception.ValidationFailed;
-import io.clutter.writer.JavaFileFactory;
+import io.clutter.writer.JavaFileGenerator;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
@@ -190,7 +190,7 @@ class ProcessingValidationTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
 }

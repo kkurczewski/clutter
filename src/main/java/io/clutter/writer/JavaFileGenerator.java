@@ -22,7 +22,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
-final public class JavaFileFactory {
+final public class JavaFileGenerator {
 
     public static JavaFile generate(ClassType classType) {
         return new JavaFile() {

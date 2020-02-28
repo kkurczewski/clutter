@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class JavaFileFactoryTest {
+public class JavaFileGeneratorTest {
 
     @Test
     void shouldCompileComplexClass() {
@@ -51,7 +51,7 @@ public class JavaFileFactoryTest {
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setGenericType(WildcardType.T.extend(String.class))
-                        .setParentClass(JavaFileFactoryTest.class)
+                        .setParentClass(JavaFileGeneratorTest.class)
                         .setInterfaces(Closeable.class)
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
@@ -131,7 +131,7 @@ public class JavaFileFactoryTest {
                 elements.getAll()
                         .stream()
                         .filter(typeElement -> !typeElement.getQualifiedName().toString().contains("Generated"))
-                        .map(typeElement -> JavaFileFactory.generate(new ClassType("io.gen.GeneratedClass")
+                        .map(typeElement -> JavaFileGenerator.generate(new ClassType("io.gen.GeneratedClass")
                                 .setAnnotations(new AnnotationType(TestAnnotations.FooClass.class)))
                         )
                         .forEach(fileGenerator::createSourceFile);
@@ -169,10 +169,10 @@ public class JavaFileFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
     private JavaFileObject javaFile(InterfaceType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
     }
 }

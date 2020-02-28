@@ -7,7 +7,7 @@ import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestAnnotations;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.JavaFileFactory;
+import io.clutter.writer.JavaFileGenerator;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.classtype.ClassType;
@@ -82,7 +82,7 @@ class AnnotationTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileFactory.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
 }
