@@ -20,6 +20,7 @@ import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
+import io.clutter.writer.model.type.WildcardType;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -28,6 +29,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
@@ -48,6 +50,7 @@ public class JavaFileFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
+                        .setGenericType(WildcardType.T.extend(String.class))
                         .setParentClass(JavaFileFactoryTest.class)
                         .setInterfaces(Closeable.class)
                         .setAnnotations(
@@ -57,7 +60,11 @@ public class JavaFileFactoryTest {
                         .setFields(
                                 new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
                                 new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC).setValue("123"),
-                                new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED)
+                                new Field("list", Type.listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED),
+                                new Field("complexGeneric", Type.listOf(Type.mapOf(
+                                        Type.STRING,
+                                        Type.generic(LinkedHashSet.class, Type.STRING)))
+                                ).setVisibility(FieldVisibility.PROTECTED)
                         )
                         .setConstructors(
                                 new Constructor().setAnnotations(new AnnotationType(Nonnull.class)),
@@ -90,6 +97,7 @@ public class JavaFileFactoryTest {
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new InterfaceType("test.foo.bar.TestInterface")
+                        .setGenericType(WildcardType.T.extend(String.class))
                         .setAnnotations(
                                 new AnnotationType(BarClass.class),
                                 new AnnotationType(SuppressWarnings.class, AnnotationParam.ofString("value", "test"))

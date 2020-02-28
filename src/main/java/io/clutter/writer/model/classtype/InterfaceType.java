@@ -2,13 +2,13 @@ package io.clutter.writer.model.classtype;
 
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
+import io.clutter.writer.model.type.Type;
+import io.clutter.writer.model.type.WildcardType;
+import io.clutter.writer.model.type.WrappedType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
-
-// TODO generics
 
 final public class InterfaceType {
 
@@ -17,6 +17,7 @@ final public class InterfaceType {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
+    private WildcardType genericType;
 
     public InterfaceType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
@@ -30,6 +31,10 @@ final public class InterfaceType {
 
     public InterfaceType setInterfaces(Class<?>... interfaces) {
         return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
+    }
+
+    public InterfaceType setInterfaces(WrappedType... interfaces) {
+        return setInterfaces(Stream.of(interfaces).map(Type::toString).toArray(String[]::new));
     }
 
     public InterfaceType setAnnotations(AnnotationType... annotations) {
@@ -49,6 +54,11 @@ final public class InterfaceType {
         return this;
     }
 
+    public InterfaceType setGenericType(WildcardType genericType) {
+        this.genericType = genericType;
+        return this;
+    }
+
     public String getFullQualifiedName() {
         return fullQualifiedName;
     }
@@ -63,5 +73,9 @@ final public class InterfaceType {
 
     public Set<Method> getMethods() {
         return methods;
+    }
+
+    public Optional<Type> getGenericType() {
+        return Optional.ofNullable(genericType);
     }
 }

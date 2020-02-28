@@ -5,6 +5,7 @@ import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
+import io.clutter.writer.model.type.WildcardType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -15,6 +16,7 @@ final public class Method {
     private final String name;
     private final LinkedHashSet<Param> params = new LinkedHashSet<>();
     private final Type returnType;
+    private WildcardType genericType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
@@ -66,6 +68,11 @@ final public class Method {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
+    public Method setGenericType(WildcardType genericType) {
+        this.genericType = genericType;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -92,6 +99,10 @@ final public class Method {
 
     public List<String> getBody() {
         return body;
+    }
+
+    public Optional<WildcardType> getGenericType() {
+        return Optional.ofNullable(genericType);
     }
 
     @Override

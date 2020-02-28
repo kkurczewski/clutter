@@ -3,14 +3,13 @@ package io.clutter.writer.model.constructor;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.constructor.modifiers.ConstructorVisibility;
 import io.clutter.writer.model.param.Param;
+import io.clutter.writer.model.type.WildcardType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
 import static io.clutter.writer.model.constructor.modifiers.ConstructorVisibility.PUBLIC;
-
-// TODO generics
 
 final public class Constructor {
 
@@ -19,6 +18,7 @@ final public class Constructor {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
     private ConstructorVisibility visibility;
+    private WildcardType genericType;
 
     public Constructor(Param... params) {
         Collections.addAll(this.params, params);
@@ -47,6 +47,11 @@ final public class Constructor {
         return this;
     }
 
+    public Constructor setGenericType(WildcardType genericType) {
+        this.genericType = genericType;
+        return this;
+    }
+
     public ConstructorVisibility getVisibility() {
         return visibility;
     }
@@ -61,6 +66,10 @@ final public class Constructor {
 
     public List<String> getBody() {
         return body;
+    }
+
+    public Optional<WildcardType> getGenericType() {
+        return Optional.ofNullable(genericType);
     }
 
     @Override
