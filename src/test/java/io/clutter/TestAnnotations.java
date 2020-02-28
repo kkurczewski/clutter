@@ -40,7 +40,7 @@ public class TestAnnotations {
     }
 
     public enum TestEnum {
-        FOO, BAR, BAZ
+        FOO, BAR
     }
 
     public @interface Aggregate {

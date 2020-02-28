@@ -75,7 +75,7 @@ final public class InterfaceType {
         return methods;
     }
 
-    public Optional<Type> getGenericType() {
+    public Optional<WildcardType> getGenericType() {
         return Optional.ofNullable(genericType);
     }
 }

@@ -62,6 +62,6 @@ final public class TypeExtractor {
     private <T extends Element> Predicate<T> composeFilters(Predicate<T>[] filters) {
         return Stream.of(filters)
                 .reduce(Predicate::and)
-                .orElse((executableElement) -> true);
+                .orElse((element) -> true);
     }
 }
