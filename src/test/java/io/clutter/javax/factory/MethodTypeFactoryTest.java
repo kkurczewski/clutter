@@ -9,7 +9,7 @@ import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.JavaFileGenerator;
-import io.clutter.writer.common.PojoNamingConventions;
+import io.clutter.javax.factory.common.PojoNamingConventions;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.classtype.modifiers.ClassTrait;

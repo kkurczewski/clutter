@@ -1,6 +1,6 @@
 package io.clutter.javax.factory;
 
-import io.clutter.writer.common.PojoNamingConvention;
+import io.clutter.javax.factory.common.PojoNamingConvention;
 import io.clutter.writer.model.field.Field;
 
 import javax.lang.model.element.ExecutableElement;

@@ -1,4 +1,4 @@
-package io.clutter.writer.common;
+package io.clutter.javax.factory.common;
 
 final public class StringUtils {
 

@@ -1,4 +1,4 @@
-package io.clutter.writer.common;
+package io.clutter.javax.factory.common;
 
 import static java.lang.String.format;
 

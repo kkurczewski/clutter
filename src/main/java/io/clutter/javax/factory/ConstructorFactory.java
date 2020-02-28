@@ -1,6 +1,6 @@
 package io.clutter.javax.factory;
 
-import io.clutter.writer.common.PojoNamingConvention;
+import io.clutter.javax.factory.common.PojoNamingConvention;
 import io.clutter.writer.model.constructor.Constructor;
 import io.clutter.writer.model.param.Param;
 

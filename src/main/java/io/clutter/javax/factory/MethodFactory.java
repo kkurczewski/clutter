@@ -1,6 +1,6 @@
 package io.clutter.javax.factory;
 
-import io.clutter.writer.common.PojoNamingConvention;
+import io.clutter.javax.factory.common.PojoNamingConvention;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodVisibility;
