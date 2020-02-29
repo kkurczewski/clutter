@@ -24,9 +24,9 @@ final public class ClassType {
     private final LinkedHashSet<Field> fields = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
     private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
     private String parentClass;
     private ClassVisibility visibility;
-    private WildcardType genericType;
 
     public ClassType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
@@ -35,6 +35,10 @@ final public class ClassType {
 
     public ClassType setParentClass(Class<?> parentClass) {
         return setParentClass(parentClass.getCanonicalName());
+    }
+
+    public ClassType setParentClass(WrappedType parentClass) {
+        return setParentClass(parentClass.toString());
     }
 
     public ClassType setParentClass(String parentClass) {
@@ -96,8 +100,9 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setGenericType(WildcardType genericType) {
-        this.genericType = genericType;
+    public ClassType setGenericTypes(WildcardType... genericTypes) {
+        this.genericTypes.clear();
+        Collections.addAll(this.genericTypes, genericTypes);
         return this;
     }
 
@@ -137,7 +142,7 @@ final public class ClassType {
         return methods;
     }
 
-    public Optional<WildcardType> getGenericType() {
-        return Optional.ofNullable(genericType);
+    public Set<WildcardType> getGenericTypes() {
+        return genericTypes;
     }
 }

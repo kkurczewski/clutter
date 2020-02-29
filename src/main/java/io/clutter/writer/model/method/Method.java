@@ -16,11 +16,11 @@ final public class Method {
     private final String name;
     private final LinkedHashSet<Param> params = new LinkedHashSet<>();
     private final Type returnType;
-    private WildcardType genericType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final List<String> body = new LinkedList<>();
+    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
     private final LinkedHashSet<MethodTrait> traits = new LinkedHashSet<>();
+    private final List<String> body = new LinkedList<>();
     private MethodVisibility visibility;
 
     /**
@@ -68,8 +68,9 @@ final public class Method {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
-    public Method setGenericType(WildcardType genericType) {
-        this.genericType = genericType;
+    public Method setGenericTypes(WildcardType genericTypes) {
+        this.genericTypes.clear();
+        Collections.addAll(this.genericTypes, genericTypes);
         return this;
     }
 
@@ -101,8 +102,8 @@ final public class Method {
         return body;
     }
 
-    public Optional<WildcardType> getGenericType() {
-        return Optional.ofNullable(genericType);
+    public Set<WildcardType> getGenericTypes() {
+        return genericTypes;
     }
 
     @Override
@@ -120,12 +121,4 @@ final public class Method {
         return Objects.hash(name, params, returnType);
     }
 
-    @Override
-    public String toString() {
-        return "Method{" +
-                "name='" + name + '\'' +
-                ", params=" + params +
-                ", returnType='" + returnType + '\'' +
-                '}';
-    }
 }

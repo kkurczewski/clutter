@@ -13,10 +13,7 @@ import io.clutter.writer.model.type.WildcardType;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -82,7 +79,7 @@ final public class JavaFileGenerator {
                 classType.getVisibility(),
                 join(classType.getTraits()),
                 className,
-                generics(classType.getGenericType()),
+                generics(classType.getGenericTypes()),
                 classType.getParentClass().map(" extends "::concat).orElse(""),
                 implementedInterfaces(classType.getInterfaces()))
         );
@@ -106,7 +103,7 @@ final public class JavaFileGenerator {
         lines.addAll(annotations(interfaceType.getAnnotations()));
         lines.add(trimFormat("public interface %s%s %s {",
                 className,
-                generics(interfaceType.getGenericType()),
+                generics(interfaceType.getGenericTypes()),
                 extendedInterfaces(interfaceType.getInterfaces()))
                 .strip()
         );
@@ -141,7 +138,7 @@ final public class JavaFileGenerator {
             lines.addAll(annotations(constructor.getAnnotations()));
             lines.add(trimFormat("%s %s %s(%s) {",
                     constructor.getVisibility(),
-                    generics(constructor.getGenericType()),
+                    generics(constructor.getGenericTypes()),
                     className,
                     params(constructor.getParams()))
             );
@@ -175,7 +172,7 @@ final public class JavaFileGenerator {
             lines.add(trimFormat("%s %s %s %s %s(%s);",
                     method.getVisibility(),
                     join(method.getTraits()),
-                    generics(method.getGenericType()),
+                    generics(method.getGenericTypes()),
                     method.getReturnType(),
                     method.getName(),
                     params(method.getParams()))
@@ -197,7 +194,7 @@ final public class JavaFileGenerator {
             lines.addAll(annotations(method.getAnnotations()));
             lines.add(trimFormat("%s %s %s %s(%s);",
                     join(method.getTraits()),
-                    generics(method.getGenericType()),
+                    generics(method.getGenericTypes()),
                     method.getReturnType(),
                     method.getName(),
                     params(method.getParams()))
@@ -226,9 +223,12 @@ final public class JavaFileGenerator {
                 .collect(toList());
     }
 
-    @SuppressWarnings("all")
-    private static String generics(Optional<WildcardType> genericType) {
-        return genericType.map(type -> "<" + type + ">").orElse("");
+    private static String generics(Set<WildcardType> genericType) {
+        return genericType.stream()
+                .map(String::valueOf)
+                .reduce((first, second) -> first + ", " + second)
+                .map(type -> "<" + type + ">")
+                .orElse("");
     }
 
     private static <T> String join(Collection<T> traits) {

@@ -17,7 +17,7 @@ final public class InterfaceType {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-    private WildcardType genericType;
+    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
 
     public InterfaceType(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
@@ -54,8 +54,9 @@ final public class InterfaceType {
         return this;
     }
 
-    public InterfaceType setGenericType(WildcardType genericType) {
-        this.genericType = genericType;
+    public InterfaceType setGenericTypes(WildcardType genericTypes) {
+        this.genericTypes.clear();
+        Collections.addAll(this.genericTypes, genericTypes);
         return this;
     }
 
@@ -75,7 +76,7 @@ final public class InterfaceType {
         return methods;
     }
 
-    public Optional<WildcardType> getGenericType() {
-        return Optional.ofNullable(genericType);
+    public Set<WildcardType> getGenericTypes() {
+        return genericTypes;
     }
 }

@@ -1,13 +1,6 @@
 package io.clutter.writer.model.type;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-
-import static java.lang.String.format;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 
 public class Type {
 
@@ -40,26 +33,6 @@ public class Type {
 
     public static Type from(Class<?> type) {
         return new Type(type.getCanonicalName(), type.getSimpleName());
-    }
-
-    public static Type generic(Class<?> wrapper, Type type, Type... more) {
-        return Type.raw(format("%s<%s%s>",
-                wrapper.getCanonicalName(),
-                type.boxed,
-                more.length > 0 ? ", " + stream(more).map(t -> t.boxed).collect(joining(", ")) : "")
-        );
-    }
-
-    public static Type listOf(Type type) {
-        return generic(List.class, type);
-    }
-
-    public static Type setOf(Type type) {
-        return generic(Set.class, type);
-    }
-
-    public static Type mapOf(Type keyType, Type valueType) {
-        return generic(Map.class, keyType, valueType);
     }
 
     @Override

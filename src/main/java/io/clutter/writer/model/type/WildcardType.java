@@ -26,10 +26,24 @@ final public class WildcardType extends Type {
         return new WildcardType(super.value + " extends " + exactType.getSimpleName(), true);
     }
 
+    public WildcardType extend(WrappedType wrappedType) {
+        if (this.expanded) {
+            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
+        }
+        return new WildcardType(super.value + " extends " + wrappedType.boxed, true);
+    }
+
     public WildcardType subclass(Class<?> exactType) {
         if (this.expanded) {
             throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
         }
         return new WildcardType(super.value + " super " + exactType.getSimpleName(), true);
+    }
+
+    public WildcardType subclass(WrappedType wrappedType) {
+        if (this.expanded) {
+            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
+        }
+        return new WildcardType(super.value + " super " + wrappedType.boxed, true);
     }
 }

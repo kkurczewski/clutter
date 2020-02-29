@@ -67,7 +67,7 @@ final public class Field {
         return visibility;
     }
 
-    public LinkedHashSet<FieldTrait> getTraits() {
+    public Set<FieldTrait> getTraits() {
         return traits;
     }
 
