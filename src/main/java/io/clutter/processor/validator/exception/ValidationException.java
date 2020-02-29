@@ -10,14 +10,14 @@ import static io.clutter.processor.validator.ValidationOutput.violation;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
-final public class ValidationFailed extends AnnotationProcessorException {
+final public class ValidationException extends AnnotationProcessorException {
 
-    public ValidationFailed(Map<String, List<ValidationOutput>> classViolations) {
-        super(composeMessage(classViolations));
+    public ValidationException(Map<String, List<ValidationOutput>> violations) {
+        super(composeMessage(violations));
     }
 
     private static String composeMessage(Map<String, List<ValidationOutput>> classViolations) {
-        return System.lineSeparator() + classViolations
+        return classViolations
                 .entrySet()
                 .stream()
                 .map((entry) -> violation(format("Class %s has following violations:", entry.getKey()), entry.getValue()))

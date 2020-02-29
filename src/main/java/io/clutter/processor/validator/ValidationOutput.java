@@ -32,7 +32,7 @@ final public class ValidationOutput {
 
     private List<String> lines() {
         List<String> lines = new LinkedList<>();
-        lines.add("\t- " + expectation);
+        lines.add("- " + expectation);
         violations
                 .stream()
                 .map(ValidationOutput::lines)

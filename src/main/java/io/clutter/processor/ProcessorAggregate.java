@@ -1,5 +1,7 @@
 package io.clutter.processor;
 
+import io.clutter.javax.filter.Filters;
+
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
@@ -26,7 +28,7 @@ final public class ProcessorAggregate {
                         annotation -> roundEnv
                                 .getElementsAnnotatedWithAny(annotation)
                                 .stream()
-                                .filter(TypeElement.class::isInstance)
+                                .filter(Filters.CLASS.or(Filters.INTERFACE))
                                 .map(TypeElement.class::cast)
                                 .collect(toSet())));
     }

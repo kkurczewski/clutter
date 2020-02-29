@@ -1,12 +1,16 @@
 package io.clutter.processor;
 
+import io.clutter.processor.exception.AnnotationProcessorException;
 import io.clutter.processor.validator.TypeValidator;
-import io.clutter.processor.validator.exception.ValidationFailed;
+import io.clutter.processor.validator.exception.ValidationException;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Map;
@@ -48,9 +52,11 @@ public class SimpleProcessor extends AbstractProcessor {
 
     /**
      * Provides {@link ProcessorAggregate} with annotated classes for processing
-     * and {@link FileGenerator} for generating new files
-     * <p>
-     * This method provides default implementation for {@link javax.annotation.processing.Processor#process(Set, RoundEnvironment)}
+     * and {@link FileGenerator} for generating new files.
+     * <br>
+     * Use {@link SimpleProcessor#printError(String)}, {@link SimpleProcessor#printError(String, Element)} or {@link SimpleProcessor#getMessager()} to report errors to console.
+     * <br>
+     * This method provides simplified implementation of {@link javax.annotation.processing.Processor#process(Set, RoundEnvironment)}
      */
     public void process(ProcessorAggregate elements, FileGenerator fileGenerator) {
     }
@@ -70,8 +76,12 @@ public class SimpleProcessor extends AbstractProcessor {
             return false;
         }
 
-        validate(annotations, roundEnv);
-        process(new ProcessorAggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
+        try {
+            validate(annotations, roundEnv);
+            process(new ProcessorAggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
+        } catch (AnnotationProcessorException e) {
+            printError(e.getMessage());
+        }
         return claim();
     }
 
@@ -83,6 +93,28 @@ public class SimpleProcessor extends AbstractProcessor {
     @Override
     final public SourceVersion getSupportedSourceVersion() {
         return sourceVersion;
+    }
+
+    final protected Messager getMessager() {
+        return super.processingEnv.getMessager();
+    }
+
+    /**
+     * Provides simple API to report errors to console.
+     * <br>
+     * For fine-grained control use {@link SimpleProcessor#getMessager()}
+     */
+    final protected void printError(String message, Element element) {
+        getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+    }
+
+    /**
+     * Provides simple API to report errors to console.
+     * <br>
+     * For fine-grained control use {@link SimpleProcessor#getMessager()}
+     */
+    final protected void printError(String message) {
+        getMessager().printMessage(Diagnostic.Kind.ERROR, message);
     }
 
     private void validate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -107,7 +139,7 @@ public class SimpleProcessor extends AbstractProcessor {
                         Map.Entry::getValue));
 
         if (!nonEmptyViolations.isEmpty()) {
-            throw new ValidationFailed(violations);
+            throw new ValidationException(violations);
         }
     }
 }
