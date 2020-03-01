@@ -11,7 +11,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import java.util.Set;
 
-import static io.clutter.javax.filter.Filters.*;
+import static io.clutter.javax.extractor.Filters.*;
 import static java.lang.String.valueOf;
 
 final public class MethodFactory {

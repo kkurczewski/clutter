@@ -1,8 +1,5 @@
 package io.clutter.javax.extractor;
 
-import io.clutter.javax.filter.ElementFilter;
-import io.clutter.javax.filter.MethodFilter;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -12,15 +9,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.clutter.javax.filter.Filters.FIELD;
-import static io.clutter.javax.filter.Filters.METHOD;
+import static io.clutter.javax.extractor.Filters.FIELD;
+import static io.clutter.javax.extractor.Filters.METHOD;
 
 /**
  * Provides simplified API to extract {@link Element} types from {@link TypeElement}
  *
  * @see VariableElement
  * @see ExecutableElement
- * @see io.clutter.javax.filter.Filters
+ * @see Filters
  */
 final public class TypeExtractor {
 
@@ -30,7 +27,12 @@ final public class TypeExtractor {
         this.rootElement = rootElement;
     }
 
-    public List<Element> extractElements(ElementFilter... elementFilters) {
+    public TypeElement rootElement() {
+        return rootElement;
+    }
+
+    @SafeVarargs
+    final public List<Element> extractElements(Predicate<Element>... elementFilters) {
         Predicate<Element> composedFilter = composeFilters(elementFilters);
         return rootElement
                 .getEnclosedElements()
@@ -39,8 +41,9 @@ final public class TypeExtractor {
                 .collect(Collectors.toList());
     }
 
-    public List<VariableElement> extractFields(ElementFilter... fieldFilters) {
-        Predicate<Element> composedFilter = composeFilters(fieldFilters);
+    @SafeVarargs
+    final public List<VariableElement> extractFields(Predicate<VariableElement>... fieldFilters) {
+        Predicate<VariableElement> composedFilter = composeFilters(fieldFilters);
         return extractElements()
                 .stream()
                 .filter(FIELD)
@@ -49,7 +52,8 @@ final public class TypeExtractor {
                 .collect(Collectors.toList());
     }
 
-    public List<ExecutableElement> extractMethods(MethodFilter... methodFilters) {
+    @SafeVarargs
+    final public List<ExecutableElement> extractMethods(Predicate<ExecutableElement>... methodFilters) {
         Predicate<ExecutableElement> composedFilter = composeFilters(methodFilters);
         return extractElements()
                 .stream()

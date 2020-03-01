@@ -14,12 +14,12 @@ final public class PojoNamingConventions {
                 if (!methodName.startsWith(prefix)) {
                     throw new IllegalArgumentException(format("Expected method to start with `%s` prefix", prefix));
                 }
-                return StringUtils.toLowerWordCase(methodName.substring(prefix.length()));
+                return StringUtils.toCamelCase(methodName.substring(prefix.length()));
             }
 
             @Override
             public String method(String variableName) {
-                return prefix + StringUtils.toUpperWordCase(variableName);
+                return prefix + StringUtils.toPascalCase(variableName);
             }
         };
     }

@@ -1,6 +1,6 @@
 package io.clutter.processor;
 
-import io.clutter.javax.filter.Filters;
+import io.clutter.javax.extractor.Filters;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;

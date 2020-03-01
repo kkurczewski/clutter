@@ -1,7 +1,7 @@
 package io.clutter.processor.validator.unique;
 
 import io.clutter.javax.extractor.TypeExtractor;
-import io.clutter.javax.filter.Filters;
+import io.clutter.javax.extractor.Filters;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.ValidationOutput;
 

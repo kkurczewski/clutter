@@ -1,15 +1,28 @@
 package io.clutter.javax.factory;
 
 import io.clutter.javax.factory.common.PojoNamingConvention;
+import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.field.Field;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
-import static io.clutter.javax.filter.Filters.ACCESSOR;
-import static io.clutter.javax.filter.Filters.METHOD;
+import static io.clutter.javax.extractor.Filters.*;
 import static java.lang.String.valueOf;
 
 final public class FieldFactory {
+
+    public static Field from(VariableElement field) {
+        if (!FIELD.test(field)) {
+            throw new IllegalArgumentException("VariableElement is not field");
+        }
+        return new Field(valueOf(field.getSimpleName()), TypeFactory.of(field.asType()))
+                .setAnnotations(field
+                        .getAnnotationMirrors()
+                        .stream()
+                        .map(AnnotationTypeFactory::from)
+                        .toArray(AnnotationType[]::new));
+    }
 
     /**
      * @throws IllegalArgumentException when given {@link ExecutableElement} is not getter

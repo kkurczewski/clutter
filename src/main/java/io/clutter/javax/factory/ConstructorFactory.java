@@ -8,8 +8,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import java.util.stream.Stream;
 
-import static io.clutter.javax.filter.Filters.ACCESSOR;
-import static io.clutter.javax.filter.Filters.FIELD;
+import static io.clutter.javax.extractor.Filters.ACCESSOR;
+import static io.clutter.javax.extractor.Filters.FIELD;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;

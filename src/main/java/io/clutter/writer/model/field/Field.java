@@ -9,6 +9,11 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static io.clutter.writer.model.field.modifiers.FieldTrait.FINAL;
+import static io.clutter.writer.model.field.modifiers.FieldTrait.STATIC;
+import static io.clutter.writer.model.field.modifiers.FieldVisibility.PUBLIC;
+import static java.lang.String.valueOf;
+
 final public class Field {
 
     private final String name;
@@ -26,6 +31,13 @@ final public class Field {
         this.name = name;
         this.type = type;
         this.visibility = FieldVisibility.PRIVATE;
+    }
+
+    public static Field constant(String key, Object value) {
+        return new Field(key, Type.from(value.getClass()))
+                .setValue(value)
+                .setVisibility(PUBLIC)
+                .setTraits(STATIC, FINAL);
     }
 
     public Field setVisibility(FieldVisibility visibility) {
@@ -50,8 +62,8 @@ final public class Field {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
-    public Field setValue(String value) {
-        this.value = value;
+    public Field setValue(Object value) {
+        this.value = value instanceof String ? "\"" + value + "\"" : valueOf(value);
         return this;
     }
 
@@ -77,6 +89,13 @@ final public class Field {
 
     public Optional<String> getValue() {
         return Optional.ofNullable(value);
+    }
+
+    @SafeVarargs
+    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return annotations
+                .stream()
+                .anyMatch(a -> a.isInstanceOf(annotation, more));
     }
 
     @Override

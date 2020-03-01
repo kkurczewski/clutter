@@ -90,7 +90,7 @@ public class JavaFileGeneratorTest {
                         )
                         .setFields(
                                 new Field("name", Type.STRING).setVisibility(FieldVisibility.PRIVATE),
-                                new Field("CONST", Type.INT).setTraits(FieldTrait.FINAL, FieldTrait.STATIC).setValue("123"),
+                                Field.constant("const", 123),
                                 new Field("list", listOf(Type.STRING)).setVisibility(FieldVisibility.PROTECTED),
                                 new Field("complexGeneric", listOf(mapOf(
                                         Type.STRING,
