@@ -4,7 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.TestAnnotations;
+import io.clutter.TestElements;
 import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
@@ -50,13 +50,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldImplementAbstractMethod() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(new Method("greeter", Param.of("name", Type.INT)).setTraits(MethodTrait.ABSTRACT))
                 )
         );
@@ -66,7 +66,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
@@ -82,13 +82,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldOverrideMethod() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(new Method("greeter", Param.of("name", Type.INT)))
                 )
         );
@@ -98,7 +98,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
@@ -114,13 +114,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldImplementGetterFromAbstractMethod() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(new Method("getFoo").setTraits(MethodTrait.ABSTRACT))
                 )
         );
@@ -130,7 +130,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
@@ -146,13 +146,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldImplementGetterFromField() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setFields(new Field("foo", Type.INT).setVisibility(FieldVisibility.PROTECTED))
                 )
         );
@@ -162,7 +162,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractFields)
@@ -178,13 +178,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldImplementSetterFromAbstractMethod() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(new Method("setFoo", Param.of("foo", Type.INT)))
                 )
         );
@@ -194,7 +194,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
@@ -210,13 +210,13 @@ class MethodTypeFactoryTest {
 
     @Test
     void shouldImplementSetterFromField() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setFields(new Field("foo", Type.INT).setVisibility(FieldVisibility.PROTECTED))
                 )
         );
@@ -226,7 +226,7 @@ class MethodTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractFields)
@@ -241,6 +241,6 @@ class MethodTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 }

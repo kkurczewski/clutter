@@ -25,7 +25,7 @@ final public class MethodFactory {
         if (!ABSTRACT.test(executableElement)) {
             throw new IllegalArgumentException("ExecutableElement is not abstract");
         }
-        return build(executableElement, body).setAnnotations(new AnnotationType(Override.class));
+        return build(executableElement, body).setAnnotations(AnnotationType.of(Override.class));
     }
 
     /**
@@ -39,7 +39,7 @@ final public class MethodFactory {
         if (FINAL.test(executableElement)) {
             throw new IllegalArgumentException("ExecutableElement is final");
         }
-        return build(executableElement, body).setAnnotations(new AnnotationType(Override.class));
+        return build(executableElement, body).setAnnotations(AnnotationType.of(Override.class));
     }
 
     /**
@@ -92,7 +92,7 @@ final public class MethodFactory {
             throw new IllegalArgumentException("VariableElement is private");
         }
         String variable = valueOf(field.getSimpleName());
-        return new Method(convention.method(variable), new Param(variable, valueOf(field.asType())))
+        return new Method(convention.method(variable), Param.raw(variable, valueOf(field.asType())))
                 .setBody("this." + variable + " = " + variable + ";");
     }
 
@@ -106,7 +106,7 @@ final public class MethodFactory {
 
         Param[] params = method.getParameters()
                 .stream()
-                .map(javaxParam -> new Param(valueOf(javaxParam.getSimpleName()), valueOf(javaxParam.asType())))
+                .map(javaxParam -> Param.raw(valueOf(javaxParam.getSimpleName()), valueOf(javaxParam.asType())))
                 .toArray(Param[]::new);
         AnnotationType[] annotations = method.getAnnotationMirrors()
                 .stream()

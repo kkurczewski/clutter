@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 final public class ClassType {
 
-    private final String fullQualifiedName;
+    private final String fullyQualifiedName;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
@@ -28,8 +28,8 @@ final public class ClassType {
     private String parentClass;
     private ClassVisibility visibility;
 
-    public ClassType(String fullQualifiedName) {
-        this.fullQualifiedName = fullQualifiedName;
+    public ClassType(String fullyQualifiedName) {
+        this.fullyQualifiedName = fullyQualifiedName;
         this.visibility = ClassVisibility.PUBLIC;
     }
 
@@ -68,7 +68,7 @@ final public class ClassType {
 
     @SafeVarargs
     final public ClassType setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
     public ClassType setVisibility(ClassVisibility visibility) {
@@ -106,8 +106,8 @@ final public class ClassType {
         return this;
     }
 
-    public String getFullQualifiedName() {
-        return fullQualifiedName;
+    public String getFullyQualifiedName() {
+        return fullyQualifiedName;
     }
 
     public Optional<String> getParentClass() {
@@ -116,10 +116,6 @@ final public class ClassType {
 
     public Set<String> getInterfaces() {
         return interfaces;
-    }
-
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
     }
 
     public ClassVisibility getVisibility() {
@@ -144,5 +140,38 @@ final public class ClassType {
 
     public Set<WildcardType> getGenericTypes() {
         return genericTypes;
+    }
+
+    public List<AnnotationType> getAnnotations() {
+        return annotations;
+    }
+
+    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        return annotations.stream()
+                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+                .findFirst();
+    }
+
+    @SafeVarargs
+    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClassType classType = (ClassType) o;
+        return fullyQualifiedName.equals(classType.fullyQualifiedName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullyQualifiedName);
+    }
+
+    @Override
+    public String toString() {
+        return fullyQualifiedName + genericTypes;
     }
 }

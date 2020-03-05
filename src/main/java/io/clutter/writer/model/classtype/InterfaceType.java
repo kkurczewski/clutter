@@ -12,15 +12,15 @@ import java.util.stream.Stream;
 
 final public class InterfaceType {
 
-    private final String fullQualifiedName;
+    private final String fullyQualifiedName;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
     private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
 
-    public InterfaceType(String fullQualifiedName) {
-        this.fullQualifiedName = fullQualifiedName;
+    public InterfaceType(String fullyQualifiedName) {
+        this.fullyQualifiedName = fullyQualifiedName;
     }
 
     public InterfaceType setInterfaces(String... interfaces) {
@@ -45,7 +45,7 @@ final public class InterfaceType {
 
     @SafeVarargs
     final public InterfaceType setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
     public InterfaceType setMethods(Method... methods) {
@@ -60,16 +60,12 @@ final public class InterfaceType {
         return this;
     }
 
-    public String getFullQualifiedName() {
-        return fullQualifiedName;
+    public String getFullyQualifiedName() {
+        return fullyQualifiedName;
     }
 
     public Set<String> getInterfaces() {
         return interfaces;
-    }
-
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
     }
 
     public Set<Method> getMethods() {
@@ -78,5 +74,38 @@ final public class InterfaceType {
 
     public Set<WildcardType> getGenericTypes() {
         return genericTypes;
+    }
+
+    public List<AnnotationType> getAnnotations() {
+        return annotations;
+    }
+
+    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        return annotations.stream()
+                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+                .findFirst();
+    }
+
+    @SafeVarargs
+    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InterfaceType that = (InterfaceType) o;
+        return fullyQualifiedName.equals(that.fullyQualifiedName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullyQualifiedName);
+    }
+
+    @Override
+    public String toString() {
+        return fullyQualifiedName + genericTypes;
     }
 }

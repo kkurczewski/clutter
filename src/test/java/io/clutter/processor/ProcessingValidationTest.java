@@ -17,7 +17,7 @@ import javax.tools.JavaFileObject;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
-import static io.clutter.TestAnnotations.*;
+import static io.clutter.TestElements.*;
 import static java.util.Set.of;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 
@@ -37,7 +37,7 @@ class ProcessingValidationTest {
 
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
-                        "  \t- Expected annotation io.clutter.TestAnnotations.BarElement to be unique " +
+                        "  \t- Expected annotation io.clutter.TestElements.BarElement to be unique " +
                         "but following elements were annotated:\n" +
                         "  \t\t- Field str\n" +
                         "  \t\t- Method fun"
@@ -56,7 +56,7 @@ class ProcessingValidationTest {
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
                         "  \t- Expected annotations:\n" +
-                        "  \t\t- io.clutter.TestAnnotations.FooField"
+                        "  \t\t- io.clutter.TestElements.FooField"
         );
     }
 
@@ -72,8 +72,8 @@ class ProcessingValidationTest {
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
                         "  \t- Expected one of the following annotations:\n" +
-                        "  \t\t- io.clutter.TestAnnotations.BarField\n" +
-                        "  \t\t- io.clutter.TestAnnotations.FooField"
+                        "  \t\t- io.clutter.TestElements.BarField\n" +
+                        "  \t\t- io.clutter.TestElements.FooField"
         );
     }
 
@@ -90,8 +90,8 @@ class ProcessingValidationTest {
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
                         "  \t- Class TestClass has exclusive annotations:\n" +
-                        "  \t\t- io.clutter.TestAnnotations.BarClass\n" +
-                        "  \t\t- io.clutter.TestAnnotations.FooClass"
+                        "  \t\t- io.clutter.TestElements.BarClass\n" +
+                        "  \t\t- io.clutter.TestElements.FooClass"
         );
     }
 
@@ -109,8 +109,8 @@ class ProcessingValidationTest {
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
                         "  \t- Field str has exclusive annotations:\n" +
-                        "  \t\t- io.clutter.TestAnnotations.BarField\n" +
-                        "  \t\t- io.clutter.TestAnnotations.FooField"
+                        "  \t\t- io.clutter.TestElements.BarField\n" +
+                        "  \t\t- io.clutter.TestElements.FooField"
         );
     }
 
@@ -128,8 +128,8 @@ class ProcessingValidationTest {
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
                         "  \t- Method fun has exclusive annotations:\n" +
-                        "  \t\t- io.clutter.TestAnnotations.BarMethod\n" +
-                        "  \t\t- io.clutter.TestAnnotations.FooMethod"
+                        "  \t\t- io.clutter.TestElements.BarMethod\n" +
+                        "  \t\t- io.clutter.TestElements.FooMethod"
         );
     }
 
@@ -181,7 +181,7 @@ class ProcessingValidationTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
 }

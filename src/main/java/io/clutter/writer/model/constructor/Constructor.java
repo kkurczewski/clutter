@@ -2,6 +2,7 @@ package io.clutter.writer.model.constructor;
 
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.constructor.modifiers.ConstructorVisibility;
+import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.WildcardType;
 
@@ -10,6 +11,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static io.clutter.writer.model.constructor.modifiers.ConstructorVisibility.PUBLIC;
+import static java.lang.String.*;
 
 final public class Constructor {
 
@@ -38,12 +40,18 @@ final public class Constructor {
 
     @SafeVarargs
     final public Constructor setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
     public Constructor setBody(String... body) {
         this.body.clear();
         Collections.addAll(this.body, body);
+        return this;
+    }
+
+    public Constructor setBody(List<String> body) {
+        this.body.clear();
+        this.body.addAll(body);
         return this;
     }
 
@@ -55,10 +63,6 @@ final public class Constructor {
 
     public ConstructorVisibility getVisibility() {
         return visibility;
-    }
-
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
     }
 
     public Set<Param> getParams() {
@@ -73,6 +77,21 @@ final public class Constructor {
         return genericTypes;
     }
 
+    public List<AnnotationType> getAnnotations() {
+        return annotations;
+    }
+
+    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        return annotations.stream()
+                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+                .findFirst();
+    }
+
+    @SafeVarargs
+    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,5 +103,10 @@ final public class Constructor {
     @Override
     public int hashCode() {
         return Objects.hash(params);
+    }
+
+    @Override
+    public String toString() {
+        return format("Constructor{%s}", params);
     }
 }

@@ -19,7 +19,7 @@ final public class Field {
     private final String name;
     private final Type type;
 
-    private final List<AnnotationType> annotations = new LinkedList<>();
+    private final List<AnnotationType> annotations = new ArrayList<>();
     private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
     private FieldVisibility visibility;
     private String value;
@@ -59,11 +59,22 @@ final public class Field {
 
     @SafeVarargs
     final public Field setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
+    /**
+     * Set field value to raw value of passed object using {@link Object#toString()}, if actual object is {@link String} also quoting is added
+     */
     public Field setValue(Object value) {
         this.value = value instanceof String ? "\"" + value + "\"" : valueOf(value);
+        return this;
+    }
+
+    /**
+     * Set field value to exact expression without
+     */
+    public Field setRawValue(String rawExpression) {
+        this.value = rawExpression;
         return this;
     }
 
@@ -83,19 +94,23 @@ final public class Field {
         return traits;
     }
 
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
-    }
-
     public Optional<String> getValue() {
         return Optional.ofNullable(value);
     }
 
+    public List<AnnotationType> getAnnotations() {
+        return annotations;
+    }
+
+    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        return annotations.stream()
+                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+                .findFirst();
+    }
+
     @SafeVarargs
     final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return annotations
-                .stream()
-                .anyMatch(a -> a.isInstanceOf(annotation, more));
+        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
     }
 
     @Override
@@ -103,12 +118,16 @@ final public class Field {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Field field = (Field) o;
-        return name.equals(field.name) &&
-                type.equals(field.type);
+        return name.equals(field.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type);
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return name + '{' + value + '}';
     }
 }

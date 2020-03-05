@@ -4,7 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.TestAnnotations;
+import io.clutter.TestElements;
 import io.clutter.writer.JavaFileGenerator;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
@@ -37,13 +37,13 @@ class BasicProcessingTest {
 
     @Test
     void shouldProcessClassesOnlyWithGivenAnnotation() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
-                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestAnnotations.BarClass.class)),
-                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestAnnotations.BarClass.class)),
-                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestAnnotations.FooClass.class)),
+                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestElements.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestElements.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestElements.FooClass.class)),
                 javaFile(new ClassType("io.clutter.PlainClass"))
         );
 
@@ -53,7 +53,7 @@ class BasicProcessingTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(String::valueOf))
                 .containsExactlyInAnyOrder("io.clutter.FirstBarClass", "io.clutter.SecondBarClass");
@@ -65,9 +65,9 @@ class BasicProcessingTest {
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor)); // annotation wildcard
 
         Set<JavaFileObject> files = Set.of(
-                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestAnnotations.BarClass.class)),
-                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestAnnotations.BarClass.class)),
-                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestAnnotations.FooClass.class)),
+                javaFile(new ClassType("io.clutter.FirstBarClass").setAnnotations(TestElements.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SecondBarClass").setAnnotations(TestElements.BarClass.class)),
+                javaFile(new ClassType("io.clutter.SomeFooClass").setAnnotations(TestElements.FooClass.class)),
                 javaFile(new ClassType("io.clutter.PlainClass"))
         );
 
@@ -77,12 +77,12 @@ class BasicProcessingTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(String::valueOf))
                 .containsExactlyInAnyOrder("io.clutter.FirstBarClass", "io.clutter.SecondBarClass");
         assertThat(captor.getValue()
-                .get(TestAnnotations.FooClass.class)
+                .get(TestElements.FooClass.class)
                 .stream()
                 .map(String::valueOf))
                 .containsExactlyInAnyOrder("io.clutter.SomeFooClass");
@@ -90,22 +90,22 @@ class BasicProcessingTest {
 
     @Test
     void shouldProcessOnlyClasses() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarElement.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarElement.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         JavaFileObject testFile = javaFile(new ClassType("io.clutter.TestClass")
-                .setFields(new Field("foo", Type.INT).setAnnotations(TestAnnotations.BarElement.class)));
+                .setFields(new Field("foo", Type.INT).setAnnotations(TestElements.BarElement.class)));
 
         Compilation compilation = compiler.compile(testFile);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
 
         verify(simpleProcessor).process(captor.capture(), any());
 
-        assertThat(captor.getValue().get(TestAnnotations.BarElement.class)).isEmpty();
+        assertThat(captor.getValue().get(TestElements.BarElement.class)).isEmpty();
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
 }

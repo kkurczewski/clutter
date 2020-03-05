@@ -26,7 +26,7 @@ final public class JavaFileGenerator {
 
             @Override
             public String getFullQualifiedName() {
-                return classType.getFullQualifiedName();
+                return classType.getFullyQualifiedName();
             }
 
             @Override
@@ -48,7 +48,7 @@ final public class JavaFileGenerator {
 
             @Override
             public String getFullQualifiedName() {
-                return interfaceType.getFullQualifiedName();
+                return interfaceType.getFullyQualifiedName();
             }
 
             @Override
@@ -66,7 +66,7 @@ final public class JavaFileGenerator {
     }
 
     public static List<String> lines(ClassType classType) {
-        String qualifiedName = classType.getFullQualifiedName();
+        String qualifiedName = classType.getFullyQualifiedName();
         int classNameIndex = qualifiedName.lastIndexOf('.');
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
@@ -92,7 +92,7 @@ final public class JavaFileGenerator {
     }
 
     public static List<String> lines(InterfaceType interfaceType) {
-        String qualifiedName = interfaceType.getFullQualifiedName();
+        String qualifiedName = interfaceType.getFullyQualifiedName();
         int classNameIndex = qualifiedName.lastIndexOf('.');
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);

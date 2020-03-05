@@ -4,7 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.TestAnnotations;
+import io.clutter.TestElements;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.JavaFileGenerator;
@@ -40,12 +40,12 @@ class ClassTypeFactoryTest {
 
     @Test
     void shouldImplementInterfaceWithPostfix() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new InterfaceType("test.foo.bar.TestInterface")
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class)))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -53,13 +53,13 @@ class ClassTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(typeElement -> ClassTypeFactory.extendWithPostfix(typeElement, "Postfix"))
                 .collect(toList()))
                 .hasOnlyOneElementSatisfying(classType -> {
                     assertThat(classType
-                            .getFullQualifiedName())
+                            .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.TestInterfacePostfix");
                     assertThat(classType
                             .getInterfaces())
@@ -69,12 +69,12 @@ class ClassTypeFactoryTest {
 
     @Test
     void shouldImplementClassWithPostfix() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class)))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -82,13 +82,13 @@ class ClassTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(typeElement -> ClassTypeFactory.extendWithPostfix(typeElement, "Postfix"))
                 .collect(toList()))
                 .hasOnlyOneElementSatisfying(classType -> {
                     assertThat(classType
-                            .getFullQualifiedName())
+                            .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.TestClassPostfix");
                     assertThat(classType
                             .getParentClass())
@@ -98,12 +98,12 @@ class ClassTypeFactoryTest {
 
     @Test
     void shouldImplementInterfaceWithPrefix() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new InterfaceType("test.foo.bar.TestInterface")
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class)))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -111,13 +111,13 @@ class ClassTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(typeElement -> ClassTypeFactory.extendWithPrefix(typeElement, "Prefix"))
                 .collect(toList()))
                 .hasOnlyOneElementSatisfying(classType -> {
                     assertThat(classType
-                            .getFullQualifiedName())
+                            .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.PrefixTestInterface");
                     assertThat(classType
                             .getInterfaces())
@@ -127,12 +127,12 @@ class ClassTypeFactoryTest {
 
     @Test
     void shouldImplementClassWithPrefix() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class)))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class)))
         );
 
         Compilation compilation = compiler.compile(files);
@@ -140,13 +140,13 @@ class ClassTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(typeElement -> ClassTypeFactory.extendWithPrefix(typeElement, "Prefix"))
                 .collect(toList()))
                 .hasOnlyOneElementSatisfying(classType -> {
                     assertThat(classType
-                            .getFullQualifiedName())
+                            .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.PrefixTestClass");
                     assertThat(classType
                             .getParentClass())
@@ -155,10 +155,10 @@ class ClassTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
     private JavaFileObject javaFile(InterfaceType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 }

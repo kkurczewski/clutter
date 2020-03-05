@@ -10,7 +10,7 @@ import static java.lang.String.valueOf;
 final public class AnnotationTypeFactory {
 
     public static AnnotationType from(AnnotationMirror annotation) {
-        return new AnnotationType(
+        return AnnotationType.raw(
                 valueOf(annotation.getAnnotationType()),
                 annotation
                         .getElementValues()
@@ -18,7 +18,7 @@ final public class AnnotationTypeFactory {
                         .stream()
                         .map(entry -> AnnotationParam.ofRaw(
                                 valueOf(entry.getKey().getSimpleName()),
-                                valueOf(entry.getValue()))
+                                entry.getValue())
                         ).toArray(AnnotationParam[]::new)
         );
     }

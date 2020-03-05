@@ -11,6 +11,8 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static java.lang.String.*;
+
 final public class Method {
 
     private final String name;
@@ -57,6 +59,12 @@ final public class Method {
         return this;
     }
 
+    public Method setBody(List<String> body) {
+        this.body.clear();
+        this.body.addAll(body);
+        return this;
+    }
+
     public Method setAnnotations(AnnotationType... annotations) {
         this.annotations.clear();
         Collections.addAll(this.annotations, annotations);
@@ -65,7 +73,7 @@ final public class Method {
 
     @SafeVarargs
     final public Method setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
     public Method setGenericTypes(WildcardType genericTypes) {
@@ -90,10 +98,6 @@ final public class Method {
         return returnType;
     }
 
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
-    }
-
     public Set<Param> getParams() {
         return params;
     }
@@ -106,19 +110,36 @@ final public class Method {
         return genericTypes;
     }
 
+    public List<AnnotationType> getAnnotations() {
+        return annotations;
+    }
+
+    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+        return annotations.stream()
+                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+                .findFirst();
+    }
+
+    @SafeVarargs
+    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Method method = (Method) o;
-        return name.equals(method.name) &&
-                params.equals(method.params) &&
-                returnType.equals(method.returnType);
+        return name.equals(method.name) && params.equals(method.params);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, params, returnType);
+        return Objects.hash(name, params);
     }
 
+    @Override
+    public String toString() {
+        return name + params;
+    }
 }

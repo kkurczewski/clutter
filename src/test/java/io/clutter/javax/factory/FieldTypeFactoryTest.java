@@ -4,7 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.TestAnnotations;
+import io.clutter.TestElements;
 import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
@@ -45,12 +45,12 @@ class FieldTypeFactoryTest {
 
     @Test
     void shouldCreateFieldFromGetter() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setAnnotations(new AnnotationType(TestAnnotations.BarClass.class))
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(
                                 new Method("getFoo", Type.INT).setBody("return 0;"),
                                 new Method("getBar", Type.LONG).setBody("return 0;")
@@ -62,7 +62,7 @@ class FieldTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
@@ -73,6 +73,6 @@ class FieldTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 }

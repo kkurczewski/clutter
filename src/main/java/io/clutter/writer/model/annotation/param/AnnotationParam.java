@@ -11,47 +11,49 @@ final public class AnnotationParam {
 
     private final String key;
     private final String value;
+    private final Object rawValue;
 
-    private AnnotationParam(String key, String value) {
+    private AnnotationParam(String key, String value, Object rawValue) {
         this.key = key;
         this.value = value;
+        this.rawValue = rawValue;
     }
 
     public static <T extends Enum<?>> AnnotationParam ofEnum(String key, T type) {
-        return new AnnotationParam(key, type.getClass().getCanonicalName() + '.' + type.name());
+        return new AnnotationParam(key, type.getClass().getCanonicalName() + '.' + type.name(), type);
     }
 
     public static AnnotationParam ofClass(String key, Class<?> type) {
-        return new AnnotationParam(key, type.getCanonicalName() + ".class");
+        return new AnnotationParam(key, type.getCanonicalName() + ".class", type);
     }
 
     public static AnnotationParam ofPrimitive(String key, Object primitive) {
         if (isNotPrimitive(primitive)) {
             throw new IllegalArgumentException("Value is not primitive");
         }
-        return new AnnotationParam(key, valueOf(primitive));
+        return new AnnotationParam(key, valueOf(primitive), primitive);
     }
 
-    public static AnnotationParam ofRaw(String key, String rawValue) {
-        return new AnnotationParam(key, valueOf(rawValue));
+    public static AnnotationParam ofRaw(String key, Object rawValue) {
+        return new AnnotationParam(key, valueOf(rawValue), rawValue);
     }
 
     public static AnnotationParam ofString(String key, String str) {
-        return new AnnotationParam(key, "\"" + str + "\"");
+        return new AnnotationParam(key, "\"" + str + "\"", str);
     }
 
     @SafeVarargs
     public static <T extends Enum<?>> AnnotationParam ofEnumArray(String key, T... enums) {
         return new AnnotationParam(key, stream(enums)
                 .map(enumType -> enumType.getClass().getCanonicalName() + '.' + enumType.name())
-                .collect(joining(", ", "{", "}")));
+                .collect(joining(", ", "{", "}")), enums);
     }
 
     public static AnnotationParam ofClassArray(String key, Class<?>... classes) {
         return new AnnotationParam(key, stream(classes)
                 .map(Class::getCanonicalName)
                 .map(type -> type + ".class")
-                .collect(joining(", ", "{", "}")));
+                .collect(joining(", ", "{", "}")), classes);
     }
 
     public static AnnotationParam ofPrimitiveArray(String key, Object... primitives) {
@@ -63,11 +65,11 @@ final public class AnnotationParam {
                 });
         return new AnnotationParam(key, stream(primitives)
                 .map(String::valueOf)
-                .collect(joining(", ", "{", "}")));
+                .collect(joining(", ", "{", "}")), primitives);
     }
 
     public static AnnotationParam ofStringArray(String key, String... strings) {
-        return new AnnotationParam(key, "{\"" + String.join("\", \"", strings) + "\"}");
+        return new AnnotationParam(key, "{\"" + String.join("\", \"", strings) + "\"}", strings);
     }
 
     public String getKey() {
@@ -78,18 +80,26 @@ final public class AnnotationParam {
         return value;
     }
 
+    public Object getRawValue() {
+        return rawValue;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnnotationParam that = (AnnotationParam) o;
-        return key.equals(that.key) &&
-                value.equals(that.value);
+        return key.equals(that.key);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(key);
+    }
+
+    @Override
+    public String toString() {
+        return key + '{' + rawValue + '}';
     }
 
     private static boolean isNotPrimitive(Object object) {

@@ -1,9 +1,12 @@
 package io.clutter.writer.model.type;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.Arrays.stream;
 
 final public class WrappedType extends Type {
 
@@ -11,14 +14,9 @@ final public class WrappedType extends Type {
         super(value, boxed);
     }
 
-    public static WrappedType generic(Class<?> wrapper, Type type, Type... more) {
-        List<Type> types = new ArrayList<>();
-        types.add(type);
-        Collections.addAll(types, more);
-        return new WrappedType(
-                formatGeneric(wrapper, types.stream().map(t -> t.value).toArray(String[]::new)),
-                formatGeneric(wrapper, types.stream().map(t -> t.boxed).toArray(String[]::new))
-        );
+    public static WrappedType generic(Class<?> wrapper, Type... types) {
+        String[] rawTypes = stream(types).map(t -> t.boxed).toArray(String[]::new);
+        return new WrappedType(formatGeneric(wrapper, rawTypes), formatGeneric(wrapper, rawTypes));
     }
 
     public static WrappedType listOf(Type type) {

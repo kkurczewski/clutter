@@ -4,7 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.TestAnnotations;
+import io.clutter.TestElements;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.JavaFileGenerator;
@@ -45,20 +45,20 @@ class AnnotationTypeFactoryTest {
 
     @Test
     void shouldCreateAnnotationType() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotations.BarClass.class));
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         AnnotationType[] inputAnnotation = new AnnotationType[]{
-                new AnnotationType(TestAnnotations.BarClass.class),
-                new AnnotationType(TestAnnotations.Aggregate.class,
+                AnnotationType.of(TestElements.BarClass.class),
+                AnnotationType.of(TestElements.Aggregate.class,
                         AnnotationParam.ofPrimitive("intValue", 123),
                         AnnotationParam.ofString("stringValue", "foo"),
-                        AnnotationParam.ofClass("classValue", TestAnnotations.BarElement.class),
-                        AnnotationParam.ofEnum("enumValue", TestAnnotations.TestEnum.FOO),
+                        AnnotationParam.ofClass("classValue", TestElements.BarElement.class),
+                        AnnotationParam.ofEnum("enumValue", TestElements.TestEnum.FOO),
                         AnnotationParam.ofPrimitiveArray("intArray", 456, 789),
                         AnnotationParam.ofStringArray("stringArray", "bar", "baz"),
-                        AnnotationParam.ofClassArray("classArray", TestAnnotations.BarElement.class, Nonnull.class),
-                        AnnotationParam.ofEnumArray("enumArray", TestAnnotations.TestEnum.FOO, TestAnnotations.TestEnum.BAR))
+                        AnnotationParam.ofClassArray("classArray", TestElements.BarElement.class, Nonnull.class),
+                        AnnotationParam.ofEnumArray("enumArray", TestElements.TestEnum.FOO, TestElements.TestEnum.BAR))
         };
         Set<JavaFileObject> files = Set.of(
                 javaFile(new ClassType("test.foo.bar.TestClass")
@@ -72,7 +72,7 @@ class AnnotationTypeFactoryTest {
         verify(simpleProcessor).process(captor.capture(), any());
 
         Assertions.assertThat(captor.getValue()
-                .get(TestAnnotations.BarClass.class)
+                .get(TestElements.BarClass.class)
                 .stream()
                 .map(TypeElement::getAnnotationMirrors)
                 .flatMap(Collection::stream)
@@ -82,7 +82,7 @@ class AnnotationTypeFactoryTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 
 }
