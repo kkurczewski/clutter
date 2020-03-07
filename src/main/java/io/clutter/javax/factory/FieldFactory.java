@@ -1,8 +1,8 @@
 package io.clutter.javax.factory;
 
 import io.clutter.javax.factory.common.PojoNamingConvention;
-import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.field.Field;
+import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.field.Field;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;

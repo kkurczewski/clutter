@@ -4,25 +4,25 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
+import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.annotation.param.AnnotationParam;
+import io.clutter.model.classtype.ClassType;
+import io.clutter.model.classtype.InterfaceType;
+import io.clutter.model.classtype.modifiers.ClassTrait;
+import io.clutter.model.classtype.modifiers.ClassVisibility;
+import io.clutter.model.constructor.Constructor;
+import io.clutter.model.constructor.modifiers.ConstructorVisibility;
+import io.clutter.model.field.Field;
+import io.clutter.model.field.modifiers.FieldTrait;
+import io.clutter.model.field.modifiers.FieldVisibility;
+import io.clutter.model.method.Method;
+import io.clutter.model.method.modifiers.MethodTrait;
+import io.clutter.model.param.Param;
+import io.clutter.model.type.CollectionInstances;
 import io.clutter.processor.FileGenerator;
 import io.clutter.processor.JavaFile;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.annotation.param.AnnotationParam;
-import io.clutter.writer.model.classtype.ClassType;
-import io.clutter.writer.model.classtype.InterfaceType;
-import io.clutter.writer.model.classtype.modifiers.ClassTrait;
-import io.clutter.writer.model.classtype.modifiers.ClassVisibility;
-import io.clutter.writer.model.constructor.Constructor;
-import io.clutter.writer.model.constructor.modifiers.ConstructorVisibility;
-import io.clutter.writer.model.field.Field;
-import io.clutter.writer.model.field.modifiers.FieldTrait;
-import io.clutter.writer.model.field.modifiers.FieldVisibility;
-import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
-import io.clutter.writer.model.param.Param;
-import io.clutter.writer.model.type.CollectionInstances;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -31,27 +31,23 @@ import javax.annotation.processing.Processor;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestElements.*;
-import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;
-import static io.clutter.writer.model.type.BasicTypes.INT;
-import static io.clutter.writer.model.type.BasicTypes.STRING;
-import static io.clutter.writer.model.type.WildcardType.*;
-import static io.clutter.writer.model.type.WrappedType.*;
+import static io.clutter.model.method.modifiers.MethodVisibility.PRIVATE;
+import static io.clutter.model.type.BasicTypes.INT;
+import static io.clutter.model.type.BasicTypes.STRING;
+import static io.clutter.model.type.WildcardType.*;
+import static io.clutter.model.type.WrappedType.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class JavaFileGeneratorTest {
-
-    private final List<java.lang.String> a = new ArrayList<>();
 
     /**
      * Annotation processor which will generate given {@link JavaFile}

@@ -1,7 +1,7 @@
 package io.clutter.javax.factory;
 
 import io.clutter.javax.extractor.Filters;
-import io.clutter.writer.model.classtype.ClassType;
+import io.clutter.model.classtype.ClassType;
 
 import javax.lang.model.element.TypeElement;
 

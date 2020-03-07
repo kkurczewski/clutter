@@ -1,7 +1,7 @@
 package io.clutter.javax.factory;
 
-import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.annotation.param.AnnotationParam;
+import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.annotation.param.AnnotationParam;
 
 import javax.lang.model.element.AnnotationMirror;
 
@@ -18,7 +18,7 @@ final public class AnnotationTypeFactory {
                         .stream()
                         .map(entry -> AnnotationParam.ofRaw(
                                 valueOf(entry.getKey().getSimpleName()),
-                                entry.getValue().getValue()) // TODO test with reflection API
+                                entry.getValue().getValue())
                         ).toArray(AnnotationParam[]::new)
         );
     }

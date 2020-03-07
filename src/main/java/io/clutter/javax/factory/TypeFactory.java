@@ -1,6 +1,6 @@
 package io.clutter.javax.factory;
 
-import io.clutter.writer.model.type.Type;
+import io.clutter.model.type.Type;
 
 import javax.lang.model.type.TypeMirror;
 

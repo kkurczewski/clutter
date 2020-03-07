@@ -1,15 +1,15 @@
 package io.clutter.writer;
 
 import io.clutter.processor.JavaFile;
-import io.clutter.writer.model.annotation.AnnotationType;
-import io.clutter.writer.model.classtype.ClassType;
-import io.clutter.writer.model.classtype.InterfaceType;
-import io.clutter.writer.model.constructor.Constructor;
-import io.clutter.writer.model.field.Field;
-import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.method.modifiers.MethodTrait;
-import io.clutter.writer.model.param.Param;
-import io.clutter.writer.model.type.WildcardType;
+import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.classtype.ClassType;
+import io.clutter.model.classtype.InterfaceType;
+import io.clutter.model.constructor.Constructor;
+import io.clutter.model.field.Field;
+import io.clutter.model.method.Method;
+import io.clutter.model.method.modifiers.MethodTrait;
+import io.clutter.model.param.Param;
+import io.clutter.model.type.WildcardType;
 
 import java.io.IOException;
 import java.io.Writer;
