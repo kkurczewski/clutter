@@ -19,6 +19,7 @@ import io.clutter.model.method.Method;
 import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.param.Param;
 import io.clutter.model.type.CollectionInstances;
+import io.clutter.model.type.WrappedType;
 import io.clutter.processor.FileGenerator;
 import io.clutter.processor.JavaFile;
 import io.clutter.processor.ProcessorAggregate;
@@ -122,7 +123,7 @@ public class JavaFileGeneratorTest {
     void generateSubclass() {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = JavaFileGenerator
-                .generate(new ClassType("test.GeneratedClass").setParentClass(TestElements.class));
+                .generate(new ClassType("test.GeneratedClass").setParentClass(WrappedType.generic(TestElements.TestClass.class, String.class)));
 
         Compiler compiler = javac().withProcessors(Set.of(generatingProcessor(outputFileBlueprint)));
 
@@ -136,7 +137,7 @@ public class JavaFileGeneratorTest {
     void generateImplementation() {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = JavaFileGenerator
-                .generate(new ClassType("test.GeneratedClass").setInterfaces(TestInterface.class));
+                .generate(new ClassType("test.GeneratedClass").setInterfaces(WrappedType.generic(TestInterface.class, String.class)));
 
         Compiler compiler = javac().withProcessors(Set.of(generatingProcessor(outputFileBlueprint)));
 
@@ -244,6 +245,27 @@ public class JavaFileGeneratorTest {
     }
 
     @Test
+    void generateInterface() {
+        JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
+        JavaFile outputFileBlueprint = JavaFileGenerator
+                .generate(new InterfaceType("test.GeneratedInterface")
+                        .setGenericTypes(T)
+                        .setInterfaces(WrappedType.generic(Comparable.class, STRING))
+                        .setMethods(
+                                new Method("foo"),
+                                new Method("bar", Param.of("i", int.class))
+                        )
+                );
+
+        Compiler compiler = javac().withProcessors(Set.of(generatingProcessor(outputFileBlueprint)));
+
+        Compilation compilation = compiler.compile(inputFile);
+        assertThat(compilation).succeeded();
+        assertThat(compilation).generatedSourceFile("test.GeneratedInterface")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("GeneratedInterface.java"));
+    }
+
+    @Test
     void annotationProcessorShouldProcessGeneratedClasses() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, FooClass.class) {
 
@@ -278,10 +300,6 @@ public class JavaFileGeneratorTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
-    }
-
-    private JavaFileObject javaFile(InterfaceType classType) {
         return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }
 }

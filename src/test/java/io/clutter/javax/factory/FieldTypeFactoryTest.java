@@ -71,6 +71,35 @@ class FieldTypeFactoryTest {
                 .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
     }
 
+    @Test
+    void shouldCreateFieldFromVariableElement() {
+        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
+        Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
+
+        Set<JavaFileObject> files = Set.of(
+                javaFile(new ClassType("test.foo.bar.TestClass")
+                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
+                        .setFields(
+                                new Field("foo", int.class),
+                                new Field("bar", long.class)
+                        ))
+        );
+
+        Compilation compilation = compiler.compile(files);
+        CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
+        verify(simpleProcessor).process(captor.capture(), any());
+
+        assertThat(captor.getValue()
+                .get(TestElements.BarClass.class)
+                .stream()
+                .map(TypeExtractor::new)
+                .map(TypeExtractor::extractFields)
+                .flatMap(Collection::stream)
+                .map(FieldFactory::from)
+                .collect(toList()))
+                .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
+    }
+
     private JavaFileObject javaFile(ClassType classType) {
         return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
     }

@@ -5,7 +5,9 @@ import java.lang.annotation.Target;
 
 public class TestElements {
 
-    public interface TestInterface {}
+    public interface TestInterface<T> {}
+
+    public static class TestClass<T> {}
 
     @Target(ElementType.TYPE)
     public @interface FooClass {
