@@ -7,12 +7,14 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.clutter.processor.validator.ValidationOutput.*;
+import static io.clutter.javax.factory.common.StringUtils.toPascalCase;
+import static io.clutter.processor.validator.ValidationOutput.violation;
+import static java.lang.String.valueOf;
 
 final class ExclusiveFormatter {
     public static ValidationOutput format(Element element, Set<Annotation> conflictedAnnotations) {
         return violation(String.format("%s %s has exclusive annotations:",
-                toWordCase(element.getKind()),
+                toPascalCase(valueOf(element.getKind()).toLowerCase()),
                 element.getSimpleName()),
                 conflictedAnnotations
                         .stream()
@@ -22,10 +24,5 @@ final class ExclusiveFormatter {
                         .map(ValidationOutput::violationCause)
                         .collect(Collectors.toList())
         );
-    }
-
-    private static String toWordCase(Object object) {
-        String stringValue = String.valueOf(object);
-        return String.valueOf(stringValue.charAt(0)).toUpperCase() + stringValue.toLowerCase().substring(1);
     }
 }

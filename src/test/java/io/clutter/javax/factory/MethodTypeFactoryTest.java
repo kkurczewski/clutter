@@ -57,7 +57,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setMethods(new Method("greeter", Param.of("name", Type.INT)).setTraits(MethodTrait.ABSTRACT))
+                        .setMethods(new Method("greeter", Param.of("name", int.class)).setTraits(MethodTrait.ABSTRACT))
                 )
         );
 
@@ -75,7 +75,7 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("greeter", Param.of("name", Type.INT)))
+                .isEqualTo(new Method("greeter", Param.of("name", int.class)))
                 .matches(method -> method.getBody().equals(List.of("return 0;")))
                 .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
@@ -89,7 +89,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setMethods(new Method("greeter", Param.of("name", Type.INT)))
+                        .setMethods(new Method("greeter", Param.of("name", int.class)))
                 )
         );
 
@@ -107,7 +107,7 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("greeter", Param.of("name", Type.INT)))
+                .isEqualTo(new Method("greeter", Param.of("name", int.class)))
                 .matches(method -> method.getBody().equals(List.of("return 0;")))
                 .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
@@ -153,7 +153,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setFields(new Field("foo", Type.INT).setVisibility(FieldVisibility.PROTECTED))
+                        .setFields(new Field("foo", int.class).setVisibility(FieldVisibility.PROTECTED))
                 )
         );
 
@@ -171,7 +171,7 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("getFoo", Type.INT))
+                .isEqualTo(new Method("getFoo", int.class))
                 .matches(method -> method.getBody().equals(List.of("return this.foo;")))
                 .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
@@ -185,7 +185,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setMethods(new Method("setFoo", Param.of("foo", Type.INT)))
+                        .setMethods(new Method("setFoo", Param.of("foo", int.class)))
                 )
         );
 
@@ -203,7 +203,7 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("setFoo", Param.of("foo", Type.INT)))
+                .isEqualTo(new Method("setFoo", Param.of("foo", int.class)))
                 .matches(method -> method.getBody().equals(List.of("this.foo = foo;")))
                 .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }
@@ -217,7 +217,7 @@ class MethodTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setTraits(ClassTrait.ABSTRACT)
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setFields(new Field("foo", Type.INT).setVisibility(FieldVisibility.PROTECTED))
+                        .setFields(new Field("foo", int.class).setVisibility(FieldVisibility.PROTECTED))
                 )
         );
 
@@ -235,7 +235,7 @@ class MethodTypeFactoryTest {
                 .collect(toList()))
                 .hasSize(1)
                 .element(0)
-                .isEqualTo(new Method("setFoo", Param.of("foo", Type.INT)))
+                .isEqualTo(new Method("setFoo", Param.of("foo", int.class)))
                 .matches(method -> method.getBody().equals(List.of("this.foo = foo;")))
                 .matches(method -> !method.getTraits().contains(MethodTrait.ABSTRACT));
     }

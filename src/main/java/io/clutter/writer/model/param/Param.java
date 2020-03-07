@@ -20,6 +20,10 @@ final public class Param {
         return new Param(name, valueOf(value));
     }
 
+    public static Param of(String name, Class<?> type) {
+        return Param.of(name, Type.from(type));
+    }
+
     public static Param raw(String name, String value) {
         return new Param(name, value);
     }

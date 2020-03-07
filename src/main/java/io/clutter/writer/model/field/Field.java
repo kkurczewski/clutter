@@ -24,8 +24,6 @@ final public class Field {
     private FieldVisibility visibility;
     private String value;
 
-    //TODO consider constructor with class instead type
-
     /**
      * Creates field with default private visibility
      */
@@ -33,6 +31,10 @@ final public class Field {
         this.name = name;
         this.type = type;
         this.visibility = FieldVisibility.PRIVATE;
+    }
+
+    public Field(String name, Class<?> type) {
+        this(name, Type.from(type));
     }
 
     public static Field constant(String key, Object value) {

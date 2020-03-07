@@ -5,7 +5,6 @@ import io.clutter.common.Varargs;
 import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static javax.lang.model.type.TypeKind.VOID;
 
@@ -31,7 +30,8 @@ final public class Filters {
 
     @SafeVarargs
     public static Predicate<Element> isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return element -> Stream.of(Varargs.concat(annotation, more))
+        return element -> Varargs.concat(annotation, more)
+                .stream()
                 .anyMatch(a -> element.getAnnotation(a) != null);
     }
 

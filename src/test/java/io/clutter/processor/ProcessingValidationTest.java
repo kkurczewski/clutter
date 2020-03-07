@@ -10,7 +10,6 @@ import io.clutter.writer.JavaFileGenerator;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -32,8 +31,8 @@ class ProcessingValidationTest {
 
         JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
                 .setAnnotations(BarClass.class)
-                .setFields(new Field("str", Type.STRING).setAnnotations(BarElement.class))
-                .setMethods(new Method("fun", Type.INT).setAnnotations(BarElement.class)));
+                .setFields(new Field("str", String.class).setAnnotations(BarElement.class))
+                .setMethods(new Method("fun", int.class).setAnnotations(BarElement.class)));
 
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
@@ -104,7 +103,7 @@ class ProcessingValidationTest {
 
         JavaFileObject javaFile = javaFile(new ClassType("io.clutter.TestClass")
                 .setAnnotations(BarClass.class)
-                .setFields(new Field("str", Type.STRING).setAnnotations(FooField.class, BarField.class)));
+                .setFields(new Field("str", String.class).setAnnotations(FooField.class, BarField.class)));
 
         CompilationSubject.assertThat(compiler.compile(javaFile)).hadErrorContaining(
                 "- Class io.clutter.TestClass has following violations:\n" +
@@ -171,7 +170,7 @@ class ProcessingValidationTest {
 
         JavaFileObject javaFile = javaFile(new ClassType("io.clutter.PlainClass")
                 .setAnnotations(BarClass.class)
-                .setFields(new Field("foo", Type.INT).setAnnotations(FooField.class)));
+                .setFields(new Field("foo", int.class).setAnnotations(FooField.class)));
 
         Compilation compilation = javac()
                 .withProcessors(of(new SimpleProcessor(RELEASE_11, typeValidator, BarClass.class)))

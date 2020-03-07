@@ -11,8 +11,6 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static java.lang.String.*;
-
 final public class Method {
 
     private final String name;
@@ -36,10 +34,17 @@ final public class Method {
     }
 
     /**
+     * Creates method with default public visibility
+     */
+    public Method(String name, Class<?> returnType, Param... params) {
+        this(name, Type.from(returnType), params);
+    }
+
+    /**
      * Creates method with default void return type and public visibility
      */
     public Method(String name, Param... params) {
-        this(name, Type.VOID, params);
+        this(name, Type.from(void.class), params);
     }
 
     public Method setVisibility(MethodVisibility visibility) {

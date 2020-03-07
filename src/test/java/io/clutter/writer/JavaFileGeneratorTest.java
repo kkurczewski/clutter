@@ -8,7 +8,6 @@ import io.clutter.processor.FileGenerator;
 import io.clutter.processor.JavaFile;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.expressions.Collections;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.annotation.param.AnnotationParam;
 import io.clutter.writer.model.classtype.ClassType;
@@ -23,7 +22,7 @@ import io.clutter.writer.model.field.modifiers.FieldVisibility;
 import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.param.Param;
-import io.clutter.writer.model.type.Type;
+import io.clutter.writer.model.type.CollectionInstances;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -32,6 +31,8 @@ import javax.annotation.processing.Processor;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -39,10 +40,8 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 import static io.clutter.TestElements.*;
 import static io.clutter.writer.model.method.modifiers.MethodVisibility.PRIVATE;
-import static io.clutter.writer.model.type.WildcardType.DOUBLE;
-import static io.clutter.writer.model.type.WildcardType.INT;
-import static io.clutter.writer.model.type.WildcardType.STRING;
-import static io.clutter.writer.model.type.WildcardType.VOID;
+import static io.clutter.writer.model.type.BasicTypes.INT;
+import static io.clutter.writer.model.type.BasicTypes.STRING;
 import static io.clutter.writer.model.type.WildcardType.*;
 import static io.clutter.writer.model.type.WrappedType.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
@@ -51,6 +50,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class JavaFileGeneratorTest {
+
+    private final List<java.lang.String> a = new ArrayList<>();
 
     /**
      * Annotation processor which will generate given {@link JavaFile}
@@ -172,16 +173,16 @@ public class JavaFileGeneratorTest {
         JavaFile outputFileBlueprint = JavaFileGenerator
                 .generate(new ClassType("test.GeneratedClass")
                         .setFields(
-                                new Field("PI", DOUBLE).setValue(3.14159)
+                                new Field("PI", double.class).setValue(3.14159)
                                         .setVisibility(FieldVisibility.PUBLIC)
                                         .setTraits(FieldTrait.STATIC, FieldTrait.FINAL),
-                                new Field("primitive", INT).setValue(123),
-                                new Field("literal", STRING).setValue("hello"),
-                                new Field("list", listOf(INT)).setRawValue(Collections.newArrayList(INT)),
-                                new Field("set", setOf(INT)).setRawValue(Collections.newHashSet()),
-                                new Field("map", mapOf(INT, STRING)).setRawValue(Collections.newHashMap()),
+                                new Field("primitive", int.class).setValue(123),
+                                new Field("literal", String.class).setValue("hello"),
+                                new Field("list", listOf(INT)).setRawValue(CollectionInstances.newArrayList(INT)),
+                                new Field("set", setOf(INT)).setRawValue(CollectionInstances.newHashSet()),
+                                new Field("map", mapOf(INT, STRING)).setRawValue(CollectionInstances.newHashMap()),
                                 new Field("nested", mapOf(INT, mapOf(STRING, STRING)))
-                                        .setRawValue(Collections.newHashMap()),
+                                        .setRawValue(CollectionInstances.newHashMap()),
                                 new Field("generic", generic(Consumer.class, ANY.extend(Number.class)))
                         )
                 );
@@ -205,7 +206,7 @@ public class JavaFileGeneratorTest {
                                 new Method("main", Param.raw("args", String.class.getCanonicalName() + "[]"))
                                         .setTraits(MethodTrait.STATIC),
                                 new Method("getValue", T).setBody("return null;"),
-                                new Method("setValue", VOID, Param.of("first", T), Param.of("second", U))
+                                new Method("setValue", Param.of("first", T), Param.of("second", U))
                                         .setVisibility(PRIVATE)
                                         .setGenericTypes(U),
                                 new Method("close").setAnnotations(Override.class)
@@ -228,9 +229,9 @@ public class JavaFileGeneratorTest {
                         .setGenericTypes(T)
                         .setConstructors(
                                 new Constructor(
-                                        Param.of("A", Type.INT),
-                                        Param.of("B", Type.LONG),
-                                        Param.of("C", Type.LONG))
+                                        Param.of("A", int.class),
+                                        Param.of("B", long.class),
+                                        Param.of("C", long.class))
                                         .setVisibility(ConstructorVisibility.PRIVATE),
                                 new Constructor(Param.of("genericT", T), Param.of("genericU", U))
                                         .setGenericTypes(U)

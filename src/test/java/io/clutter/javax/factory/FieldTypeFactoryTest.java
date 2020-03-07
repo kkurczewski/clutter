@@ -6,15 +6,14 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
 import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.javax.factory.common.PojoNamingConventions;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import io.clutter.writer.JavaFileGenerator;
-import io.clutter.javax.factory.common.PojoNamingConventions;
 import io.clutter.writer.model.annotation.AnnotationType;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
 import io.clutter.writer.model.method.Method;
-import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,8 +51,8 @@ class FieldTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setMethods(
-                                new Method("getFoo", Type.INT).setBody("return 0;"),
-                                new Method("getBar", Type.LONG).setBody("return 0;")
+                                new Method("getFoo", int.class).setBody("return 0;"),
+                                new Method("getBar", long.class).setBody("return 0;")
                         ))
         );
 
@@ -69,7 +68,7 @@ class FieldTypeFactoryTest {
                 .flatMap(Collection::stream)
                 .map(getter -> FieldFactory.property(getter, PojoNamingConventions.GET))
                 .collect(toList()))
-                .containsExactly(new Field("foo", Type.INT), new Field("bar", Type.LONG));
+                .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
     }
 
     private JavaFileObject javaFile(ClassType classType) {

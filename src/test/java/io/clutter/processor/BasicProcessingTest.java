@@ -8,7 +8,6 @@ import io.clutter.TestElements;
 import io.clutter.writer.JavaFileGenerator;
 import io.clutter.writer.model.classtype.ClassType;
 import io.clutter.writer.model.field.Field;
-import io.clutter.writer.model.type.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -94,7 +93,7 @@ class BasicProcessingTest {
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
         JavaFileObject testFile = javaFile(new ClassType("io.clutter.TestClass")
-                .setFields(new Field("foo", Type.INT).setAnnotations(TestElements.BarElement.class)));
+                .setFields(new Field("foo", int.class).setAnnotations(TestElements.BarElement.class)));
 
         Compilation compilation = compiler.compile(testFile);
         CompilationSubject.assertThat(compilation).succeededWithoutWarnings();

@@ -8,7 +8,6 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 
 import static java.lang.String.format;
-import static java.util.Arrays.stream;
 
 final public class AnnotationType {
 
@@ -50,7 +49,8 @@ final public class AnnotationType {
 
     @SafeVarargs
     final public boolean isInstanceOf(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return stream(Varargs.concat(annotation, more))
+        return Varargs.concat(annotation, more)
+                .stream()
                 .map(Class::getCanonicalName)
                 .anyMatch(type::equals);
     }

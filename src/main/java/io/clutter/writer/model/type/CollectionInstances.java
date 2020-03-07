@@ -1,13 +1,10 @@
-package io.clutter.writer.expressions;
-
-import io.clutter.writer.model.type.Type;
-import io.clutter.writer.model.type.WrappedType;
+package io.clutter.writer.model.type;
 
 import java.util.*;
 
 import static java.lang.String.format;
 
-final public class Collections {
+final public class CollectionInstances {
 
     public static String newArrayList() {
         return newCollection(ArrayList.class);
@@ -15,6 +12,10 @@ final public class Collections {
 
     public static String newArrayList(Type type) {
         return newCollection(ArrayList.class, type);
+    }
+
+    public static String newArrayList(Class<?> type) {
+        return newArrayList(Type.from(type));
     }
 
     public static String newHashSet() {
