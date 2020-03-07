@@ -18,7 +18,7 @@ final public class AnnotationTypeFactory {
                         .stream()
                         .map(entry -> AnnotationParam.ofRaw(
                                 valueOf(entry.getKey().getSimpleName()),
-                                entry.getValue())
+                                entry.getValue().getValue()) // TODO test with reflection API
                         ).toArray(AnnotationParam[]::new)
         );
     }

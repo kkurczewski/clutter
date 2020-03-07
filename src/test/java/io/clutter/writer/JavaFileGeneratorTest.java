@@ -24,7 +24,6 @@ import io.clutter.writer.model.method.Method;
 import io.clutter.writer.model.method.modifiers.MethodTrait;
 import io.clutter.writer.model.param.Param;
 import io.clutter.writer.model.type.Type;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -89,11 +88,11 @@ public class JavaFileGeneratorTest {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = JavaFileGenerator.generate(
                 new ClassType("test.GeneratedClass").setAnnotations(AnnotationType.of(Aggregate.class,
-                        AnnotationParam.ofPrimitive("intValue", 123),
+                        AnnotationParam.ofInt("intValue", 123),
                         AnnotationParam.ofString("stringValue", "abc"),
                         AnnotationParam.ofClass("classValue", Object.class),
                         AnnotationParam.ofEnum("enumValue", TestEnum.FOO),
-                        AnnotationParam.ofPrimitiveArray("intArray", 456, 789),
+                        AnnotationParam.ofIntArray("intArray", 456, 789),
                         AnnotationParam.ofStringArray("stringArray", "def", "ghi"),
                         AnnotationParam.ofClassArray("classArray", Object.class, Integer.class),
                         AnnotationParam.ofEnumArray("enumArray", TestEnum.BAR, TestEnum.FOO)

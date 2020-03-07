@@ -51,11 +51,11 @@ class AnnotationTypeFactoryTest {
         AnnotationType[] inputAnnotation = new AnnotationType[]{
                 AnnotationType.of(TestElements.BarClass.class),
                 AnnotationType.of(TestElements.Aggregate.class,
-                        AnnotationParam.ofPrimitive("intValue", 123),
+                        AnnotationParam.ofInt("intValue", 123),
                         AnnotationParam.ofString("stringValue", "foo"),
                         AnnotationParam.ofClass("classValue", TestElements.BarElement.class),
                         AnnotationParam.ofEnum("enumValue", TestElements.TestEnum.FOO),
-                        AnnotationParam.ofPrimitiveArray("intArray", 456, 789),
+                        AnnotationParam.ofIntArray("intArray", 456, 789),
                         AnnotationParam.ofStringArray("stringArray", "bar", "baz"),
                         AnnotationParam.ofClassArray("classArray", TestElements.BarElement.class, Nonnull.class),
                         AnnotationParam.ofEnumArray("enumArray", TestElements.TestEnum.FOO, TestElements.TestEnum.BAR))

@@ -1,11 +1,9 @@
 package io.clutter.writer.model.annotation.param;
 
-import java.util.List;
+import java.lang.reflect.Array;
 import java.util.Objects;
 
-import static java.lang.String.valueOf;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
+import static java.lang.String.*;
 
 final public class AnnotationParam {
 
@@ -19,57 +17,100 @@ final public class AnnotationParam {
         this.rawValue = rawValue;
     }
 
+    // TODO test array raw values
+    public static AnnotationParam ofRaw(String key, Object rawValue) {
+        Class<?> type = rawValue.getClass();
+        String stringValue = type.isArray() ? paramAsArray(rawValue) : paramAsString(rawValue);
+        return new AnnotationParam(key, stringValue, rawValue);
+    }
+
     public static <T extends Enum<?>> AnnotationParam ofEnum(String key, T type) {
-        return new AnnotationParam(key, type.getClass().getCanonicalName() + '.' + type.name(), type);
+        return new AnnotationParam(key, paramAsString(type), type);
     }
 
     public static AnnotationParam ofClass(String key, Class<?> type) {
-        return new AnnotationParam(key, type.getCanonicalName() + ".class", type);
+        return new AnnotationParam(key, paramAsString(type), type);
     }
 
-    public static AnnotationParam ofPrimitive(String key, Object primitive) {
-        if (isNotPrimitive(primitive)) {
-            throw new IllegalArgumentException("Value is not primitive");
-        }
-        return new AnnotationParam(key, valueOf(primitive), primitive);
+    public static AnnotationParam ofShort(String key, short primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
     }
 
-    public static AnnotationParam ofRaw(String key, Object rawValue) {
-        return new AnnotationParam(key, valueOf(rawValue), rawValue);
+    public static AnnotationParam ofInt(String key, int primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofLong(String key, long primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofFloat(String key, float primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofDouble(String key, double primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofBool(String key, boolean primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofChar(String key, char primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
+    }
+
+    public static AnnotationParam ofByte(String key, byte primitive) {
+        return new AnnotationParam(key, paramAsString(primitive), primitive);
     }
 
     public static AnnotationParam ofString(String key, String str) {
-        return new AnnotationParam(key, "\"" + str + "\"", str);
+        return new AnnotationParam(key, paramAsString(str), str);
     }
 
     @SafeVarargs
     public static <T extends Enum<?>> AnnotationParam ofEnumArray(String key, T... enums) {
-        return new AnnotationParam(key, stream(enums)
-                .map(enumType -> enumType.getClass().getCanonicalName() + '.' + enumType.name())
-                .collect(joining(", ", "{", "}")), enums);
+        return new AnnotationParam(key, paramAsArray(enums), enums);
     }
 
     public static AnnotationParam ofClassArray(String key, Class<?>... classes) {
-        return new AnnotationParam(key, stream(classes)
-                .map(Class::getCanonicalName)
-                .map(type -> type + ".class")
-                .collect(joining(", ", "{", "}")), classes);
+        return new AnnotationParam(key, paramAsArray(classes), classes);
     }
 
-    public static AnnotationParam ofPrimitiveArray(String key, Object... primitives) {
-        stream(primitives)
-                .filter(AnnotationParam::isNotPrimitive)
-                .findAny()
-                .ifPresent(nonPrimitive -> {
-                    throw new IllegalArgumentException("Only primitives are allowed");
-                });
-        return new AnnotationParam(key, stream(primitives)
-                .map(String::valueOf)
-                .collect(joining(", ", "{", "}")), primitives);
+    public static AnnotationParam ofShortArray(String key, short... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofIntArray(String key, int... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofLongArray(String key, long... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofFloatArray(String key, float... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofDoubleArray(String key, double... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofBoolArray(String key, boolean... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofCharArray(String key, char... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
+    }
+
+    public static AnnotationParam ofByteArray(String key, byte... primitives) {
+        return new AnnotationParam(key, paramAsArray(primitives), primitives);
     }
 
     public static AnnotationParam ofStringArray(String key, String... strings) {
-        return new AnnotationParam(key, "{\"" + String.join("\", \"", strings) + "\"}", strings);
+        return new AnnotationParam(key, paramAsArray(strings), strings);
     }
 
     public String getKey() {
@@ -102,12 +143,24 @@ final public class AnnotationParam {
         return key + '{' + rawValue + '}';
     }
 
-    private static boolean isNotPrimitive(Object object) {
-        // Due to autoboxing this is only way to make sure that given object is primitive
-        List<Class<?>> boxedPrimitives = List.of(Byte.class, Character.class,
-                Short.class, Integer.class, Long.class,
-                Float.class, Double.class,
-                Boolean.class);
-        return object == null || !boxedPrimitives.contains(object.getClass());
+    private static String paramAsString(Object rawValue) {
+        if (rawValue instanceof String) {
+            return "\"" + rawValue + "\"";
+        } else if (rawValue instanceof Enum) {
+            return rawValue.getClass().getCanonicalName() + '.' + ((Enum<?>) rawValue).name();
+        } else if (rawValue instanceof Class) {
+            return ((Class<?>) rawValue).getCanonicalName() + ".class";
+        }
+        // assumed primitives
+        return valueOf(rawValue);
+    }
+
+    private static String paramAsArray(Object rawArray) {
+        final int length = Array.getLength(rawArray);
+        String[] arr = new String[length];
+        for (int i = 0; i < length; i++) {
+            arr[i] = paramAsString(Array.get(rawArray, i));
+        }
+        return format("{%s}", join(", ", arr));
     }
 }

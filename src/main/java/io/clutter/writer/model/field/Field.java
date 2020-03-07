@@ -24,6 +24,8 @@ final public class Field {
     private FieldVisibility visibility;
     private String value;
 
+    //TODO consider constructor with class instead type
+
     /**
      * Creates field with default private visibility
      */

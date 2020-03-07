@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 
 final public class AnnotationType {
@@ -39,8 +40,12 @@ final public class AnnotationType {
         return values;
     }
 
-    public Optional<Object> getParam(String key) {
-        return values.stream().filter(annotationParam -> annotationParam.getKey().equals(key)).findFirst().map(AnnotationParam::getRawValue);
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getParam(String key) {
+        return (Optional<T>) values.stream()
+                .filter(annotationParam -> annotationParam.getKey().equals(key))
+                .findFirst()
+                .map(AnnotationParam::getRawValue);
     }
 
     @SafeVarargs
@@ -51,21 +56,23 @@ final public class AnnotationType {
     }
 
     /**
-     * Returns shallow copy of {@link Annotation}. Resulting object will return nulls for not initialized annotation params and is guaranteed to return null for non accessor methods (including common method like {@link Object#toString()})
+     * Returns shallow copy of {@link Annotation}. Resulting object will return nulls for not initialized annotation params and is allowed to return null for any non accessor methods
      *
      * @throws RuntimeException when reflection related failure
      */
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T reflect() throws RuntimeException {
-        try {
-            return (T) Proxy.newProxyInstance(
-                    this.getClass().getClassLoader(),
-                    new Class[]{Class.forName(type, false, this.getClass().getClassLoader())},
-                    (proxy, method, args) -> getParam(method.getName()).orElse(method.getDefaultValue())
-            );
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Class<Annotation> type = reflectType();
+        return (T) Proxy.newProxyInstance(
+                type.getClassLoader(),
+                new Class[]{type},
+                (proxy, method, args) -> {
+                    if ("toString".equals(method.getName())) {
+                        return format("Proxy{%s}", type);
+                    }
+                    return getParam(method.getName()).orElse(method.getDefaultValue());
+                }
+        );
     }
 
     /**
@@ -74,9 +81,9 @@ final public class AnnotationType {
      * @throws RuntimeException when reflection related failure
      */
     @SuppressWarnings("unchecked")
-    public Class<? extends Annotation> reflectType() {
+    public <T extends Annotation> Class<T> reflectType() {
         try {
-            return (Class<? extends Annotation>) Class.forName(type, false, this.getClass().getClassLoader());
+            return (Class<T>) Class.forName(type);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
