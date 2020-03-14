@@ -2,9 +2,8 @@ package io.clutter.model.classtype;
 
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.method.Method;
-import io.clutter.model.type.Type;
+import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.WildcardType;
-import io.clutter.model.type.WrappedType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -15,26 +14,22 @@ final public class InterfaceType {
     private final String fullyQualifiedName;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
+    private final LinkedHashSet<BoxedType> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
 
     public InterfaceType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
     }
 
-    public InterfaceType setInterfaces(String... interfaces) {
+    public InterfaceType setInterfaces(BoxedType... interfaces) {
         this.interfaces.clear();
         Collections.addAll(this.interfaces, interfaces);
         return this;
     }
 
     public InterfaceType setInterfaces(Class<?>... interfaces) {
-        return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
-    }
-
-    public InterfaceType setInterfaces(WrappedType... interfaces) {
-        return setInterfaces(Stream.of(interfaces).map(Type::toString).toArray(String[]::new));
+        return setInterfaces(Stream.of(interfaces).map(BoxedType::of).toArray(BoxedType[]::new));
     }
 
     public InterfaceType setAnnotations(AnnotationType... annotations) {
@@ -54,9 +49,9 @@ final public class InterfaceType {
         return this;
     }
 
-    public InterfaceType setGenericTypes(WildcardType genericTypes) {
-        this.genericTypes.clear();
-        Collections.addAll(this.genericTypes, genericTypes);
+    public InterfaceType setWildcardTypes(WildcardType wildcardTypes) {
+        this.wildcardTypes.clear();
+        Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;
     }
 
@@ -64,7 +59,7 @@ final public class InterfaceType {
         return fullyQualifiedName;
     }
 
-    public Set<String> getInterfaces() {
+    public Set<BoxedType> getInterfaces() {
         return interfaces;
     }
 
@@ -72,8 +67,8 @@ final public class InterfaceType {
         return methods;
     }
 
-    public Set<WildcardType> getGenericTypes() {
-        return genericTypes;
+    public Set<WildcardType> getWildcardTypes() {
+        return wildcardTypes;
     }
 
     public List<AnnotationType> getAnnotations() {
@@ -106,6 +101,6 @@ final public class InterfaceType {
 
     @Override
     public String toString() {
-        return fullyQualifiedName + genericTypes;
+        return fullyQualifiedName + wildcardTypes;
     }
 }

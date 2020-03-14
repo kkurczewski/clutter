@@ -1,8 +1,10 @@
 package test;
 
-public class GeneratedClass<T> implements java.io.Closeable {
+import java.io.Closeable;
 
-    public static void main(java.lang.String[] args) {}
+public class GeneratedClass<T> implements Closeable {
+
+    public static void main(String[] args) {}
 
     public T getValue() {
         return null;

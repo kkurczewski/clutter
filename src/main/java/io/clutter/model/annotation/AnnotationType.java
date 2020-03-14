@@ -27,6 +27,7 @@ final public class AnnotationType {
         return new AnnotationType(type, values);
     }
 
+    @Deprecated
     public static AnnotationType raw(String type, AnnotationParam... values) {
         return new AnnotationType(type, values);
     }

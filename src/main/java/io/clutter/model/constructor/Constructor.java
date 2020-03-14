@@ -18,7 +18,7 @@ final public class Constructor {
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
     private ConstructorVisibility visibility;
 
     public Constructor(Param... params) {
@@ -54,9 +54,9 @@ final public class Constructor {
         return this;
     }
 
-    public Constructor setGenericTypes(WildcardType genericTypes) {
-        this.genericTypes.clear();
-        Collections.addAll(this.genericTypes, genericTypes);
+    public Constructor setWildcardTypes(WildcardType wildcardTypes) {
+        this.wildcardTypes.clear();
+        Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;
     }
 
@@ -72,8 +72,8 @@ final public class Constructor {
         return body;
     }
 
-    public Set<WildcardType> getGenericTypes() {
-        return genericTypes;
+    public Set<WildcardType> getWildcardTypes() {
+        return wildcardTypes;
     }
 
     public List<AnnotationType> getAnnotations() {

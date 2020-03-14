@@ -1,13 +1,20 @@
 package test;
 
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 public class GeneratedClass {
     public static final double PI = 3.14159;
 
     private int primitive = 123;
     private String literal = "hello";
-    private java.util.List<Integer> list = new java.util.ArrayList<Integer>();
-    private java.util.Set<Integer> set = new java.util.HashSet<>();
-    private java.util.Map<Integer, String> map = new java.util.HashMap<>();
-    private java.util.Map<Integer, java.util.Map<String, String>> nested = new java.util.HashMap<>();
-    private java.util.function.Consumer<? extends Number> generic;
+    private Set<Integer> set;
+    private List<Integer> list = new ArrayList<Integer>();
+    private Map<Integer, String> map = new HashMap<Integer, String>();
+    private Map<Integer, Map<String, String>> nested;
+    private Consumer<? extends Number> generic;
 }

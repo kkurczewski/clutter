@@ -1,6 +1,5 @@
 package io.clutter.writer;
 
-import io.clutter.processor.JavaFile;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.classtype.InterfaceType;
@@ -9,19 +8,25 @@ import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
 import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.param.Param;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.type.BoxedType;
+import io.clutter.model.type.Type;
+import io.clutter.processor.JavaFile;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.*;
 
+@Deprecated
 final public class JavaFileGenerator {
 
-    public static JavaFile generate(ClassType classType) {
+    private TypePrinter typePrinter;
+
+    public JavaFile generate(ClassType classType) {
         return new JavaFile() {
 
             @Override
@@ -30,20 +35,13 @@ final public class JavaFileGenerator {
             }
 
             @Override
-            public void writeTo(Writer writer) {
-                lines(classType).forEach(line -> {
-                    try {
-                        writer.write(line);
-                        writer.write(System.lineSeparator());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+            public List<String> getLines() {
+                return lines(classType);
             }
         };
     }
 
-    public static JavaFile generate(InterfaceType interfaceType) {
+    public JavaFile generate(InterfaceType interfaceType) {
         return new JavaFile() {
 
             @Override
@@ -52,35 +50,37 @@ final public class JavaFileGenerator {
             }
 
             @Override
-            public void writeTo(Writer writer) {
-                lines(interfaceType).forEach(line -> {
-                    try {
-                        writer.write(line);
-                        writer.write(System.lineSeparator());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+            public List<String> getLines() {
+                return lines(interfaceType);
             }
         };
     }
 
-    public static List<String> lines(ClassType classType) {
+    public List<String> lines(ClassType classType) {
         String qualifiedName = classType.getFullyQualifiedName();
         int classNameIndex = qualifiedName.lastIndexOf('.');
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
 
+        Set<String> imports = imports(classType);
+        typePrinter = new TypePrinter();
+
         List<String> lines = new LinkedList<>();
         lines.add(format("package %s;", packageName));
         lines.add("");
+        if (!imports.isEmpty()) {
+            imports.stream()
+                    .map(import_ -> String.format("import %s;", import_))
+                    .forEach(lines::add);
+            lines.add("");
+        }
         lines.addAll(annotations(classType.getAnnotations()));
         lines.add(trimFormat("%s %s class %s%s %s %s {",
                 classType.getVisibility(),
                 join(classType.getTraits()),
                 className,
-                generics(classType.getGenericTypes()),
-                classType.getParentClass().map(" extends "::concat).orElse(""),
+                typeToString(classType.getWildcardTypes()),
+                extendedClass(classType.getParentClass()),
                 implementedInterfaces(classType.getInterfaces()))
         );
         lines.addAll(tabbed(fields(classType.getFields())));
@@ -91,11 +91,19 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    public static List<String> lines(InterfaceType interfaceType) {
+    @SuppressWarnings("all")
+    private String extendedClass(Optional<BoxedType> parentClass) {
+        return parentClass.map(this::typeToString).map(" extends "::concat).orElse("");
+    }
+
+    public List<String> lines(InterfaceType interfaceType) {
         String qualifiedName = interfaceType.getFullyQualifiedName();
         int classNameIndex = qualifiedName.lastIndexOf('.');
         String packageName = qualifiedName.substring(0, classNameIndex);
         String className = qualifiedName.substring(classNameIndex + 1);
+
+        Set<String> imports = imports(interfaceType);
+        typePrinter = new TypePrinter();
 
         List<String> lines = new LinkedList<>();
         lines.add(format("package %s;", packageName));
@@ -103,7 +111,7 @@ final public class JavaFileGenerator {
         lines.addAll(annotations(interfaceType.getAnnotations()));
         lines.add(trimFormat("public interface %s%s %s {",
                 className,
-                generics(interfaceType.getGenericTypes()),
+                typeToString(interfaceType.getWildcardTypes()),
                 extendedInterfaces(interfaceType.getInterfaces()))
                 .strip()
         );
@@ -113,32 +121,32 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    private static String implementedInterfaces(Collection<String> interfaces) {
+    private String implementedInterfaces(Set<BoxedType> interfaces) {
         return interfaces
                 .stream()
-                .map(String::valueOf)
+                .map(this::typeToString)
                 .reduce((first, second) -> first + ", " + second)
                 .map(" implements "::concat)
                 .orElse("");
     }
 
-    private static String extendedInterfaces(Collection<String> interfaces) {
+    private String extendedInterfaces(Set<BoxedType> interfaces) {
         return interfaces
                 .stream()
-                .map(String::valueOf)
+                .map(this::typeToString)
                 .reduce((first, second) -> first + ", " + second)
                 .map(" extends "::concat)
                 .orElse("");
     }
 
-    private static List<String> constructors(Collection<Constructor> constructors, String className) {
+    private List<String> constructors(Collection<Constructor> constructors, String className) {
         List<String> lines = new LinkedList<>();
         constructors.forEach(constructor -> {
             lines.add("");
             lines.addAll(annotations(constructor.getAnnotations()));
             lines.add(trimFormat("%s %s %s(%s) {",
                     constructor.getVisibility(),
-                    generics(constructor.getGenericTypes()),
+                    typeToString(constructor.getWildcardTypes()),
                     className,
                     params(constructor.getParams()))
             );
@@ -148,7 +156,7 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    private static List<String> fields(Collection<Field> fields) {
+    private List<String> fields(Collection<Field> fields) {
         List<String> lines = new LinkedList<>();
         lines.add("");
         fields.forEach(field -> {
@@ -156,7 +164,7 @@ final public class JavaFileGenerator {
             lines.add(trimFormat("%s %s %s %s%s;",
                     field.getVisibility(),
                     join(field.getTraits()),
-                    field.getType(),
+                    typeToString(field.getType()),
                     field.getName(),
                     field.getValue().map(" = "::concat).orElse(""))
             );
@@ -164,7 +172,7 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    private static List<String> methods(Collection<Method> methods) {
+    private List<String> methods(Collection<Method> methods) {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
             lines.add("");
@@ -172,8 +180,8 @@ final public class JavaFileGenerator {
             lines.add(trimFormat("%s %s %s %s %s(%s);",
                     method.getVisibility(),
                     join(method.getTraits()),
-                    generics(method.getGenericTypes()),
-                    method.getReturnType(),
+                    typeToString(method.getWildcardTypes()),
+                    typeToString(method.getReturnType()),
                     method.getName(),
                     params(method.getParams()))
                     .strip()
@@ -187,14 +195,14 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    private static List<String> interfaceMethods(Collection<Method> methods) {
+    private List<String> interfaceMethods(Collection<Method> methods) {
         List<String> lines = new LinkedList<>();
         methods.forEach(method -> {
             lines.add("");
             lines.addAll(annotations(method.getAnnotations()));
             lines.add(trimFormat("%s %s %s %s(%s);",
                     join(method.getTraits()),
-                    generics(method.getGenericTypes()),
+                    typeToString(method.getWildcardTypes()),
                     method.getReturnType(),
                     method.getName(),
                     params(method.getParams()))
@@ -204,14 +212,14 @@ final public class JavaFileGenerator {
         return lines;
     }
 
-    private static String params(Collection<Param> params) {
+    private String params(Collection<Param> params) {
         return params
                 .stream()
-                .map(param -> param.getValue() + " " + param.getName())
+                .map(param -> typeToString(param.getValue()) + " " + param.getName())
                 .collect(joining(", "));
     }
 
-    private static List<String> annotations(Collection<AnnotationType> annotations) {
+    private List<String> annotations(Collection<AnnotationType> annotations) {
         return annotations.stream()
                 .map(annotationType -> "@" + annotationType.getType() + annotationType
                         .getParams()
@@ -223,30 +231,117 @@ final public class JavaFileGenerator {
                 .collect(toList());
     }
 
-    private static String generics(Set<WildcardType> genericType) {
-        return genericType.stream()
-                .map(String::valueOf)
-                .reduce((first, second) -> first + ", " + second)
-                .map(type -> "<" + type + ">")
-                .orElse("");
+    private Set<String> imports(InterfaceType interfaceType) {
+        List<Type> types = new LinkedList<>(interfaceType.getWildcardTypes());
+        interfaceType
+                .getMethods()
+                .stream()
+                .map(Method::getReturnType)
+                .forEach(types::add);
+        interfaceType
+                .getMethods()
+                .stream()
+                .map(Method::getParams)
+                .flatMap(Collection::stream)
+                .map(Param::getValue)
+                .forEach(types::add);
+        interfaceType
+                .getMethods()
+                .stream()
+                .map(Method::getWildcardTypes)
+                .flatMap(Collection::stream)
+                .forEach(types::add);
+
+        return types.stream()
+                .map(Type::getType)
+                .map(aClass -> {
+                    Class<?> a = aClass;
+                    while (a.isArray()) {
+                        a = a.getComponentType();
+                    }
+                    return a;
+                })
+                .filter(not(Class::isPrimitive))
+                .map(Class::getCanonicalName)
+                .collect(toSet());
     }
 
-    private static <T> String join(Collection<T> traits) {
+    private Set<String> imports(ClassType classType) {
+        List<Type> types = new LinkedList<>(classType.getWildcardTypes());
+        classType.getConstructors()
+                .stream()
+                .map(Constructor::getParams)
+                .flatMap(Collection::stream)
+                .map(Param::getValue)
+                .forEach(types::add);
+        classType.getConstructors()
+                .stream()
+                .map(Constructor::getWildcardTypes)
+                .flatMap(Collection::stream)
+                .forEach(types::add);
+        classType
+                .getFields()
+                .stream()
+                .map(Field::getType)
+                .forEach(types::add);
+        classType
+                .getMethods()
+                .stream()
+                .map(Method::getReturnType)
+                .forEach(types::add);
+        classType
+                .getMethods()
+                .stream()
+                .map(Method::getParams)
+                .flatMap(Collection::stream)
+                .map(Param::getValue)
+                .forEach(types::add);
+        classType
+                .getMethods()
+                .stream()
+                .map(Method::getWildcardTypes)
+                .flatMap(Collection::stream)
+                .forEach(types::add);
+
+        return types.stream()
+                .map(Type::getType)
+                .map(aClass -> {
+                    Class<?> a = aClass;
+                    while (a.isArray()) {
+                        a = a.getComponentType();
+                    }
+                    return a;
+                })
+                .filter(not(Class::isPrimitive))
+                .map(Class::getCanonicalName)
+                .collect(toSet());
+    }
+
+    private String typeToString(Collection<? extends Type> type) {
+        if (type.isEmpty()) return "";
+        return type.stream().map(typePrinter::print).collect(Collectors.joining(", ", "<", ">"));
+    }
+
+    private String typeToString(Type type) {
+        return typePrinter.print(type);
+    }
+
+    private <T> String join(Collection<T> traits) {
         return traits.stream()
                 .map(String::valueOf)
                 .reduce((first, second) -> first + " " + second)
                 .orElse("");
     }
 
-    private static List<String> tabbed(Collection<String> lines) {
+    private List<String> tabbed(Collection<String> lines) {
         return lines.stream().map("\t"::concat).collect(toList());
     }
 
-    private static void replaceLast(List<String> lines, String pattern, String replacement) {
+    private void replaceLast(List<String> lines, String pattern, String replacement) {
         lines.add(lines.remove(lines.size() - 1).replace(pattern, replacement));
     }
 
-    private static String trimFormat(String input, Object... params) {
+    private String trimFormat(String input, Object... params) {
         return format(input, params).replaceAll("\\s+", " ");
     }
 }

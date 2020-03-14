@@ -34,11 +34,11 @@ final public class Field {
     }
 
     public Field(String name, Class<?> type) {
-        this(name, Type.from(type));
+        this(name, Type.of(type));
     }
 
     public static Field constant(String key, Object value) {
-        return new Field(key, Type.from(value.getClass()))
+        return new Field(key, Type.of(value.getClass()))
                 .setValue(value)
                 .setVisibility(PUBLIC)
                 .setTraits(STATIC, FINAL);

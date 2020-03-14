@@ -2,6 +2,9 @@ package io.clutter.javax.factory;
 
 import io.clutter.javax.extractor.Filters;
 import io.clutter.model.classtype.ClassType;
+import io.clutter.model.type.BoxedType;
+import io.clutter.model.type.PrimitiveType;
+import io.clutter.model.type.Type;
 
 import javax.lang.model.element.TypeElement;
 
@@ -17,9 +20,9 @@ final public class ClassTypeFactory {
         ClassType classType = new ClassType(packageName + '.' + prefix + typeElement.getSimpleName());
 
         if (Filters.CLASS.test(typeElement)) {
-            classType.setParentClass(qualifiedName);
+            classType.setParentClass(getBoxedType(typeElement));
         } else if (Filters.INTERFACE.test(typeElement)) {
-            classType.setInterfaces(qualifiedName);
+            classType.setInterfaces(getBoxedType(typeElement));
         } else {
             throw new IllegalArgumentException("TypeElement is not element or interface");
         }
@@ -32,17 +35,24 @@ final public class ClassTypeFactory {
      */
     public static ClassType extendWithPostfix(TypeElement typeElement, String postfix) {
 
-        String qualifiedName = typeElement.getQualifiedName().toString();
         ClassType classType = new ClassType(typeElement.getQualifiedName() + postfix);
 
         if (Filters.CLASS.test(typeElement)) {
-            classType.setParentClass(qualifiedName);
+            classType.setParentClass(getBoxedType(typeElement));
         } else if (Filters.INTERFACE.test(typeElement)) {
-            classType.setInterfaces(qualifiedName);
+            classType.setInterfaces(getBoxedType(typeElement));
         } else {
             throw new IllegalArgumentException("TypeElement is not element or interface");
         }
 
         return classType;
+    }
+
+    private static BoxedType getBoxedType(TypeElement typeElement) {
+        Type type = TypeFactory.of(typeElement.asType());
+        if (type instanceof PrimitiveType) {
+            throw new IllegalArgumentException("Type element is primitive");
+        }
+        return (BoxedType) type;
     }
 }

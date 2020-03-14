@@ -1,11 +1,11 @@
 package io.clutter.model.method;
 
 import io.clutter.model.method.modifiers.MethodTrait;
+import io.clutter.model.type.Type;
 import io.clutter.model.type.WildcardType;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.method.modifiers.MethodVisibility;
 import io.clutter.model.param.Param;
-import io.clutter.model.type.Type;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -18,7 +18,7 @@ final public class Method {
     private final Type returnType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
     private final LinkedHashSet<MethodTrait> traits = new LinkedHashSet<>();
     private final List<String> body = new LinkedList<>();
     private MethodVisibility visibility;
@@ -37,14 +37,14 @@ final public class Method {
      * Creates method with default public visibility
      */
     public Method(String name, Class<?> returnType, Param... params) {
-        this(name, Type.from(returnType), params);
+        this(name, Type.of(returnType), params);
     }
 
     /**
      * Creates method with default void return type and public visibility
      */
     public Method(String name, Param... params) {
-        this(name, Type.from(void.class), params);
+        this(name, Type.of(void.class), params);
     }
 
     public Method setVisibility(MethodVisibility visibility) {
@@ -81,9 +81,9 @@ final public class Method {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
-    public Method setGenericTypes(WildcardType genericTypes) {
-        this.genericTypes.clear();
-        Collections.addAll(this.genericTypes, genericTypes);
+    public Method setWildcardTypes(WildcardType wildcardTypes) {
+        this.wildcardTypes.clear();
+        Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;
     }
 
@@ -111,8 +111,8 @@ final public class Method {
         return body;
     }
 
-    public Set<WildcardType> getGenericTypes() {
-        return genericTypes;
+    public Set<WildcardType> getWildcardTypes() {
+        return wildcardTypes;
     }
 
     public List<AnnotationType> getAnnotations() {

@@ -17,6 +17,7 @@ final public class AnnotationParam {
         this.rawValue = rawValue;
     }
 
+    @Deprecated
     public static AnnotationParam ofRaw(String key, Object rawValue) {
         Class<?> type = rawValue.getClass();
         String stringValue = type.isArray() ? paramAsArray(rawValue) : paramAsString(rawValue);

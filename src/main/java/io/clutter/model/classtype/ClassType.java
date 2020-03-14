@@ -1,14 +1,13 @@
 package io.clutter.model.classtype;
 
+import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.classtype.modifiers.ClassTrait;
 import io.clutter.model.classtype.modifiers.ClassVisibility;
 import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
-import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.method.Method;
-import io.clutter.model.type.Type;
+import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.WildcardType;
-import io.clutter.model.type.WrappedType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -17,47 +16,40 @@ import java.util.stream.Stream;
 final public class ClassType {
 
     private final String fullyQualifiedName;
+    private final String packageName;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final LinkedHashSet<String> interfaces = new LinkedHashSet<>();
+    private final LinkedHashSet<BoxedType> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Constructor> constructors = new LinkedHashSet<>();
     private final LinkedHashSet<Field> fields = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
     private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> genericTypes = new LinkedHashSet<>();
-    private String parentClass;
+    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
+    private BoxedType parentClass;
     private ClassVisibility visibility;
 
     public ClassType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
+        this.packageName = fullyQualifiedName.substring(0, Math.max(0, fullyQualifiedName.lastIndexOf('.')));
         this.visibility = ClassVisibility.PUBLIC;
     }
 
-    public ClassType setParentClass(Class<?> parentClass) {
-        return setParentClass(parentClass.getCanonicalName());
-    }
-
-    public ClassType setParentClass(WrappedType parentClass) {
-        return setParentClass(parentClass.toString());
-    }
-
-    public ClassType setParentClass(String parentClass) {
+    public ClassType setParentClass(BoxedType parentClass) {
         this.parentClass = parentClass;
         return this;
     }
 
-    public ClassType setInterfaces(Class<?>... interfaces) {
-        return setInterfaces(Stream.of(interfaces).map(Class::getCanonicalName).toArray(String[]::new));
+    public ClassType setParentClass(Class<?> parentClass) {
+        return setParentClass(BoxedType.of(parentClass));
     }
 
-    public ClassType setInterfaces(WrappedType... interfaces) {
-        return setInterfaces(Stream.of(interfaces).map(Type::toString).toArray(String[]::new));
-    }
-
-    public ClassType setInterfaces(String... interfaces) {
-        this.interfaces.clear();
+    public ClassType setInterfaces(BoxedType... interfaces) {
         Collections.addAll(this.interfaces, interfaces);
         return this;
+    }
+
+    public ClassType setInterfaces(Class<?>... interfaces) {
+        return setInterfaces(Stream.of(interfaces).map(BoxedType::of).toArray(BoxedType[]::new));
     }
 
     public ClassType setAnnotations(AnnotationType... annotations) {
@@ -100,9 +92,9 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setGenericTypes(WildcardType... genericTypes) {
-        this.genericTypes.clear();
-        Collections.addAll(this.genericTypes, genericTypes);
+    public ClassType setWildcardTypes(WildcardType... wildcardTypes) {
+        this.wildcardTypes.clear();
+        Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;
     }
 
@@ -110,11 +102,15 @@ final public class ClassType {
         return fullyQualifiedName;
     }
 
-    public Optional<String> getParentClass() {
+    public String getPackage() {
+        return packageName;
+    }
+
+    public Optional<BoxedType> getParentClass() {
         return Optional.ofNullable(parentClass);
     }
 
-    public Set<String> getInterfaces() {
+    public Set<BoxedType> getInterfaces() {
         return interfaces;
     }
 
@@ -138,8 +134,8 @@ final public class ClassType {
         return methods;
     }
 
-    public Set<WildcardType> getGenericTypes() {
-        return genericTypes;
+    public Set<WildcardType> getWildcardTypes() {
+        return wildcardTypes;
     }
 
     public List<AnnotationType> getAnnotations() {
@@ -172,6 +168,6 @@ final public class ClassType {
 
     @Override
     public String toString() {
-        return fullyQualifiedName + genericTypes;
+        return fullyQualifiedName + wildcardTypes;
     }
 }

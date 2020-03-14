@@ -1,3 +1,5 @@
 package test;
 
-public class GeneratedClass extends io.clutter.TestElements.TestClass<String> {}
+import io.clutter.TestElements.TestClass;
+
+public class GeneratedClass extends TestClass<String> {}

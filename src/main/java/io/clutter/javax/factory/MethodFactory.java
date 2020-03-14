@@ -92,7 +92,7 @@ final public class MethodFactory {
             throw new IllegalArgumentException("VariableElement is private");
         }
         String variable = valueOf(field.getSimpleName());
-        return new Method(convention.method(variable), Param.raw(variable, valueOf(field.asType())))
+        return new Method(convention.method(variable), Param.of(variable, TypeFactory.of(field.asType())))
                 .setBody("this." + variable + " = " + variable + ";");
     }
 
@@ -106,7 +106,7 @@ final public class MethodFactory {
 
         Param[] params = method.getParameters()
                 .stream()
-                .map(javaxParam -> Param.raw(valueOf(javaxParam.getSimpleName()), valueOf(javaxParam.asType())))
+                .map(javaxParam -> Param.of(valueOf(javaxParam.getSimpleName()), TypeFactory.of(javaxParam.asType())))
                 .toArray(Param[]::new);
         AnnotationType[] annotations = method.getAnnotationMirrors()
                 .stream()
@@ -125,7 +125,7 @@ final public class MethodFactory {
         } else if (javaxModifiers.contains(Modifier.PROTECTED)) {
             return MethodVisibility.PROTECTED;
         } else if (javaxModifiers.contains(Modifier.PRIVATE)) {
-            throw new IllegalArgumentException("Trying to implement private method");
+            throw new IllegalArgumentException("Attempt to implement private method");
         } else {
             return MethodVisibility.PACKAGE_PRIVATE;
         }

@@ -7,24 +7,27 @@ import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
 import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.javax.factory.common.PojoNamingConventions;
-import io.clutter.processor.ProcessorAggregate;
-import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.JavaFileGenerator;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
+import io.clutter.model.type.ContainerType;
+import io.clutter.processor.ProcessorAggregate;
+import io.clutter.processor.SimpleProcessor;
+import io.clutter.writer.ClassWriter;
+import io.clutter.writer.JavaFileGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-
+import java.math.BigDecimal;
 import javax.tools.JavaFileObject;
 import java.util.Collection;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
+import static io.clutter.model.type.WildcardType.ANY;
 import static java.util.stream.Collectors.toList;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +74,7 @@ class FieldTypeFactoryTest {
                 .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
     }
 
+    // TODO add more extensive tests, generic, object with value etc.
     @Test
     void shouldCreateFieldFromVariableElement() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
@@ -80,8 +84,9 @@ class FieldTypeFactoryTest {
                 javaFile(new ClassType("test.foo.bar.TestClass")
                         .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
                         .setFields(
-                                new Field("foo", int.class),
-                                new Field("bar", long.class)
+                                new Field("primitive", int.class),
+                                new Field("nonPrimitive", BigDecimal.class),
+                                new Field("generic", ContainerType.of(Comparable.class, ANY.extend(String.class)))
                         ))
         );
 
@@ -97,10 +102,14 @@ class FieldTypeFactoryTest {
                 .flatMap(Collection::stream)
                 .map(FieldFactory::from)
                 .collect(toList()))
-                .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
+                .containsExactly(
+                        new Field("primitive", int.class),
+                        new Field("nonPrimitive", BigDecimal.class),
+                        new Field("generic", ContainerType.of(Comparable.class, BigDecimal.class))
+                );
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), new ClassWriter(classType).generate().getLines());
     }
 }

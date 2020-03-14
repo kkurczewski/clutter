@@ -5,12 +5,13 @@ import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
-import io.clutter.processor.ProcessorAggregate;
-import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.JavaFileGenerator;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.classtype.InterfaceType;
+import io.clutter.model.type.DynamicType;
+import io.clutter.processor.ProcessorAggregate;
+import io.clutter.processor.SimpleProcessor;
+import io.clutter.writer.JavaFileGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -61,9 +62,13 @@ class ClassTypeFactoryTest {
                     assertThat(classType
                             .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.TestInterfacePostfix");
-                    assertThat(classType
-                            .getInterfaces())
-                            .containsExactly("test.foo.bar.TestInterface");
+                    assertThat(classType.getInterfaces())
+                            .hasOnlyOneElementSatisfying(boxedType -> assertThat(boxedType)
+                                    .isInstanceOf(DynamicType.class)
+                                    .satisfies(type -> assertThat(((DynamicType) type)
+                                            .getName())
+                                            .isEqualTo("test.foo.bar.TestInterface")
+                                    ));
                 });
     }
 
@@ -90,9 +95,13 @@ class ClassTypeFactoryTest {
                     assertThat(classType
                             .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.TestClassPostfix");
-                    assertThat(classType
-                            .getParentClass())
-                            .hasValue("test.foo.bar.TestClass");
+                    assertThat(classType.getParentClass())
+                            .hasValueSatisfying(boxedType -> assertThat(boxedType)
+                                    .isInstanceOf(DynamicType.class)
+                                    .satisfies(type -> assertThat(((DynamicType) type)
+                                            .getName())
+                                            .isEqualTo("test.foo.bar.TestClass"))
+                            );
                 });
     }
 
@@ -119,9 +128,13 @@ class ClassTypeFactoryTest {
                     assertThat(classType
                             .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.PrefixTestInterface");
-                    assertThat(classType
-                            .getInterfaces())
-                            .containsExactly("test.foo.bar.TestInterface");
+                    assertThat(classType.getInterfaces())
+                            .hasOnlyOneElementSatisfying(boxedType -> assertThat(boxedType)
+                                    .isInstanceOf(DynamicType.class)
+                                    .satisfies(type -> assertThat(((DynamicType) type)
+                                            .getName())
+                                            .isEqualTo("test.foo.bar.TestInterface"))
+                            );
                 });
     }
 
@@ -148,17 +161,20 @@ class ClassTypeFactoryTest {
                     assertThat(classType
                             .getFullyQualifiedName())
                             .isEqualTo("test.foo.bar.PrefixTestClass");
-                    assertThat(classType
-                            .getParentClass())
-                            .hasValue("test.foo.bar.TestClass");
+                    assertThat(classType.getParentClass())
+                            .hasValueSatisfying(boxedType -> assertThat(boxedType)
+                                    .isInstanceOf(DynamicType.class)
+                                    .satisfies(type -> assertThat(((DynamicType) type)
+                                            .getName())
+                                            .isEqualTo("test.foo.bar.TestClass")));
                 });
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), new JavaFileGenerator().lines(classType));
     }
 
     private JavaFileObject javaFile(InterfaceType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), JavaFileGenerator.lines(classType));
+        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), new JavaFileGenerator().lines(classType));
     }
 }

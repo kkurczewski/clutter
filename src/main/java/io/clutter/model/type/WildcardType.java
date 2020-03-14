@@ -1,6 +1,11 @@
 package io.clutter.model.type;
 
-final public class WildcardType extends Type {
+import java.util.Objects;
+
+import static io.clutter.model.type.BoundedWildcardType.BoundaryType.EXTENDS;
+import static io.clutter.model.type.BoundedWildcardType.BoundaryType.SUPER;
+
+public class WildcardType extends BoxedType {
 
     public static final WildcardType ANY = WildcardType.alias("?");
     public static final WildcardType T = WildcardType.alias("T");
@@ -8,42 +13,68 @@ final public class WildcardType extends Type {
     public static final WildcardType V = WildcardType.alias("V");
     public static final WildcardType R = WildcardType.alias("R");
 
-    private boolean expanded;
+    protected final String alias;
 
-    private WildcardType(String alias, boolean expanded) {
-        super(alias, alias);
-        this.expanded = expanded;
+    private WildcardType(String alias) {
+        super(Object.class);
+        this.alias = alias;
+    }
+
+    WildcardType(String alias, Class<?> type) {
+        super(type);
+        this.alias = alias;
     }
 
     public static WildcardType alias(String alias) {
-        return new WildcardType(alias, false);
+        return new WildcardType(alias);
     }
 
-    public WildcardType extend(Class<?> exactType) {
-        if (this.expanded) {
-            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
-        }
-        return new WildcardType(super.value + " extends " + exactType.getSimpleName(), true);
+    /**
+     * Returns approximate class represented by this wildcard
+     *
+     * @return T type if wildcard is bounded (i.e. ? super T, ? extends T) or {@link Object} otherwise
+     */
+    @Override
+    public Class<?> getType() {
+        return super.getType();
     }
 
-    public WildcardType extend(WrappedType wrappedType) {
-        if (this.expanded) {
-            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
-        }
-        return new WildcardType(super.value + " extends " + wrappedType.boxed, true);
+    public String getAlias() {
+        return alias;
     }
 
-    public WildcardType subclass(Class<?> exactType) {
-        if (this.expanded) {
-            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
-        }
-        return new WildcardType(super.value + " super " + exactType.getSimpleName(), true);
+    public BoundedWildcardType extend(Class<?> exactType) {
+        return new BoundedWildcardType(alias, EXTENDS, BoxedType.of(exactType));
     }
 
-    public WildcardType subclass(WrappedType wrappedType) {
-        if (this.expanded) {
-            throw new IllegalArgumentException("Illegal expand of generic type: " + super.value);
-        }
-        return new WildcardType(super.value + " super " + wrappedType.boxed, true);
+    public BoundedWildcardType extend(ContainerType containerType) {
+        return new BoundedWildcardType(alias, EXTENDS, containerType);
+    }
+
+    public BoundedWildcardType subclass(Class<?> exactType) {
+        return new BoundedWildcardType(alias, SUPER, BoxedType.of(exactType));
+    }
+
+    public BoundedWildcardType subclass(ContainerType containerType) {
+        return new BoundedWildcardType(alias, SUPER, containerType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        WildcardType that = (WildcardType) o;
+        return alias.equals(that.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), alias);
+    }
+
+    @Override
+    public String toString() {
+        return alias;
     }
 }
