@@ -35,7 +35,7 @@ class BasicProcessingTest {
     }
 
     @Test
-    void shouldProcessClassesOnlyWithGivenAnnotation() {
+    public void shouldProcessClassesOnlyWithGivenAnnotation() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -59,7 +59,7 @@ class BasicProcessingTest {
     }
 
     @Test
-    void shouldProcessAllAnnotatedClasses() {
+    public void shouldProcessAllAnnotatedClasses() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor)); // annotation wildcard
 
@@ -88,7 +88,7 @@ class BasicProcessingTest {
     }
 
     @Test
-    void shouldProcessOnlyClasses() {
+    public void shouldProcessOnlyClasses() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarElement.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

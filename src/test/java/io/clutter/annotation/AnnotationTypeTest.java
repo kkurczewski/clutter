@@ -10,21 +10,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AnnotationTypeTest {
 
     @Test
-    void shouldReflectAnnotationClassType() {
+    public void shouldReflectAnnotationClassType() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class);
 
         assertThat(annotationType.reflectType()).isEqualTo(ReflectionTestAnnotation.class);
     }
 
     @Test
-    void shouldReflectAnnotationClassTypeFromStringName() {
+    public void shouldReflectAnnotationClassTypeFromStringName() {
         AnnotationType annotationType = AnnotationType.raw(ReflectionTestAnnotation.class.getCanonicalName());
 
         assertThat(annotationType.reflectType()).isEqualTo(ReflectionTestAnnotation.class);
     }
 
     @Test
-    void shouldReflectPrimitiveParams() {
+    public void shouldReflectPrimitiveParams() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class,
                 AnnotationParam.ofShort("shortValue", (short) 1),
                 AnnotationParam.ofInt("intValue", 2),
@@ -48,7 +48,7 @@ class AnnotationTypeTest {
     }
 
     @Test
-    void shouldReflectPrimitiveArrayParams() {
+    public void shouldReflectPrimitiveArrayParams() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class,
                 AnnotationParam.ofShortArray("shortArray", new short[]{1, 2}),
                 AnnotationParam.ofIntArray("intArray", 3, 4),
@@ -72,7 +72,7 @@ class AnnotationTypeTest {
     }
 
     @Test
-    void shouldReflectStringParams() {
+    public void shouldReflectStringParams() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class,
                 AnnotationParam.ofString("stringValue", "foo"),
                 AnnotationParam.ofStringArray("stringArray", "bar", "baz")
@@ -84,7 +84,7 @@ class AnnotationTypeTest {
     }
 
     @Test
-    void shouldReflectEnumParams() {
+    public void shouldReflectEnumParams() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class,
                 AnnotationParam.ofEnum("enumValue", TestEnum.FOO),
                 AnnotationParam.ofEnumArray("enumArray", TestEnum.FOO, TestEnum.BAR)
@@ -96,7 +96,7 @@ class AnnotationTypeTest {
     }
 
     @Test
-    void shouldReflectClassParams() {
+    public void shouldReflectClassParams() {
         AnnotationType annotationType = AnnotationType.of(ReflectionTestAnnotation.class,
                 AnnotationParam.ofClass("classValue", Short.class),
                 AnnotationParam.ofClassArray("classArray", String.class, Integer.class)

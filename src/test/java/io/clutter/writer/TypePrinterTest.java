@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TypePrinterTest {
 
     @Test
-    void shouldPrintType() {
+    public void shouldPrintType() {
         Type type = ContainerType.of(
                 List.class,
                 ContainerType.of(Map.class,
@@ -26,7 +26,7 @@ class TypePrinterTest {
     }
 
     @Test
-    void shouldPrintTypeWithCanonicalNameButJavaLang() {
+    public void shouldPrintTypeWithCanonicalNameButJavaLang() {
         Type type = ContainerType.of(
                 List.class,
                 ContainerType.of(Map.class,
@@ -39,7 +39,7 @@ class TypePrinterTest {
     }
 
     @Test
-    void shouldPrintTypeWithDiamondOperator() {
+    public void shouldPrintTypeWithDiamondOperator() {
         Type type = ContainerType.of(
                 List.class,
                 ContainerType.of(Map.class,
@@ -52,7 +52,7 @@ class TypePrinterTest {
     }
 
     @Test
-    void shouldPrintTypeWithCanonicalNameAndDiamondOperator() {
+    public void shouldPrintTypeWithCanonicalNameAndDiamondOperator() {
         Type type = ContainerType.of(
                 List.class,
                 ContainerType.of(Map.class,

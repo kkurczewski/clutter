@@ -43,7 +43,7 @@ class AnnotationTypeFactoryTest {
     }
 
     @Test
-    void shouldCreateAnnotationType() {
+    public void shouldCreateAnnotationType() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

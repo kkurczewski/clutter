@@ -40,7 +40,7 @@ class ClassTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementInterfaceWithPostfix() {
+    public void shouldImplementInterfaceWithPostfix() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -73,7 +73,7 @@ class ClassTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementClassWithPostfix() {
+    public void shouldImplementClassWithPostfix() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -106,7 +106,7 @@ class ClassTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementInterfaceWithPrefix() {
+    public void shouldImplementInterfaceWithPrefix() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -139,7 +139,7 @@ class ClassTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementClassWithPrefix() {
+    public void shouldImplementClassWithPrefix() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

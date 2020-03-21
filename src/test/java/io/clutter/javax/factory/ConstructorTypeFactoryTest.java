@@ -45,7 +45,7 @@ class ConstructorTypeFactoryTest {
     }
 
     @Test
-    void shouldCreateConstructorFromFields() {
+    public void shouldCreateConstructorFromFields() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -81,7 +81,7 @@ class ConstructorTypeFactoryTest {
     }
 
     @Test
-    void shouldCreateConstructorFromGetters() {
+    public void shouldCreateConstructorFromGetters() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

@@ -51,7 +51,7 @@ class TypeFactoryTest {
     }
 
     @Test
-    void shouldCreateFieldFromGetter() {
+    public void shouldCreateFieldFromGetter() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

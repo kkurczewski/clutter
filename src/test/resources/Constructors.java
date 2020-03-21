@@ -1,7 +1,5 @@
 package test;
 
-import java.lang.Object;
-
 public class GeneratedClass<T> {
 
     private GeneratedClass(int A, long B, long C) {

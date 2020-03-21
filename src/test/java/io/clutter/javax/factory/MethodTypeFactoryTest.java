@@ -48,7 +48,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementAbstractMethod() {
+    public void shouldImplementAbstractMethod() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -80,7 +80,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldOverrideMethod() {
+    public void shouldOverrideMethod() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -112,7 +112,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementGetterFromAbstractMethod() {
+    public void shouldImplementGetterFromAbstractMethod() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -144,7 +144,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementGetterFromField() {
+    public void shouldImplementGetterFromField() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -176,7 +176,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementSetterFromAbstractMethod() {
+    public void shouldImplementSetterFromAbstractMethod() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -208,7 +208,7 @@ class MethodTypeFactoryTest {
     }
 
     @Test
-    void shouldImplementSetterFromField() {
+    public void shouldImplementSetterFromField() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

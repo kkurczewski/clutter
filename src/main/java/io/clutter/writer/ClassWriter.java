@@ -12,14 +12,12 @@ import io.clutter.model.type.Type;
 import io.clutter.model.type.WildcardType;
 import io.clutter.processor.JavaFile;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static io.clutter.writer.TypePrinter.*;
+import static io.clutter.writer.TypePrinter.DEFAULT_IMPORT;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -169,7 +167,7 @@ final public class ClassWriter {
 
     private String generics(Set<WildcardType> wildcardType) {
         return wildcardType.stream()
-                .map(String::valueOf)
+                .map(this::importType)
                 .reduce((first, second) -> first + ", " + second)
                 .map(type -> "<" + type + ">")
                 .orElse("");

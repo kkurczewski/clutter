@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CommentsTest {
 
     @Test
-    void shouldCreateJavadoc() {
+    public void shouldCreateJavadoc() {
         Comments comments = Comments.javadoc("foo", "bar", "baz");
         assertThat(comments.getLines()).containsExactly(
                 "/**",
@@ -19,7 +19,7 @@ class CommentsTest {
     }
 
     @Test
-    void shouldCreateComment() {
+    public void shouldCreateComment() {
         Comments comments = Comments.comment("foo", "bar", "baz");
         assertThat(comments.getLines()).containsExactly(
                 "// foo",
@@ -29,7 +29,7 @@ class CommentsTest {
     }
 
     @Test
-    void shouldCreateMultiLineComment() {
+    public void shouldCreateMultiLineComment() {
         Comments comments = Comments.multiLineComment("foo", "bar", "baz");
         assertThat(comments.getLines()).containsExactly(
                 "/*",

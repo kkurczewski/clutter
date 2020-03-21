@@ -46,7 +46,7 @@ class FieldTypeFactoryTest {
     }
 
     @Test
-    void shouldCreateFieldFromGetter() {
+    public void shouldCreateFieldFromGetter() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 
@@ -76,7 +76,7 @@ class FieldTypeFactoryTest {
 
     // TODO add more extensive tests, generic, object with value etc.
     @Test
-    void shouldCreateFieldFromVariableElement() {
+    public void shouldCreateFieldFromVariableElement() {
         SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
         Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
 

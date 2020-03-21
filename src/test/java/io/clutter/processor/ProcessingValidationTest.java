@@ -23,7 +23,7 @@ import static javax.lang.model.SourceVersion.RELEASE_11;
 class ProcessingValidationTest {
 
     @Test
-    void shouldThrowIfNonUniqueAnnotation() {
+    public void shouldThrowIfNonUniqueAnnotation() {
         TypeValidator typeValidator = new AnnotationValidatorBuilder()
                 .unique(Set.of(BarElement.class))
                 .build();
