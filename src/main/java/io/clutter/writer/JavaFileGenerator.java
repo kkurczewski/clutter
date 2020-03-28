@@ -223,6 +223,7 @@ final public class JavaFileGenerator {
         return annotations.stream()
                 .map(annotationType -> "@" + annotationType.getType() + annotationType
                         .getParams()
+                        .entrySet()
                         .stream()
                         .map(param -> param.getKey() + " = " + param.getValue())
                         .reduce((first, second) -> first + ", " + second)

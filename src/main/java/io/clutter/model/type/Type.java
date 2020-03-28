@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Type {
 
-    protected final Class<?> type;
+    private final Class<?> type;
 
     Type(Class<?> type) {
         this.type = type;

@@ -106,8 +106,4 @@ final public class ContainerType extends BoxedType {
         return Objects.hash(super.hashCode(), genericValues);
     }
 
-    @Override
-    public String toString() {
-        return format("%s{%s}", type, genericValues);
-    }
 }

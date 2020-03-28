@@ -47,7 +47,7 @@ public class WildcardType extends BoxedType {
         return new BoundedWildcardType(alias, EXTENDS, BoxedType.of(exactType));
     }
 
-    public BoundedWildcardType extend(ContainerType containerType) {
+    public BoundedWildcardType extend(BoxedType containerType) {
         return new BoundedWildcardType(alias, EXTENDS, containerType);
     }
 
@@ -55,7 +55,7 @@ public class WildcardType extends BoxedType {
         return new BoundedWildcardType(alias, SUPER, BoxedType.of(exactType));
     }
 
-    public BoundedWildcardType subclass(ContainerType containerType) {
+    public BoundedWildcardType subclass(BoxedType containerType) {
         return new BoundedWildcardType(alias, SUPER, containerType);
     }
 

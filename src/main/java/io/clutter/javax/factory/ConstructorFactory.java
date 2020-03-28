@@ -27,7 +27,7 @@ final public class ConstructorFactory {
         Param[] params = Stream.of(fields)
                 .map(field -> Param.of(
                         valueOf(field.getSimpleName()),
-                        TypeFactory.of(field.asType())))
+                        TypeFactory.from(field.asType())))
                 .toArray(Param[]::new);
 
         return new Constructor(params);
@@ -44,7 +44,7 @@ final public class ConstructorFactory {
         Param[] params = Stream.of(methods)
                 .map(getter -> Param.of(
                         namingConvention.variable(valueOf(getter.getSimpleName())),
-                        TypeFactory.of(getter.getReturnType())))
+                        TypeFactory.from(getter.getReturnType())))
                 .toArray(Param[]::new);
         return new Constructor(params);
     }

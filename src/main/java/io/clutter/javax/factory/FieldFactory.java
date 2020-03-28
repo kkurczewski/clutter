@@ -16,7 +16,7 @@ final public class FieldFactory {
         if (!FIELD.test(field)) {
             throw new IllegalArgumentException("VariableElement is not field");
         }
-        return new Field(valueOf(field.getSimpleName()), TypeFactory.of(field.asType()))
+        return new Field(valueOf(field.getSimpleName()), TypeFactory.from(field.asType()))
                 .setAnnotations(field
                         .getAnnotationMirrors()
                         .stream()
@@ -35,6 +35,6 @@ final public class FieldFactory {
             throw new IllegalArgumentException("ExecutableElement is not getter");
         }
 
-        return new Field(namingConvention.variable(valueOf(method.getSimpleName())), TypeFactory.of(method.getReturnType()));
+        return new Field(namingConvention.variable(valueOf(method.getSimpleName())), TypeFactory.from(method.getReturnType()));
     }
 }

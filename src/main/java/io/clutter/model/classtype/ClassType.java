@@ -60,7 +60,7 @@ final public class ClassType {
 
     @SafeVarargs
     final public ClassType setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public ClassType setVisibility(ClassVisibility visibility) {

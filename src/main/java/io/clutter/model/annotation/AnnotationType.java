@@ -5,47 +5,52 @@ import io.clutter.model.annotation.param.AnnotationParam;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Objects.hash;
 
 final public class AnnotationType {
 
-    private final String type;
-    private final LinkedHashSet<AnnotationParam> values = new LinkedHashSet<>();
+    private final Class<? extends Annotation> type;
+    private final Map<String, ?> values;
 
-    private AnnotationType(String type, AnnotationParam... values) {
+    public AnnotationType(Class<? extends Annotation> type, LinkedHashMap<String, ?> values) {
         this.type = type;
-        Collections.addAll(this.values, values);
+        this.values = values;
     }
 
-    private AnnotationType(Class<? extends Annotation> type, AnnotationParam... values) {
-        this(type.getCanonicalName(), values);
+    public AnnotationType(Class<? extends Annotation> type) {
+        this(type, new LinkedHashMap<>());
     }
 
+    public static AnnotationType of(Class<? extends Annotation> type) {
+        return new AnnotationType(type);
+    }
+
+    @Deprecated
     public static AnnotationType of(Class<? extends Annotation> type, AnnotationParam... values) {
-        return new AnnotationType(type, values);
+        return new AnnotationType(type);
     }
 
     @Deprecated
     public static AnnotationType raw(String type, AnnotationParam... values) {
-        return new AnnotationType(type, values);
+        return new AnnotationType(Deprecated.class, new LinkedHashMap<>());
     }
 
-    public String getType() {
+    public Class<? extends Annotation> getType() {
         return type;
     }
 
-    public Set<AnnotationParam> getParams() {
+    public Map<String, ?> getParams() {
         return values;
     }
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getParam(String key) {
-        return (Optional<T>) values.stream()
-                .filter(annotationParam -> annotationParam.getKey().equals(key))
-                .findFirst()
-                .map(AnnotationParam::getRawValue);
+        return (Optional<T>) Optional.ofNullable(values.get(key));
     }
 
     @SafeVarargs
@@ -63,7 +68,6 @@ final public class AnnotationType {
      */
     @SuppressWarnings("unchecked")
     public <T extends Annotation> T reflect() throws RuntimeException {
-        Class<Annotation> type = reflectType();
         return (T) Proxy.newProxyInstance(
                 type.getClassLoader(),
                 new Class[]{type},
@@ -71,7 +75,7 @@ final public class AnnotationType {
                     if ("toString".equals(method.getName())) {
                         return format("Proxy{%s}", type);
                     }
-                    return getParam(method.getName()).orElse(method.getDefaultValue());
+                    return getParam(method.getName()).orElseGet(method::getDefaultValue);
                 }
         );
     }
@@ -82,9 +86,10 @@ final public class AnnotationType {
      * @throws RuntimeException when reflection related failure
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public <T extends Annotation> Class<T> reflectType() {
         try {
-            return (Class<T>) Class.forName(type);
+            return (Class<T>) Class.forName("Deprecated.class");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -100,11 +105,11 @@ final public class AnnotationType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, values);
+        return hash(type, values);
     }
 
     @Override
     public String toString() {
-        return type + values;
+        return String.format("AnnotationType{type=%s, values=%s}", type, values);
     }
 }

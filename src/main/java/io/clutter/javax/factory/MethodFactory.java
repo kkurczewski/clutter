@@ -64,7 +64,7 @@ final public class MethodFactory {
         if (PRIVATE.test(field)) {
             throw new IllegalArgumentException("VariableElement is private");
         }
-        return new Method(convention.method(valueOf(field.getSimpleName())), TypeFactory.of(field.asType()))
+        return new Method(convention.method(valueOf(field.getSimpleName())), TypeFactory.from(field.asType()))
                 .setBody("return this." + field.getSimpleName() + ";");
     }
 
@@ -92,7 +92,7 @@ final public class MethodFactory {
             throw new IllegalArgumentException("VariableElement is private");
         }
         String variable = valueOf(field.getSimpleName());
-        return new Method(convention.method(variable), Param.of(variable, TypeFactory.of(field.asType())))
+        return new Method(convention.method(variable), Param.of(variable, TypeFactory.from(field.asType())))
                 .setBody("this." + variable + " = " + variable + ";");
     }
 
@@ -106,14 +106,14 @@ final public class MethodFactory {
 
         Param[] params = method.getParameters()
                 .stream()
-                .map(javaxParam -> Param.of(valueOf(javaxParam.getSimpleName()), TypeFactory.of(javaxParam.asType())))
+                .map(javaxParam -> Param.of(valueOf(javaxParam.getSimpleName()), TypeFactory.from(javaxParam.asType())))
                 .toArray(Param[]::new);
         AnnotationType[] annotations = method.getAnnotationMirrors()
                 .stream()
                 .map(AnnotationTypeFactory::from)
                 .toArray(AnnotationType[]::new);
 
-        return new Method(valueOf(method.getSimpleName()), TypeFactory.of(method.getReturnType()), params)
+        return new Method(valueOf(method.getSimpleName()), TypeFactory.from(method.getReturnType()), params)
                 .setVisibility(visibility(method.getModifiers()))
                 .setAnnotations(annotations)
                 .setBody(body);

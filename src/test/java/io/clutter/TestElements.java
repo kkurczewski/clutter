@@ -56,6 +56,8 @@ public class TestElements {
 
         TestEnum enumValue();
 
+        TestElements.FooClass annotationValue();
+
         int[] intArray();
 
         String[] stringArray();
@@ -63,5 +65,7 @@ public class TestElements {
         Class<?>[] classArray();
 
         TestEnum[] enumArray();
+
+        TestElements.FooClass[] annotationArray();
     }
 }

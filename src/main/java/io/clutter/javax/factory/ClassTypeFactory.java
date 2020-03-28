@@ -49,7 +49,7 @@ final public class ClassTypeFactory {
     }
 
     private static BoxedType getBoxedType(TypeElement typeElement) {
-        Type type = TypeFactory.of(typeElement.asType());
+        Type type = TypeFactory.from(typeElement.asType());
         if (type instanceof PrimitiveType) {
             throw new IllegalArgumentException("Type element is primitive");
         }

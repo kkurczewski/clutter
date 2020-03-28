@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  * Dynamic type allows to use classes not available at compile time (e.g. generated) at expense of runtime safety
  */
+@Deprecated
 final public class DynamicType extends BoxedType {
 
     private final String name;

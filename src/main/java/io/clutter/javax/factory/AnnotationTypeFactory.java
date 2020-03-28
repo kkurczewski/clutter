@@ -1,25 +1,24 @@
 package io.clutter.javax.factory;
 
+import io.clutter.javax.factory.visitors.AnnotationValueVisitor;
 import io.clutter.model.annotation.AnnotationType;
-import io.clutter.model.annotation.param.AnnotationParam;
 
 import javax.lang.model.element.AnnotationMirror;
-
-import static java.lang.String.valueOf;
+import java.lang.annotation.Annotation;
+import java.util.LinkedHashMap;
 
 final public class AnnotationTypeFactory {
 
+    private static final AnnotationValueVisitor ANNOTATION_VALUE_VISITOR = new AnnotationValueVisitor();
+
+    @SuppressWarnings("unchecked")
     public static AnnotationType from(AnnotationMirror annotation) {
-        return AnnotationType.raw(
-                valueOf(annotation.getAnnotationType()),
-                annotation
-                        .getElementValues()
-                        .entrySet()
-                        .stream()
-                        .map(entry -> AnnotationParam.ofRaw(
-                                valueOf(entry.getKey().getSimpleName()),
-                                entry.getValue().getValue())
-                        ).toArray(AnnotationParam[]::new)
-        );
+        var clazz = BoxedTypeFactory.from(annotation.getAnnotationType()).getType();
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+        annotation.getElementValues().forEach((key, value) -> params.put(
+                key.getSimpleName().toString(),
+                value.accept(ANNOTATION_VALUE_VISITOR, TypeFactory.from(key.getReturnType()).getType())
+        ));
+        return new AnnotationType((Class<? extends Annotation>) clazz, params);
     }
 }

@@ -1,0 +1,28 @@
+package io.clutter.javax.factory.visitors;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.SimpleElementVisitor7;
+
+final public class NestedClassVisitor extends SimpleElementVisitor7<String, Boolean> {
+
+    @Override
+    public String visitPackage(PackageElement e, Boolean addPostfix) {
+        return e.getQualifiedName().toString() + ".";
+    }
+
+    @Override
+    public String visitType(TypeElement e, Boolean addPostfix) {
+        String prefix = e.getEnclosingElement() != null
+                ? e.getEnclosingElement().accept(this, true)
+                : "";
+        String postfix = addPostfix ? "$" : "";
+        return prefix + e.getSimpleName().toString() + postfix;
+    }
+
+    @Override
+    protected String defaultAction(Element e, Boolean addPostfix) {
+        throw new UnsupportedOperationException(e.getKind().toString());
+    }
+}

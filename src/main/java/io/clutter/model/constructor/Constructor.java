@@ -39,7 +39,7 @@ final public class Constructor {
 
     @SafeVarargs
     final public Constructor setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
     public Constructor setBody(String... body) {
