@@ -17,7 +17,7 @@ final public class FieldFactory {
                 .setAnnotations(field
                         .getAnnotationMirrors()
                         .stream()
-                        .map(AnnotationTypeFactory::from)
+                        .map(AnnotationFactory::from)
                         .toArray(AnnotationType[]::new));
     }
 

@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static io.clutter.model.constructor.modifiers.ConstructorVisibility.PUBLIC;
-import static java.lang.String.*;
 
 final public class Constructor {
 
@@ -54,7 +53,7 @@ final public class Constructor {
         return this;
     }
 
-    public Constructor setWildcardTypes(WildcardType wildcardTypes) {
+    public Constructor setGenericParameters(WildcardType wildcardTypes) {
         this.wildcardTypes.clear();
         Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;

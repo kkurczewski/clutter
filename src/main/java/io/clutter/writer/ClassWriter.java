@@ -51,7 +51,7 @@ final public class ClassWriter {
                 classType.getVisibility(),
                 join(classType.getTraits()),
                 className,
-                generics(classType.getWildcardTypes()),
+                generics(classType.getGenericParameters()),
                 classType.getParentClass()
                         .map(this::importType)
                         .map(" extends "::concat)

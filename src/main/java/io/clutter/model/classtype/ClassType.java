@@ -34,13 +34,13 @@ final public class ClassType {
         this.visibility = ClassVisibility.PUBLIC;
     }
 
-    public ClassType setParentClass(BoxedType parentClass) {
+    public ClassType setSuperclass(BoxedType parentClass) {
         this.parentClass = parentClass;
         return this;
     }
 
-    public ClassType setParentClass(Class<?> parentClass) {
-        return setParentClass(BoxedType.of(parentClass));
+    public ClassType setSuperclass(Class<?> parentClass) {
+        return setSuperclass(BoxedType.of(parentClass));
     }
 
     public ClassType setInterfaces(BoxedType... interfaces) {
@@ -92,7 +92,7 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setWildcardTypes(WildcardType... wildcardTypes) {
+    public ClassType setGenericParameters(WildcardType... wildcardTypes) {
         this.wildcardTypes.clear();
         Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;
@@ -134,7 +134,7 @@ final public class ClassType {
         return methods;
     }
 
-    public Set<WildcardType> getWildcardTypes() {
+    public Set<WildcardType> getGenericParameters() {
         return wildcardTypes;
     }
 

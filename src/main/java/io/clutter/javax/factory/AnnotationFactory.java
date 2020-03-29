@@ -7,7 +7,7 @@ import javax.lang.model.element.AnnotationMirror;
 import java.lang.annotation.Annotation;
 import java.util.LinkedHashMap;
 
-final public class AnnotationTypeFactory {
+final public class AnnotationFactory {
 
     private static final AnnotationValueVisitor ANNOTATION_VALUE_VISITOR = new AnnotationValueVisitor();
 

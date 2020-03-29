@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.clutter.javax.extractor.Filters.*;
-import static io.clutter.javax.extractor.Filters.FIELD;
-import static io.clutter.javax.extractor.Filters.METHOD;
 
 /**
  * Provides simplified API to extract {@link Element} types from {@link TypeElement}
@@ -43,7 +41,7 @@ final public class TypeExtractor {
     }
 
     @SafeVarargs
-    final public List<ExecutableElement> extractConstructor(Predicate<ExecutableElement>... fieldFilters) {
+    final public List<ExecutableElement> extractConstructors(Predicate<ExecutableElement>... fieldFilters) {
         Predicate<ExecutableElement> composedFilter = composeFilters(fieldFilters);
         return extractElements()
                 .stream()

@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class AnnotationTypeFactoryTest {
+class AnnotationFactoryTest {
 
     private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, Aggregate.class));
     private Compiler compiler;
@@ -145,6 +145,6 @@ class AnnotationTypeFactoryTest {
                 .flatMap(Collection::stream)
                 .findFirst()
                 // extract annotation type
-                .map(AnnotationTypeFactory::from);
+                .map(AnnotationFactory::from);
     }
 }

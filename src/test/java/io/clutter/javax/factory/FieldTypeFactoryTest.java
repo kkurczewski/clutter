@@ -152,7 +152,7 @@ class FieldTypeFactoryTest {
                 .stream()
                 // get constructors
                 .map(TypeExtractor::new)
-                .map(TypeExtractor::extractConstructor)
+                .map(TypeExtractor::extractConstructors)
                 .flatMap(Collection::stream)
                 // get constructors parameters
                 .map(ExecutableElement::getParameters)

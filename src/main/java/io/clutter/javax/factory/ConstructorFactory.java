@@ -16,6 +16,11 @@ import static java.util.function.Predicate.not;
 
 final public class ConstructorFactory {
 
+    public static Constructor from(ExecutableElement executableElement) {
+        // TODO
+        return null;
+    }
+
     public static Constructor from(VariableElement... fields) {
         stream(fields)
                 .filter(not(FIELD))

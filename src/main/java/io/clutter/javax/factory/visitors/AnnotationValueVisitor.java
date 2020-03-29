@@ -1,6 +1,6 @@
 package io.clutter.javax.factory.visitors;
 
-import io.clutter.javax.factory.AnnotationTypeFactory;
+import io.clutter.javax.factory.AnnotationFactory;
 import io.clutter.javax.factory.BoxedTypeFactory;
 import io.clutter.javax.factory.TypeFactory;
 
@@ -27,7 +27,7 @@ public class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<Object
 
     @Override
     public Object visitAnnotation(AnnotationMirror a, Class<?> nothing) {
-        return AnnotationTypeFactory.from(a).reflect();
+        return AnnotationFactory.from(a).reflect();
     }
 
     @Override

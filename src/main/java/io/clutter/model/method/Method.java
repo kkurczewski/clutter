@@ -93,7 +93,7 @@ final public class Method {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
     }
 
-    public Method setWildcardTypes(WildcardType wildcardTypes) {
+    public Method setGenericParameters(WildcardType wildcardTypes) {
         this.wildcardTypes.clear();
         Collections.addAll(this.wildcardTypes, wildcardTypes);
         return this;

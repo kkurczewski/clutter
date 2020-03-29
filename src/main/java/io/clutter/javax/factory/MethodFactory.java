@@ -30,7 +30,7 @@ final public class MethodFactory {
                 .toArray(Param[]::new);
         AnnotationType[] annotations = method.getAnnotationMirrors()
                 .stream()
-                .map(AnnotationTypeFactory::from)
+                .map(AnnotationFactory::from)
                 .toArray(AnnotationType[]::new);
 
         return new Method(valueOf(method.getSimpleName()), TypeFactory.from(method.getReturnType()), params)

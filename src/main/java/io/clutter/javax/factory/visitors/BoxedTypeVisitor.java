@@ -2,7 +2,6 @@ package io.clutter.javax.factory.visitors;
 
 import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.ContainerType;
-import io.clutter.model.type.WildcardType;
 
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -12,9 +11,9 @@ import javax.lang.model.util.SimpleTypeVisitor7;
 import java.lang.reflect.Array;
 import java.util.List;
 
-import static io.clutter.model.type.WildcardType.ANY;
-
 final public class BoxedTypeVisitor extends SimpleTypeVisitor7<BoxedType, Void> {
+
+    private final WildcardTypeVisitor wildcardTypeVisitor = new WildcardTypeVisitor();
 
     @Override
     public BoxedType visitDeclared(DeclaredType d, Void nothing) {
@@ -46,18 +45,12 @@ final public class BoxedTypeVisitor extends SimpleTypeVisitor7<BoxedType, Void> 
 
     @Override
     public BoxedType visitWildcard(javax.lang.model.type.WildcardType w, Void nothing) {
-        if (w.getExtendsBound() != null) {
-            BoxedType boundary = w.getExtendsBound().accept(this, null);
-            return ANY.extend(boundary);
-        } else if (w.getSuperBound() != null){
-            BoxedType boundary = w.getSuperBound().accept(this, null);
-            return ANY.subclass(boundary);
-        } else return ANY;
+        return wildcardTypeVisitor.visitWildcard(w, nothing);
     }
 
     @Override
     public BoxedType visitTypeVariable(TypeVariable t, Void nothing) {
-        return WildcardType.alias(t.asElement().getSimpleName().toString());
+        return wildcardTypeVisitor.visitTypeVariable(t, nothing);
     }
 
     @Override

@@ -77,7 +77,7 @@ final public class JavaFileGenerator {
                 classType.getVisibility(),
                 join(classType.getTraits()),
                 className,
-                typeToString(classType.getWildcardTypes()),
+                typeToString(classType.getGenericParameters()),
                 extendedClass(classType.getParentClass()),
                 implementedInterfaces(classType.getInterfaces()))
         );
@@ -266,7 +266,7 @@ final public class JavaFileGenerator {
     }
 
     private Set<String> imports(ClassType classType) {
-        List<Type> types = new LinkedList<>(classType.getWildcardTypes());
+        List<Type> types = new LinkedList<>(classType.getGenericParameters());
         classType.getConstructors()
                 .stream()
                 .map(Constructor::getParams)
