@@ -11,6 +11,7 @@ public class Type {
     }
 
     public static Type of(Class<?> type) {
+        if (type.isPrimitive()) return PrimitiveType.of(type);
         return new Type(type);
     }
 

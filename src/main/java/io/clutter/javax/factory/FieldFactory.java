@@ -27,9 +27,6 @@ final public class FieldFactory {
      * @throws IllegalArgumentException when given {@link ExecutableElement} is not getter
      */
     public static Field fromGetters(ExecutableElement method, Function<String, String> namingConvention) {
-        if (!METHOD.test(method)) {
-            throw new IllegalArgumentException("ExecutableElement is not method");
-        }
         if (!ACCESSOR.test(method)) {
             throw new IllegalArgumentException("ExecutableElement is not getter");
         }

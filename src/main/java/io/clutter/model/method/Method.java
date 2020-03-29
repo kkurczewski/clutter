@@ -1,15 +1,18 @@
 package io.clutter.model.method;
 
-import io.clutter.model.method.modifiers.MethodTrait;
-import io.clutter.model.type.Type;
-import io.clutter.model.type.WildcardType;
 import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.method.modifiers.MethodVisibility;
 import io.clutter.model.param.Param;
+import io.clutter.model.type.Type;
+import io.clutter.model.type.WildcardType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 final public class Method {
 
@@ -45,6 +48,15 @@ final public class Method {
      */
     public Method(String name, Param... params) {
         this(name, Type.of(void.class), params);
+    }
+
+    public static Method getter(Type type, String fieldName, Function<String, String> getterNaming) {
+        return new Method(getterNaming.apply(fieldName), type).setBody(format("return this.%s;", fieldName));
+    }
+
+    public static Method setter(Type type, String fieldName, Function<String, String> setterNaming) {
+        return new Method(setterNaming.apply(fieldName), Param.of(fieldName, type))
+                .setBody(format("this.%s = %s;", fieldName, fieldName));
     }
 
     public Method setVisibility(MethodVisibility visibility) {
@@ -135,7 +147,14 @@ final public class Method {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Method method = (Method) o;
-        return name.equals(method.name) && params.equals(method.params);
+        return name.equals(method.name) &&
+                params.equals(method.params) &&
+                returnType.equals(method.returnType) &&
+                annotations.equals(method.annotations) &&
+                wildcardTypes.equals(method.wildcardTypes) &&
+                traits.equals(method.traits) &&
+                body.equals(method.body) &&
+                visibility == method.visibility;
     }
 
     @Override
@@ -145,6 +164,15 @@ final public class Method {
 
     @Override
     public String toString() {
-        return name + params;
+        return "Method{" +
+                "name='" + name + '\'' +
+                ", params=" + params +
+                ", returnType=" + returnType +
+                ", annotations=" + annotations +
+                ", wildcardTypes=" + wildcardTypes +
+                ", traits=" + traits +
+                ", body=" + body +
+                ", visibility=" + visibility +
+                '}';
     }
 }

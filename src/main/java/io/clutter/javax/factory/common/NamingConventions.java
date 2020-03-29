@@ -2,7 +2,7 @@ package io.clutter.javax.factory.common;
 
 import java.util.function.Function;
 
-import static io.clutter.javax.factory.common.StringUtils.toCamelCase;
+import static io.clutter.javax.factory.common.StringUtils.toPascalCase;
 import static java.lang.String.format;
 
 final public class NamingConventions {
@@ -18,7 +18,7 @@ final public class NamingConventions {
     /**
      * Convert first letter to upper case and add `get` prefix
      */
-    public static Function<String, String> ADD_GET_PREFIX = name -> addPrefix(GET).apply(toCamelCase(name));
+    public static Function<String, String> ADD_GET_PREFIX = name -> addPrefix(GET).apply(toPascalCase(name));
 
     /**
      * Drop `set` prefix and convert first letter to lower case
@@ -28,7 +28,7 @@ final public class NamingConventions {
     /**
      * Convert first letter to upper case and add `set` prefix
      */
-    public static Function<String, String> ADD_SET_PREFIX = name -> addPrefix(SET).apply(toCamelCase(name));
+    public static Function<String, String> ADD_SET_PREFIX = name -> addPrefix(SET).apply(toPascalCase(name));
 
     public static Function<String, String> dropPrefix(String prefix) {
         return name -> {
