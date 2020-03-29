@@ -106,6 +106,12 @@ final public class Constructor {
 
     @Override
     public String toString() {
-        return format("Constructor{%s}", params);
+        return "Constructor{" +
+                "params=" + params +
+                ", annotations=" + annotations +
+                ", body=" + body +
+                ", wildcardTypes=" + wildcardTypes +
+                ", visibility=" + visibility +
+                '}';
     }
 }
