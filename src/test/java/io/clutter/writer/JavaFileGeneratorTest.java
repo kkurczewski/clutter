@@ -5,7 +5,6 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
 import io.clutter.model.annotation.AnnotationType;
-import io.clutter.model.annotation.param.AnnotationParam;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.classtype.InterfaceType;
 import io.clutter.model.classtype.modifiers.ClassTrait;
@@ -85,30 +84,6 @@ public class JavaFileGeneratorTest {
     }
 
     @Test
-    public void generateAnnotationWithParams() {
-        JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
-        JavaFile outputFileBlueprint = new JavaFileGenerator().generate(
-                new ClassType("test.GeneratedClass").setAnnotations(AnnotationType.of(Aggregate.class,
-                        AnnotationParam.ofInt("intValue", 123),
-                        AnnotationParam.ofString("stringValue", "abc"),
-                        AnnotationParam.ofClass("classValue", Object.class),
-                        AnnotationParam.ofEnum("enumValue", TestEnum.FOO),
-                        AnnotationParam.ofIntArray("intArray", 456, 789),
-                        AnnotationParam.ofStringArray("stringArray", "def", "ghi"),
-                        AnnotationParam.ofClassArray("classArray", Object.class, Integer.class),
-                        AnnotationParam.ofEnumArray("enumArray", TestEnum.BAR, TestEnum.FOO)
-                ))
-        );
-
-        Compiler compiler = javac().withProcessors(Set.of(generatingProcessor(outputFileBlueprint)));
-
-        Compilation compilation = compiler.compile(inputFile);
-        assertThat(compilation).succeeded();
-        assertThat(compilation).generatedSourceFile("test.GeneratedClass")
-                .hasSourceEquivalentTo(JavaFileObjects.forResource("AnnotationWithParams.java"));
-    }
-
-    @Test
     public void generateGenericClass() {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = new ClassWriter(new ClassType("test.GeneratedClass").setGenericParameters(T, U, V, R.extend(Number.class))).generate();
@@ -177,14 +152,14 @@ public class JavaFileGeneratorTest {
         InstancePrinter instancePrinter = new InstancePrinter(new TypePrinter());
         JavaFile outputFileBlueprint = new ClassWriter(
                 new ClassType("test.GeneratedClass").setFields(
-                        new Field("PI", double.class).setValue(3.14159)
+                        new Field("PI", double.class).setValue("3.14159")
                                 .setVisibility(FieldVisibility.PUBLIC)
                                 .setTraits(FieldTrait.STATIC, FieldTrait.FINAL),
-                        new Field("primitive", int.class).setValue(123),
+                        new Field("primitive", int.class).setValue("123"),
                         new Field("literal", String.class).setValue("hello"),
                         new Field("set", setOf(INT)),
-                        new Field("list", listOf(INT)).setRawValue(instancePrinter.toString(ContainerType.genericOf(ArrayList.class, INT.boxed()))),
-                        new Field("map", mapOf(INT.boxed(), STRING)).setRawValue(instancePrinter.toString(ContainerType.genericOf(HashMap.class, INT.boxed(), STRING))),
+                        new Field("list", listOf(INT)).setValue(instancePrinter.toString(ContainerType.genericOf(ArrayList.class, INT.boxed()))),
+                        new Field("map", mapOf(INT.boxed(), STRING)).setValue(instancePrinter.toString(ContainerType.genericOf(HashMap.class, INT.boxed(), STRING))),
                         new Field("nested", mapOf(INT.boxed(), mapOf(STRING, STRING))),
                         new Field("generic", ContainerType.of(Consumer.class, ANY.extend(Number.class)))
                 ),
@@ -203,18 +178,18 @@ public class JavaFileGeneratorTest {
     public void generateMethods() {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = new ClassWriter(new ClassType("test.GeneratedClass")
-                        .setGenericParameters(T)
-                        .setInterfaces(Closeable.class)
-                        .setMethods(
-                                new Method("main", Param.of("args", Type.of(String[].class)))
-                                        .setTraits(MethodTrait.STATIC),
-                                new Method("getValue", T).setBody("return null;"),
-                                new Method("setValue", Param.of("first", T), Param.of("second", U))
-                                        .setVisibility(PRIVATE)
-                                        .setGenericParameters(U),
-                                new Method("close").setAnnotations(Override.class)
-                        )
-                ).generate();
+                .setGenericParameters(T)
+                .setInterfaces(Closeable.class)
+                .setMethods(
+                        new Method("main", new Param("args", Type.of(String[].class)))
+                                .setTraits(MethodTrait.STATIC),
+                        new Method("getValue", T).setBody("return null;"),
+                        new Method("setValue", new Param("first", T), new Param("second", U))
+                                .setVisibility(PRIVATE)
+                                .setGenericParameters(U),
+                        new Method("close").setAnnotations(Override.class)
+                )
+        ).generate();
 
         Compiler compiler = javac().withProcessors(Set.of(generatingProcessor(outputFileBlueprint)));
 
@@ -233,11 +208,11 @@ public class JavaFileGeneratorTest {
                         .setGenericParameters(T)
                         .setConstructors(
                                 new Constructor(
-                                        Param.of("A", int.class),
-                                        Param.of("B", long.class),
-                                        Param.of("C", long.class))
+                                        new Param("A", int.class),
+                                        new Param("B", long.class),
+                                        new Param("C", long.class))
                                         .setVisibility(ConstructorVisibility.PRIVATE),
-                                new Constructor(Param.of("genericT", T), Param.of("genericU", U))
+                                new Constructor(new Param("genericT", T), new Param("genericU", U))
                                         .setGenericParameters(U)
                                         .setAnnotations(BarElement.class)
                         )
@@ -256,11 +231,11 @@ public class JavaFileGeneratorTest {
         JavaFileObject inputFile = javaFile(new ClassType("test.InputClass").setAnnotations(BarClass.class));
         JavaFile outputFileBlueprint = new JavaFileGenerator()
                 .generate(new InterfaceType("test.GeneratedInterface")
-                        .setWildcardTypes(T)
+                        .setGenericParameters(T)
                         .setInterfaces(ContainerType.of(Comparable.class, STRING))
                         .setMethods(
                                 new Method("foo"),
-                                new Method("bar", Param.of("i", int.class))
+                                new Method("bar", new Param("i", int.class))
                         )
                 );
 

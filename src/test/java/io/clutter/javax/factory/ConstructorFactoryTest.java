@@ -15,7 +15,6 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.util.Collection;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
 import static com.google.testing.compile.JavaFileObjects.forSourceLines;
-import static io.clutter.javax.factory.common.NamingConventions.DROP_GET_PREFIX;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,13 +44,13 @@ class ConstructorFactoryTest {
     }
 
     @Test
-    void buildConstructorFromField() {
+    void buildConstructorFromExecutableElements() {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
                 "@io.clutter.TestElements.BarClass",
                 "public class TestClass {",
-                "   private int foo;",
+                "   public TestClass(int foo) {}",
                 "}"
         );
 
@@ -61,98 +59,20 @@ class ConstructorFactoryTest {
 
         verify(simpleProcessor).process(captor.capture(), any());
 
-        VariableElement extractedField = extractFields(captor.getValue()).orElseThrow();
-        Constructor created = ConstructorFactory.from(extractedField);
-        Constructor expected = new Constructor(Param.of("foo", int.class));
+        ExecutableElement constructor = extractConstructor(captor.getValue()).orElseThrow();
+        Constructor created = ConstructorFactory.from(constructor);
+        Constructor expected = new Constructor(new Param("foo", int.class));
         assertThat(created).isEqualTo(expected);
     }
 
-    @Test
-    void buildConstructorFromGetter() {
-        JavaFileObject inputFile = forSourceLines(
-                "com.test.TestClass",
-                "package com.test;",
-                "@io.clutter.TestElements.BarClass",
-                "public class TestClass {",
-                "   public int foo() { return 0; }",
-                "}"
-        );
-
-        var compilation = compiler.compile(inputFile);
-        CompilationSubject.assertThat(compilation).succeeded();
-
-        verify(simpleProcessor).process(captor.capture(), any());
-
-        ExecutableElement getter = extractMethods(captor.getValue()).orElseThrow();
-        Constructor created = ConstructorFactory.fromGetters(getter);
-        Constructor expected = new Constructor(Param.of("foo", int.class));
-        assertThat(created).isEqualTo(expected);
-    }
-
-    @Test
-    void buildFieldForGetterUsingGivenNamingConvention() {
-        JavaFileObject inputFile = forSourceLines(
-                "com.test.TestClass",
-                "package com.test;",
-                "@io.clutter.TestElements.BarClass",
-                "public class TestClass {",
-                "   public int getFoo() { return 0; }",
-                "}"
-        );
-
-        var compilation = compiler.compile(inputFile);
-        CompilationSubject.assertThat(compilation).succeeded();
-
-        verify(simpleProcessor).process(captor.capture(), any());
-
-        ExecutableElement getter = extractMethods(captor.getValue()).orElseThrow();
-        Constructor created = ConstructorFactory.fromGetters(DROP_GET_PREFIX, getter);
-        Constructor expected = new Constructor(Param.of("foo", int.class));
-        assertThat(created).isEqualTo(expected);
-    }
-
-    @Test
-    void throwWhenPassedMethodIsNotGetter() {
-        JavaFileObject inputFile = forSourceLines(
-                "com.test.TestClass",
-                "package com.test;",
-                "@io.clutter.TestElements.BarClass",
-                "public class TestClass {",
-                "   public void setFoo(int i) {}",
-                "}"
-        );
-
-        var compilation = compiler.compile(inputFile);
-        CompilationSubject.assertThat(compilation).succeeded();
-
-        verify(simpleProcessor).process(captor.capture(), any());
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            ExecutableElement setter = extractMethods(captor.getValue()).orElseThrow();
-            ConstructorFactory.fromGetters(setter);
-        });
-        assertThat(ex).hasMessage("ExecutableElement is not getter");
-    }
-
-    private Optional<ExecutableElement> extractMethods(ProcessorAggregate aggregate) {
+    private Optional<ExecutableElement> extractConstructor(ProcessorAggregate aggregate) {
         return aggregate
                 // get annotated elements
                 .get(TestElements.BarClass.class)
                 .stream()
                 // get methods
                 .map(TypeExtractor::new)
-                .map(TypeExtractor::extractMethods)
-                .flatMap(Collection::stream)
-                .findFirst();
-    }
-
-    private Optional<? extends VariableElement> extractFields(ProcessorAggregate aggregate) {
-        return aggregate
-                // get annotated elements
-                .get(TestElements.BarClass.class)
-                .stream()
-                // get fields
-                .map(TypeExtractor::new)
-                .map(TypeExtractor::extractFields)
+                .map(TypeExtractor::extractConstructors)
                 .flatMap(Collection::stream)
                 .findFirst();
     }

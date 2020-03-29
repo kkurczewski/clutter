@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
+import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.util.Set;
@@ -72,11 +73,11 @@ class ClassFactoryTest {
                 .setAnnotations(BarClass.class)
                 .setGenericParameters(T)
                 .setFields(new Field("foo", INT))
-                .setConstructors(new Constructor(Param.of("foo", INT))
+                .setConstructors(new Constructor(new Param("foo", INT))
                         .setGenericParameters(U))
                 .setMethods(new Method("getFoo", INT)
-                        .setBody("return 0;")
                         .setGenericParameters(V)
+                        .setAnnotations(Nonnull.class)
                 );
         assertThat(ClassFactory.from(typeElement)).isEqualTo(expected);
     }

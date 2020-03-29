@@ -42,7 +42,7 @@ class AnnotationFactoryTest {
     }
 
     @Test
-    public void extractAnnotationFromFile() {
+    public void buildClassFromAnnotationMirror() {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
@@ -94,7 +94,7 @@ class AnnotationFactoryTest {
     }
 
     @Test
-    public void extractAnnotationFromFileWhenEmptyArrays() {
+    public void buildClassFromAnnotationMirror_WithEmptyArrays() {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",

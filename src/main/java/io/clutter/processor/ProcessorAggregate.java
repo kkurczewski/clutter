@@ -20,6 +20,7 @@ final public class ProcessorAggregate {
 
     private final Map<String, Set<TypeElement>> annotatedElements;
 
+    // TODO return classes instead of type elements
     public ProcessorAggregate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         annotatedElements = annotations
                 .stream()

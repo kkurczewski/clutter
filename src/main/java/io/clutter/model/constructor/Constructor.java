@@ -17,9 +17,12 @@ final public class Constructor {
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
     private ConstructorVisibility visibility;
 
+    /**
+     * Creates constructor with default public visibility
+     */
     public Constructor(Param... params) {
         Collections.addAll(this.params, params);
         this.visibility = PUBLIC;
@@ -38,7 +41,9 @@ final public class Constructor {
 
     @SafeVarargs
     final public Constructor setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations)
+                .map(AnnotationType::new)
+                .toArray(AnnotationType[]::new));
     }
 
     public Constructor setBody(String... body) {
@@ -47,15 +52,15 @@ final public class Constructor {
         return this;
     }
 
-    public Constructor setBody(List<String> body) {
+    public Constructor setBody(Collection<String> body) {
         this.body.clear();
         this.body.addAll(body);
         return this;
     }
 
-    public Constructor setGenericParameters(WildcardType wildcardTypes) {
-        this.wildcardTypes.clear();
-        Collections.addAll(this.wildcardTypes, wildcardTypes);
+    public Constructor setGenericParameters(WildcardType... genericParameters) {
+        this.genericParameters.clear();
+        Collections.addAll(this.genericParameters, genericParameters);
         return this;
     }
 
@@ -71,23 +76,24 @@ final public class Constructor {
         return body;
     }
 
-    public Set<WildcardType> getWildcardTypes() {
-        return wildcardTypes;
+    public Set<WildcardType> getGenericParameters() {
+        return genericParameters;
     }
 
     public List<AnnotationType> getAnnotations() {
         return annotations;
     }
 
-    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
         return annotations.stream()
                 .filter(annotationType -> annotationType.isInstanceOf(annotation))
-                .findFirst();
+                .findFirst()
+                .map(AnnotationType::reflect);
     }
 
     @SafeVarargs
     final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+        return getAnnotations().stream().anyMatch(it -> it.isInstanceOf(annotation, more));
     }
 
     @Override
@@ -95,7 +101,11 @@ final public class Constructor {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Constructor that = (Constructor) o;
-        return params.equals(that.params);
+        return params.equals(that.params) &&
+                annotations.equals(that.annotations) &&
+                body.equals(that.body) &&
+                genericParameters.equals(that.genericParameters) &&
+                visibility == that.visibility;
     }
 
     @Override
@@ -109,7 +119,7 @@ final public class Constructor {
                 "params=" + params +
                 ", annotations=" + annotations +
                 ", body=" + body +
-                ", wildcardTypes=" + wildcardTypes +
+                ", genericParameters=" + genericParameters +
                 ", visibility=" + visibility +
                 '}';
     }

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class PrimitiveUtils {
+final public class PrimitiveUtils {
 
     private final static Map<Class<?>, Class<?>> primitiveTypesMappings = Map.of(
             Short.class, short.class,

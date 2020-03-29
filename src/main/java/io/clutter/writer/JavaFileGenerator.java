@@ -78,7 +78,7 @@ final public class JavaFileGenerator {
                 join(classType.getTraits()),
                 className,
                 typeToString(classType.getGenericParameters()),
-                extendedClass(classType.getParentClass()),
+                extendedClass(classType.getSuperclass()),
                 implementedInterfaces(classType.getInterfaces()))
         );
         lines.addAll(tabbed(fields(classType.getFields())));
@@ -109,7 +109,7 @@ final public class JavaFileGenerator {
         lines.addAll(annotations(interfaceType.getAnnotations()));
         lines.add(trimFormat("public interface %s%s %s {",
                 className,
-                typeToString(interfaceType.getWildcardTypes()),
+                typeToString(interfaceType.getGenericParameters()),
                 extendedInterfaces(interfaceType.getInterfaces()))
                 .strip()
         );
@@ -144,7 +144,7 @@ final public class JavaFileGenerator {
             lines.addAll(annotations(constructor.getAnnotations()));
             lines.add(trimFormat("%s %s %s(%s) {",
                     constructor.getVisibility(),
-                    typeToString(constructor.getWildcardTypes()),
+                    typeToString(constructor.getGenericParameters()),
                     className,
                     params(constructor.getParams()))
             );
@@ -178,7 +178,7 @@ final public class JavaFileGenerator {
             lines.add(trimFormat("%s %s %s %s %s(%s);",
                     method.getVisibility(),
                     join(method.getTraits()),
-                    typeToString(method.getWildcardTypes()),
+                    typeToString(method.getGenericParameters()),
                     typeToString(method.getReturnType()),
                     method.getName(),
                     params(method.getParams()))
@@ -200,7 +200,7 @@ final public class JavaFileGenerator {
             lines.addAll(annotations(method.getAnnotations()));
             lines.add(trimFormat("%s %s %s %s(%s);",
                     join(method.getTraits()),
-                    typeToString(method.getWildcardTypes()),
+                    typeToString(method.getGenericParameters()),
                     method.getReturnType(),
                     method.getName(),
                     params(method.getParams()))
@@ -231,7 +231,7 @@ final public class JavaFileGenerator {
     }
 
     private Set<String> imports(InterfaceType interfaceType) {
-        List<Type> types = new LinkedList<>(interfaceType.getWildcardTypes());
+        List<Type> types = new LinkedList<>(interfaceType.getGenericParameters());
         interfaceType
                 .getMethods()
                 .stream()
@@ -247,7 +247,7 @@ final public class JavaFileGenerator {
         interfaceType
                 .getMethods()
                 .stream()
-                .map(Method::getWildcardTypes)
+                .map(Method::getGenericParameters)
                 .flatMap(Collection::stream)
                 .forEach(types::add);
 
@@ -275,7 +275,7 @@ final public class JavaFileGenerator {
                 .forEach(types::add);
         classType.getConstructors()
                 .stream()
-                .map(Constructor::getWildcardTypes)
+                .map(Constructor::getGenericParameters)
                 .flatMap(Collection::stream)
                 .forEach(types::add);
         classType
@@ -298,7 +298,7 @@ final public class JavaFileGenerator {
         classType
                 .getMethods()
                 .stream()
-                .map(Method::getWildcardTypes)
+                .map(Method::getGenericParameters)
                 .flatMap(Collection::stream)
                 .forEach(types::add);
 

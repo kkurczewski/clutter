@@ -1,7 +1,8 @@
 package io.clutter.javax.factory;
 
 import io.clutter.javax.extractor.TypeExtractor;
-import io.clutter.model.annotation.AnnotationType;
+import io.clutter.javax.factory.types.BoxedTypeFactory;
+import io.clutter.javax.factory.types.WildcardTypeFactory;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.classtype.modifiers.ClassTrait;
 import io.clutter.model.classtype.modifiers.ClassVisibility;
@@ -12,6 +13,7 @@ import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.WildcardType;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.util.Objects;
@@ -21,17 +23,22 @@ import static io.clutter.model.classtype.modifiers.ClassVisibility.*;
 
 final public class ClassFactory {
 
-    public static ClassType from(TypeElement typeElement) {
-        var className = typeElement.getQualifiedName().toString();
-        var modifiers = typeElement.getModifiers();
-        var extractor = new TypeExtractor(typeElement);
+    public static ClassType from(TypeElement classType) {
+        if (classType.getKind() != ElementKind.CLASS) {
+            throw new IllegalArgumentException(classType.getKind().name());
+        }
+
+        var className = classType.getQualifiedName().toString();
+        var modifiers = classType.getModifiers();
+        var extractor = new TypeExtractor(classType);
+        var type = BoxedTypeFactory.from(classType.getSuperclass());
         return new ClassType(className)
-                .setAnnotations(annotations(typeElement))
-                .setGenericParameters(generics(typeElement))
+                .setAnnotations(AnnotationFactory.from(classType))
+                .setGenericParameters(generics(classType))
                 .setVisibility(visibility(modifiers))
                 .setTraits(traits(modifiers))
-                .setInterfaces(interfaces(typeElement))
-                .setSuperclass(BoxedTypeFactory.from(typeElement.getSuperclass()))
+                .setInterfaces(interfaces(classType))
+                .setSuperclass(type.getType() != Object.class ? type : null)
                 .setFields(fields(extractor))
                 .setConstructors(constructors(extractor))
                 .setMethods(methods(extractor));
@@ -71,13 +78,6 @@ final public class ClassFactory {
                 .map(Element::asType)
                 .map(WildcardTypeFactory::from)
                 .toArray(WildcardType[]::new);
-    }
-
-    private static AnnotationType[] annotations(TypeElement typeElement) {
-        return typeElement.getAnnotationMirrors()
-                .stream()
-                .map(AnnotationFactory::from)
-                .toArray(AnnotationType[]::new);
     }
 
     private static ClassTrait[] traits(Set<Modifier> modifiers) {

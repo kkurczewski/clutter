@@ -4,6 +4,7 @@ import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements.BarClass;
 import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.model.type.BoxedType;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
@@ -153,7 +154,7 @@ public class BoxedTypeFactoryTest {
             int[].class,
             int[][].class,
     })
-    public void shouldThrowIfPrimitivePassed(Class<?> clazz) {
+    public void throwIfPrimitivePassed(Class<?> clazz) {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",

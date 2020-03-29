@@ -1,6 +1,6 @@
 package io.clutter.javax.factory.visitors;
 
-import io.clutter.javax.factory.BoxedTypeFactory;
+import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.WildcardType;
 

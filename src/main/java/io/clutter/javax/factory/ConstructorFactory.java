@@ -1,60 +1,43 @@
 package io.clutter.javax.factory;
 
+import io.clutter.javax.factory.types.WildcardTypeFactory;
 import io.clutter.model.constructor.Constructor;
-import io.clutter.model.param.Param;
+import io.clutter.model.constructor.modifiers.ConstructorVisibility;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import javax.lang.model.element.Modifier;
+import java.util.Objects;
+import java.util.Set;
 
-import static io.clutter.javax.extractor.Filters.ACCESSOR;
-import static io.clutter.javax.extractor.Filters.FIELD;
-import static java.lang.String.valueOf;
-import static java.util.Arrays.stream;
-import static java.util.function.Predicate.not;
+import static io.clutter.model.constructor.modifiers.ConstructorVisibility.*;
 
 final public class ConstructorFactory {
 
-    public static Constructor from(ExecutableElement executableElement) {
-        // TODO
-        return null;
+    public static Constructor from(ExecutableElement constructor) {
+        if (constructor.getKind() != ElementKind.CONSTRUCTOR) {
+            throw new IllegalArgumentException(constructor.getKind().name());
+        }
+
+        return new Constructor(ParamFactory.from(constructor))
+                .setAnnotations(AnnotationFactory.from(constructor))
+                .setBody()
+                .setGenericParameters(WildcardTypeFactory.from(constructor))
+                .setVisibility(visibility(constructor.getModifiers()));
     }
 
-    public static Constructor from(VariableElement... fields) {
-        stream(fields)
-                .filter(not(FIELD))
-                .findAny()
-                .ifPresent(nonField -> {
-                    throw new IllegalArgumentException("VariableElement is not field: " + nonField);
-                });
-
-        Param[] params = Stream.of(fields)
-                .map(field -> Param.of(
-                        valueOf(field.getSimpleName()),
-                        TypeFactory.from(field.asType())))
-                .toArray(Param[]::new);
-
-        return new Constructor(params);
-    }
-
-    public static Constructor fromGetters(Function<String, String> namingConvention, ExecutableElement... methods) {
-        stream(methods)
-                .filter(not(ACCESSOR))
-                .findAny()
-                .ifPresent(nonField -> {
-                    throw new IllegalArgumentException("ExecutableElement is not getter");
-                });
-
-        Param[] params = Stream.of(methods)
-                .map(getter -> Param.of(
-                        namingConvention.apply(valueOf(getter.getSimpleName())),
-                        TypeFactory.from(getter.getReturnType())))
-                .toArray(Param[]::new);
-        return new Constructor(params);
-    }
-
-    public static Constructor fromGetters(ExecutableElement... methods) {
-        return fromGetters(Function.identity(), methods);
+    private static ConstructorVisibility visibility(Set<Modifier> javaxModifiers) {
+        return javaxModifiers.stream().map(modifier -> {
+            switch (modifier) {
+                case PUBLIC:
+                    return PUBLIC;
+                case PROTECTED:
+                    return PROTECTED;
+                case PRIVATE:
+                    return PRIVATE;
+                default:
+                    return null;
+            }
+        }).filter(Objects::nonNull).findFirst().orElse(PACKAGE_PRIVATE);
     }
 }

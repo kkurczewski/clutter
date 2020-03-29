@@ -1,4 +1,4 @@
-package io.clutter.javax.factory;
+package io.clutter.javax.factory.types;
 
 import io.clutter.javax.factory.visitors.TypeVisitor;
 import io.clutter.model.type.Type;

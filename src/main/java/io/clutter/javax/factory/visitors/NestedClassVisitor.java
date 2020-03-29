@@ -17,6 +17,7 @@ final public class NestedClassVisitor extends SimpleElementVisitor7<String, Bool
         String prefix = e.getEnclosingElement() != null
                 ? e.getEnclosingElement().accept(this, true)
                 : "";
+        // class loader uses `$` instead of dot when loading nested classes, eg.: test.MyClass$Nested
         String postfix = addPostfix ? "$" : "";
         return prefix + e.getSimpleName().toString() + postfix;
     }

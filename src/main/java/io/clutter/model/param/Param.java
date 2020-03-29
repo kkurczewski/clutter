@@ -9,17 +9,13 @@ final public class Param {
     private final String name;
     private final Type value;
 
-    private Param(String name, Type value) {
+    public Param(String name, Type value) {
         this.name = name;
         this.value = value;
     }
 
-    public static Param of(String name, Type value) {
-        return new Param(name, value);
-    }
-
-    public static Param of(String name, Class<?> type) {
-        return Param.of(name, Type.of(type));
+    public Param(String name, Class<?> type) {
+        this(name, Type.of(type));
     }
 
     public String getName() {
