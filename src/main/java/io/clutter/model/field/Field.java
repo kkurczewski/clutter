@@ -1,5 +1,6 @@
 package io.clutter.model.field;
 
+import io.clutter.common.Varargs;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.field.modifiers.FieldTrait;
 import io.clutter.model.field.modifiers.FieldVisibility;
@@ -106,15 +107,21 @@ final public class Field {
         return annotations;
     }
 
-    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
-        return annotations.stream()
-                .filter(annotationType -> annotationType.isInstanceOf(annotation))
+    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
+        return getAnnotations()
+                .stream()
+                .filter(it -> it.getType().equals(annotation))
+                .map(AnnotationType::reflect)
+                .map(annotation::cast)
                 .findFirst();
     }
 
-    @SafeVarargs
-    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+    @SuppressWarnings("unchecked")
+    boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
+        return getAnnotations()
+                .stream()
+                .map(AnnotationType::getType)
+                .anyMatch(it -> Varargs.concat(annotation, more).contains(it));
     }
 
     @Override

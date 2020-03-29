@@ -13,6 +13,7 @@ import static javax.lang.model.type.TypeKind.VOID;
  */
 final public class Filters {
 
+    public static final Predicate<Element> CONSTRUCTOR = (element) -> element.getKind() == ElementKind.CONSTRUCTOR;
     public static final Predicate<Element> FIELD = (element) -> element.getKind() == ElementKind.FIELD;
     public static final Predicate<Element> METHOD = (element) -> element.getKind() == ElementKind.METHOD;
     public static final Predicate<Element> INTERFACE = (element) -> element.getKind() == ElementKind.INTERFACE;

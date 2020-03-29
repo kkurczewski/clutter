@@ -12,8 +12,6 @@ import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.Type;
 import io.clutter.processor.JavaFile;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 

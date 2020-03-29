@@ -153,7 +153,7 @@ public class BoxedTypeFactoryTest {
             int[].class,
             int[][].class,
     })
-    void shouldThrowIfPrimitivePassed(Class<?> clazz) {
+    public void shouldThrowIfPrimitivePassed(Class<?> clazz) {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",

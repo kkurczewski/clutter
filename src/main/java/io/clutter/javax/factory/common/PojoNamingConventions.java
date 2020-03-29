@@ -2,6 +2,7 @@ package io.clutter.javax.factory.common;
 
 import static java.lang.String.format;
 
+@Deprecated
 final public class PojoNamingConventions {
 
     public static PojoNamingConvention GET = prefix("get");

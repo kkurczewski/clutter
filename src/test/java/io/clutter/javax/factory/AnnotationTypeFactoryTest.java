@@ -90,7 +90,7 @@ class AnnotationTypeFactoryTest {
         assertThat(reflect.stringArray()).contains("bar", "baz");
         assertThat(reflect.classArray()).contains(BarElement.class, Nonnull.class);
         assertThat(reflect.enumArray()).contains(TestEnum.FOO, TestEnum.BAR);
-        assertThat(reflect.annotationArray()).isInstanceOf(FooClass[].class);
+        assertThat(reflect.annotationArray()).isInstanceOf(FooClass[].class).hasSize(2);
     }
 
     @Test

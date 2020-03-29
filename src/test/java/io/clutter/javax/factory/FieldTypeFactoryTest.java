@@ -1,115 +1,162 @@
 package io.clutter.javax.factory;
 
-import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
 import io.clutter.javax.extractor.TypeExtractor;
-import io.clutter.javax.factory.common.PojoNamingConventions;
-import io.clutter.model.annotation.AnnotationType;
-import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
-import io.clutter.model.method.Method;
-import io.clutter.model.type.ContainerType;
+import io.clutter.model.field.modifiers.FieldVisibility;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
-import io.clutter.writer.ClassWriter;
-import io.clutter.writer.JavaFileGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-import java.math.BigDecimal;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
-import static io.clutter.model.type.WildcardType.ANY;
-import static java.util.stream.Collectors.toList;
+import static com.google.testing.compile.JavaFileObjects.forSourceLines;
+import static io.clutter.javax.factory.common.NamingConventions.DROP_GET_PREFIX;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 class FieldTypeFactoryTest {
 
+    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
+    private Compiler compiler;
+
     @Captor
     private ArgumentCaptor<ProcessorAggregate> captor;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
+        compiler = javac().withProcessors(Set.of(simpleProcessor));
     }
 
     @Test
-    public void shouldCreateFieldFromGetter() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
-        Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
-
-        Set<JavaFileObject> files = Set.of(
-                javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setMethods(
-                                new Method("getFoo", int.class).setBody("return 0;"),
-                                new Method("getBar", long.class).setBody("return 0;")
-                        ))
+    void buildFieldForGetter() {
+        JavaFileObject inputFile = forSourceLines(
+                "com.test.TestClass",
+                "package com.test;",
+                "@io.clutter.TestElements.BarClass",
+                "public class TestClass {",
+                "   public int foo() { return 0; }",
+                "}"
         );
 
-        Compilation compilation = compiler.compile(files);
-        CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
+        var compilation = compiler.compile(inputFile);
+        CompilationSubject.assertThat(compilation).succeeded();
+
         verify(simpleProcessor).process(captor.capture(), any());
 
-        assertThat(captor.getValue()
+        ExecutableElement getter = extractExecutableElement(captor.getValue()).orElseThrow();
+        Field created = FieldFactory.fromGetters(getter);
+        Field expected = new Field("foo", int.class).setVisibility(FieldVisibility.PRIVATE);
+        assertThat(created).isEqualTo(expected);
+    }
+
+    @Test
+    void buildFieldFromVariableElement() {
+        JavaFileObject inputFile = forSourceLines(
+                "com.test.TestClass",
+                "package com.test;",
+                "@io.clutter.TestElements.BarClass",
+                "public class TestClass {",
+                "   public TestClass(int foo) {}",
+                "}"
+        );
+
+        var compilation = compiler.compile(inputFile);
+        CompilationSubject.assertThat(compilation).succeeded();
+
+        verify(simpleProcessor).process(captor.capture(), any());
+
+        VariableElement ctorParameter = extractConstructorParameters(captor.getValue()).orElseThrow();
+        Field created = FieldFactory.from(ctorParameter);
+        Field expected = new Field("foo", int.class).setVisibility(FieldVisibility.PRIVATE);
+        assertThat(created).isEqualTo(expected);
+    }
+
+    @Test
+    void buildFieldForGetterUsingGivenNamingConvention() {
+        JavaFileObject inputFile = forSourceLines(
+                "com.test.TestClass",
+                "package com.test;",
+                "@io.clutter.TestElements.BarClass",
+                "public class TestClass {",
+                "   public int getFoo() { return 0; }",
+                "}"
+        );
+
+        var compilation = compiler.compile(inputFile);
+        CompilationSubject.assertThat(compilation).succeeded();
+
+        verify(simpleProcessor).process(captor.capture(), any());
+
+        ExecutableElement getter = extractExecutableElement(captor.getValue()).orElseThrow();
+        Field created = FieldFactory.fromGetters(getter, DROP_GET_PREFIX);
+        Field expected = new Field("foo", int.class).setVisibility(FieldVisibility.PRIVATE);
+        assertThat(created).isEqualTo(expected);
+    }
+
+    @Test
+    void throwWhenPassedMethodIsNotGetter() {
+        JavaFileObject inputFile = forSourceLines(
+                "com.test.TestClass",
+                "package com.test;",
+                "@io.clutter.TestElements.BarClass",
+                "public class TestClass {",
+                "   public void setFoo(int i) {}",
+                "}"
+        );
+
+        var compilation = compiler.compile(inputFile);
+        CompilationSubject.assertThat(compilation).succeeded();
+
+        verify(simpleProcessor).process(captor.capture(), any());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            ExecutableElement setter = extractExecutableElement(captor.getValue()).orElseThrow();
+            FieldFactory.fromGetters(setter);
+        });
+        assertThat(ex).hasMessage("ExecutableElement is not getter");
+    }
+
+    private Optional<ExecutableElement> extractExecutableElement(ProcessorAggregate aggregate) {
+        return aggregate
+                // get annotated elements
                 .get(TestElements.BarClass.class)
                 .stream()
+                // get methods
                 .map(TypeExtractor::new)
                 .map(TypeExtractor::extractMethods)
                 .flatMap(Collection::stream)
-                .map(getter -> FieldFactory.property(getter, PojoNamingConventions.GET))
-                .collect(toList()))
-                .containsExactly(new Field("foo", int.class), new Field("bar", long.class));
+                .findFirst();
     }
 
-    // TODO add more extensive tests, generic, object with value etc.
-    @Test
-    public void shouldCreateFieldFromVariableElement() {
-        SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
-        Compiler compiler = javac().withProcessors(Set.of(simpleProcessor));
-
-        Set<JavaFileObject> files = Set.of(
-                javaFile(new ClassType("test.foo.bar.TestClass")
-                        .setAnnotations(AnnotationType.of(TestElements.BarClass.class))
-                        .setFields(
-                                new Field("primitive", int.class),
-                                new Field("nonPrimitive", BigDecimal.class),
-                                new Field("generic", ContainerType.of(Comparable.class, ANY.extend(String.class)))
-                        ))
-        );
-
-        Compilation compilation = compiler.compile(files);
-        CompilationSubject.assertThat(compilation).succeededWithoutWarnings();
-        verify(simpleProcessor).process(captor.capture(), any());
-
-        assertThat(captor.getValue()
+    private Optional<? extends VariableElement> extractConstructorParameters(ProcessorAggregate aggregate) {
+        return aggregate
+                // get annotated elements
                 .get(TestElements.BarClass.class)
                 .stream()
+                // get constructors
                 .map(TypeExtractor::new)
-                .map(TypeExtractor::extractFields)
+                .map(TypeExtractor::extractConstructor)
                 .flatMap(Collection::stream)
-                .map(FieldFactory::from)
-                .collect(toList()))
-                .containsExactly(
-                        new Field("primitive", int.class),
-                        new Field("nonPrimitive", BigDecimal.class),
-                        new Field("generic", ContainerType.of(Comparable.class, BigDecimal.class))
-                );
-    }
-
-    private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), new ClassWriter(classType).generate().getLines());
+                // get constructors parameters
+                .map(ExecutableElement::getParameters)
+                .flatMap(Collection::stream)
+                .findFirst();
     }
 }
