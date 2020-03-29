@@ -24,32 +24,39 @@ final public class ClassType {
     private final LinkedHashSet<Field> fields = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
     private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
-    private BoxedType parentClass;
+    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
+
+    private BoxedType superclass;
     private ClassVisibility visibility;
 
+    /**
+     * Creates class with default public visibility
+     */
     public ClassType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
         this.packageName = fullyQualifiedName.substring(0, Math.max(0, fullyQualifiedName.lastIndexOf('.')));
         this.visibility = ClassVisibility.PUBLIC;
     }
 
-    public ClassType setSuperclass(BoxedType parentClass) {
-        this.parentClass = parentClass;
+    public ClassType setSuperclass(BoxedType superclass) {
+        this.superclass = superclass;
         return this;
     }
 
-    public ClassType setSuperclass(Class<?> parentClass) {
-        return setSuperclass(BoxedType.of(parentClass));
+    public ClassType setSuperclass(Class<?> superclass) {
+        return setSuperclass(BoxedType.of(superclass));
     }
 
     public ClassType setInterfaces(BoxedType... interfaces) {
+        this.traits.clear();
         Collections.addAll(this.interfaces, interfaces);
         return this;
     }
 
     public ClassType setInterfaces(Class<?>... interfaces) {
-        return setInterfaces(Stream.of(interfaces).map(BoxedType::of).toArray(BoxedType[]::new));
+        return setInterfaces(Stream.of(interfaces)
+                .map(BoxedType::of)
+                .toArray(BoxedType[]::new));
     }
 
     public ClassType setAnnotations(AnnotationType... annotations) {
@@ -60,7 +67,9 @@ final public class ClassType {
 
     @SafeVarargs
     final public ClassType setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations)
+                .map(AnnotationType::new)
+                .toArray(AnnotationType[]::new));
     }
 
     public ClassType setVisibility(ClassVisibility visibility) {
@@ -92,9 +101,9 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setGenericParameters(WildcardType... wildcardTypes) {
-        this.wildcardTypes.clear();
-        Collections.addAll(this.wildcardTypes, wildcardTypes);
+    public ClassType setGenericParameters(WildcardType... genericParameters) {
+        this.genericParameters.clear();
+        Collections.addAll(this.genericParameters, genericParameters);
         return this;
     }
 
@@ -106,8 +115,8 @@ final public class ClassType {
         return packageName;
     }
 
-    public Optional<BoxedType> getParentClass() {
-        return Optional.ofNullable(parentClass);
+    public Optional<BoxedType> getSuperclass() {
+        return Optional.ofNullable(superclass);
     }
 
     public Set<BoxedType> getInterfaces() {
@@ -135,22 +144,23 @@ final public class ClassType {
     }
 
     public Set<WildcardType> getGenericParameters() {
-        return wildcardTypes;
+        return genericParameters;
     }
 
     public List<AnnotationType> getAnnotations() {
         return annotations;
     }
 
-    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
         return annotations.stream()
                 .filter(annotationType -> annotationType.isInstanceOf(annotation))
-                .findFirst();
+                .findFirst()
+                .map(AnnotationType::reflect);
     }
 
     @SafeVarargs
     final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+        return getAnnotations().stream().anyMatch(it -> it.isInstanceOf(annotation, more));
     }
 
     @Override
@@ -158,7 +168,17 @@ final public class ClassType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClassType classType = (ClassType) o;
-        return fullyQualifiedName.equals(classType.fullyQualifiedName);
+        return fullyQualifiedName.equals(classType.fullyQualifiedName) &&
+                packageName.equals(classType.packageName) &&
+                annotations.equals(classType.annotations) &&
+                interfaces.equals(classType.interfaces) &&
+                constructors.equals(classType.constructors) &&
+                fields.equals(classType.fields) &&
+                methods.equals(classType.methods) &&
+                traits.equals(classType.traits) &&
+                genericParameters.equals(classType.genericParameters) &&
+                Objects.equals(superclass, classType.superclass) &&
+                visibility == classType.visibility;
     }
 
     @Override
@@ -168,6 +188,18 @@ final public class ClassType {
 
     @Override
     public String toString() {
-        return fullyQualifiedName + wildcardTypes;
+        return "ClassType{" +
+                "fullyQualifiedName='" + fullyQualifiedName + '\'' +
+                ", packageName='" + packageName + '\'' +
+                ", annotations=" + annotations +
+                ", interfaces=" + interfaces +
+                ", constructors=" + constructors +
+                ", fields=" + fields +
+                ", methods=" + methods +
+                ", traits=" + traits +
+                ", genericParameters=" + genericParameters +
+                ", superclass=" + superclass +
+                ", visibility=" + visibility +
+                '}';
     }
 }

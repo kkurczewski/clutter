@@ -16,7 +16,6 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.util.Collection;
 import java.util.Optional;
@@ -24,10 +23,8 @@ import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
 import static com.google.testing.compile.JavaFileObjects.forSourceLines;
-import static io.clutter.javax.factory.common.NamingConventions.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -64,7 +61,7 @@ class MethodFactoryTest {
 
         ExecutableElement method = extractMethods(captor.getValue()).orElseThrow();
         Method created = MethodFactory.from(method);
-        Method expected = new Method("foo", int.class, Param.of("l", long.class))
+        Method expected = new Method("foo", int.class, new Param("l", long.class))
                 .setVisibility(MethodVisibility.PUBLIC);
         assertThat(created).isEqualTo(expected);
     }

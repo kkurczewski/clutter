@@ -4,6 +4,7 @@ import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements.BarClass;
 import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.model.type.BoxedType;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;

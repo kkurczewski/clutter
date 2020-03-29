@@ -1,6 +1,7 @@
 package io.clutter.model.method;
 
 import io.clutter.model.annotation.AnnotationType;
+import io.clutter.model.field.Field;
 import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.method.modifiers.MethodVisibility;
 import io.clutter.model.param.Param;
@@ -21,9 +22,10 @@ final public class Method {
     private final Type returnType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
     private final LinkedHashSet<MethodTrait> traits = new LinkedHashSet<>();
     private final List<String> body = new LinkedList<>();
+
     private MethodVisibility visibility;
 
     /**
@@ -50,12 +52,20 @@ final public class Method {
         this(name, Type.of(void.class), params);
     }
 
-    public static Method getter(Type type, String fieldName, Function<String, String> getterNaming) {
-        return new Method(getterNaming.apply(fieldName), type).setBody(format("return this.%s;", fieldName));
+    /**
+     * Creates getter for given field and uses given function to construct getter name
+     */
+    public static Method getter(Field field, Function<String, String> getterNaming) {
+        return new Method(getterNaming.apply(field.getName()), field.getType())
+                .setBody(format("return this.%s;", field.getName()));
     }
 
-    public static Method setter(Type type, String fieldName, Function<String, String> setterNaming) {
-        return new Method(setterNaming.apply(fieldName), Param.of(fieldName, type))
+    /**
+     * Creates setter for given field and uses given function to construct name
+     */
+    public static Method setter(Field field, Function<String, String> setterNaming) {
+        String fieldName = field.getName();
+        return new Method(setterNaming.apply(fieldName), new Param(fieldName, field.getType()))
                 .setBody(format("this.%s = %s;", fieldName, fieldName));
     }
 
@@ -90,12 +100,12 @@ final public class Method {
 
     @SafeVarargs
     final public Method setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
-    public Method setGenericParameters(WildcardType wildcardTypes) {
-        this.wildcardTypes.clear();
-        Collections.addAll(this.wildcardTypes, wildcardTypes);
+    public Method setGenericParameters(WildcardType... genericParameters) {
+        this.genericParameters.clear();
+        Collections.addAll(this.genericParameters, genericParameters);
         return this;
     }
 
@@ -123,23 +133,24 @@ final public class Method {
         return body;
     }
 
-    public Set<WildcardType> getWildcardTypes() {
-        return wildcardTypes;
+    public Set<WildcardType> getGenericParameters() {
+        return genericParameters;
     }
 
     public List<AnnotationType> getAnnotations() {
         return annotations;
     }
 
-    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
         return annotations.stream()
                 .filter(annotationType -> annotationType.isInstanceOf(annotation))
-                .findFirst();
+                .findFirst()
+                .map(AnnotationType::reflect);
     }
 
     @SafeVarargs
     final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+        return getAnnotations().stream().anyMatch(it -> it.isInstanceOf(annotation, more));
     }
 
     @Override
@@ -151,7 +162,7 @@ final public class Method {
                 params.equals(method.params) &&
                 returnType.equals(method.returnType) &&
                 annotations.equals(method.annotations) &&
-                wildcardTypes.equals(method.wildcardTypes) &&
+                genericParameters.equals(method.genericParameters) &&
                 traits.equals(method.traits) &&
                 body.equals(method.body) &&
                 visibility == method.visibility;
@@ -169,7 +180,7 @@ final public class Method {
                 ", params=" + params +
                 ", returnType=" + returnType +
                 ", annotations=" + annotations +
-                ", wildcardTypes=" + wildcardTypes +
+                ", genericParameters=" + genericParameters +
                 ", traits=" + traits +
                 ", body=" + body +
                 ", visibility=" + visibility +

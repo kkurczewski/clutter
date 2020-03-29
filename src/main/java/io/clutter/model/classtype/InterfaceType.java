@@ -16,7 +16,7 @@ final public class InterfaceType {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<BoxedType> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> wildcardTypes = new LinkedHashSet<>();
+    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
 
     public InterfaceType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
@@ -40,7 +40,9 @@ final public class InterfaceType {
 
     @SafeVarargs
     final public InterfaceType setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations).map(AnnotationType::of).toArray(AnnotationType[]::new));
+        return setAnnotations(Stream.of(annotations)
+                .map(AnnotationType::new)
+                .toArray(AnnotationType[]::new));
     }
 
     public InterfaceType setMethods(Method... methods) {
@@ -49,9 +51,9 @@ final public class InterfaceType {
         return this;
     }
 
-    public InterfaceType setWildcardTypes(WildcardType wildcardTypes) {
-        this.wildcardTypes.clear();
-        Collections.addAll(this.wildcardTypes, wildcardTypes);
+    public InterfaceType setGenericParameters(WildcardType genericParameters) {
+        this.genericParameters.clear();
+        Collections.addAll(this.genericParameters, genericParameters);
         return this;
     }
 
@@ -67,23 +69,24 @@ final public class InterfaceType {
         return methods;
     }
 
-    public Set<WildcardType> getWildcardTypes() {
-        return wildcardTypes;
+    public Set<WildcardType> getGenericParameters() {
+        return genericParameters;
     }
 
     public List<AnnotationType> getAnnotations() {
         return annotations;
     }
 
-    public Optional<AnnotationType> getAnnotation(Class<? extends Annotation> annotation) throws NoSuchElementException {
+    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
         return annotations.stream()
                 .filter(annotationType -> annotationType.isInstanceOf(annotation))
-                .findFirst();
+                .findFirst()
+                .map(AnnotationType::reflect);
     }
 
     @SafeVarargs
     final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(a -> a.isInstanceOf(annotation, more));
+        return getAnnotations().stream().anyMatch(it -> it.isInstanceOf(annotation, more));
     }
 
     @Override
@@ -91,7 +94,11 @@ final public class InterfaceType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InterfaceType that = (InterfaceType) o;
-        return fullyQualifiedName.equals(that.fullyQualifiedName);
+        return fullyQualifiedName.equals(that.fullyQualifiedName) &&
+                annotations.equals(that.annotations) &&
+                interfaces.equals(that.interfaces) &&
+                methods.equals(that.methods) &&
+                genericParameters.equals(that.genericParameters);
     }
 
     @Override
@@ -101,6 +108,12 @@ final public class InterfaceType {
 
     @Override
     public String toString() {
-        return fullyQualifiedName + wildcardTypes;
+        return "InterfaceType{" +
+                "fullyQualifiedName='" + fullyQualifiedName + '\'' +
+                ", annotations=" + annotations +
+                ", interfaces=" + interfaces +
+                ", methods=" + methods +
+                ", genericParameters=" + genericParameters +
+                '}';
     }
 }

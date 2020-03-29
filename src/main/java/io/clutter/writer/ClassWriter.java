@@ -52,7 +52,7 @@ final public class ClassWriter {
                 join(classType.getTraits()),
                 className,
                 generics(classType.getGenericParameters()),
-                classType.getParentClass()
+                classType.getSuperclass()
                         .map(this::importType)
                         .map(" extends "::concat)
                         .orElse(""),
@@ -100,7 +100,7 @@ final public class ClassWriter {
             constructorLines.addAll(annotations(constructor.getAnnotations()));
             constructorLines.add(trimFormat("%s %s %s(%s) {",
                     constructor.getVisibility(),
-                    generics(constructor.getWildcardTypes()),
+                    generics(constructor.getGenericParameters()),
                     className,
                     params(constructor.getParams()))
             );
@@ -132,7 +132,7 @@ final public class ClassWriter {
             methodLines.add(trimFormat("%s %s %s %s %s(%s);",
                     method.getVisibility(),
                     join(method.getTraits()),
-                    generics(method.getWildcardTypes()),
+                    generics(method.getGenericParameters()),
                     importType(method.getReturnType()),
                     method.getName(),
                     params(method.getParams()))
