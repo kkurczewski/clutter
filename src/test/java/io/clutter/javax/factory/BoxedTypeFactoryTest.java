@@ -6,6 +6,7 @@ import io.clutter.TestElements.BarClass;
 import io.clutter.javax.extractor.TypeExtractor;
 import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.model.type.BoxedType;
+import io.clutter.model.type.ContainerType;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,6 +114,7 @@ public class BoxedTypeFactoryTest {
 
         verify(simpleProcessor).process(captor.capture(), any());
         BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
+        assertThat(boxedType.getClass()).isEqualTo(ContainerType.class);
         assertThat(boxedType.getType()).isEqualTo(List.class);
     }
 
@@ -145,6 +147,7 @@ public class BoxedTypeFactoryTest {
 
         verify(simpleProcessor).process(captor.capture(), any());
         BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
+        assertThat(boxedType.getClass()).isEqualTo(ContainerType.class);
         assertThat(boxedType.getType()).isEqualTo(Map.class);
     }
 

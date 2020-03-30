@@ -79,6 +79,7 @@ class ClassFactoryTest {
                         .setGenericParameters(V)
                         .setAnnotations(Nonnull.class)
                 );
+
         assertThat(ClassFactory.from(typeElement)).isEqualTo(expected);
     }
 }

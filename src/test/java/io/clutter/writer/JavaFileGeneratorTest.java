@@ -157,8 +157,8 @@ public class JavaFileGeneratorTest {
                                 .setTraits(FieldTrait.STATIC, FieldTrait.FINAL),
                         new Field("primitive", int.class).setValue("123"),
                         new Field("literal", String.class).setValue("hello"),
-                        new Field("set", setOf(INT)),
-                        new Field("list", listOf(INT)).setValue(instancePrinter.toString(ContainerType.genericOf(ArrayList.class, INT.boxed()))),
+                        new Field("set", setOf(INT.boxed())),
+                        new Field("list", listOf(INT.boxed())).setValue(instancePrinter.toString(ContainerType.genericOf(ArrayList.class, INT.boxed()))),
                         new Field("map", mapOf(INT.boxed(), STRING)).setValue(instancePrinter.toString(ContainerType.genericOf(HashMap.class, INT.boxed(), STRING))),
                         new Field("nested", mapOf(INT.boxed(), mapOf(STRING, STRING))),
                         new Field("generic", ContainerType.of(Consumer.class, ANY.extend(Number.class)))

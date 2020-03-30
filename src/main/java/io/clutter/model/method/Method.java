@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static io.clutter.model.type.PrimitiveType.VOID;
 import static java.lang.String.format;
 
 final public class Method {
@@ -49,7 +50,7 @@ final public class Method {
      * Creates method with default void return type and public visibility
      */
     public Method(String name, Param... params) {
-        this(name, Type.of(void.class), params);
+        this(name, VOID, params);
     }
 
     /**

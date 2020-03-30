@@ -4,7 +4,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-final public class PrimitiveType extends Type {
+import static java.lang.String.format;
+
+final public class PrimitiveType implements Type {
 
     public static final PrimitiveType SHORT = new PrimitiveType(short.class, Short.class);
     public static final PrimitiveType INT = new PrimitiveType(int.class, Integer.class);
@@ -16,10 +18,11 @@ final public class PrimitiveType extends Type {
     public static final PrimitiveType BOOLEAN = new PrimitiveType(boolean.class, Boolean.class);
     public static final PrimitiveType VOID = new PrimitiveType(void.class, Void.class);
 
+    private final Class<?> type;
     private final Class<?> boxed;
 
     private PrimitiveType(Class<?> type, Class<?> boxed) {
-        super(type);
+        this.type = type;
         this.boxed = boxed;
     }
 
@@ -33,6 +36,11 @@ final public class PrimitiveType extends Type {
                 .orElseThrow(() -> new NoSuchElementException(type.getCanonicalName()));
     }
 
+    @Override
+    public Class<?> getType() {
+        return type;
+    }
+
     public BoxedType boxed() {
         return BoxedType.of(boxed);
     }
@@ -41,13 +49,17 @@ final public class PrimitiveType extends Type {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         PrimitiveType that = (PrimitiveType) o;
-        return boxed.equals(that.boxed);
+        return type.equals(that.type) && Objects.equals(boxed, that.boxed);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), boxed);
+    }
+
+    @Override
+    public String toString() {
+        return format("PrimitiveType{type=%s, boxed=%s}", type, boxed);
     }
 }

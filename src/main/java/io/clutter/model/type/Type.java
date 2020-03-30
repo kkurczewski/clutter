@@ -1,39 +1,13 @@
 package io.clutter.model.type;
 
-import java.util.Objects;
+public interface Type {
 
-public class Type {
-
-    private final Class<?> type;
-
-    Type(Class<?> type) {
-        this.type = type;
+    /**
+     * Creates {@link PrimitiveType} if passed primitive, {@link BoxedType} otherwise
+     */
+    static Type of(Class<?> type) {
+        return type.isPrimitive() ? PrimitiveType.of(type) : new BoxedType(type);
     }
 
-    public static Type of(Class<?> type) {
-        if (type.isPrimitive()) return PrimitiveType.of(type);
-        return new Type(type);
-    }
-
-    public Class<?> getType() {
-        return type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Type other = (Type) o;
-        return type.equals(other.type);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
-    }
-
-    @Override
-    public String toString() {
-        return type.getCanonicalName();
-    }
+    Class<?> getType();
 }

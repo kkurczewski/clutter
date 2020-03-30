@@ -47,6 +47,10 @@ final public class BoundedWildcardType extends WildcardType {
 
     @Override
     public String toString() {
-        return alias + ' ' + boundaryKeyword + ' ' + bound.toString();
+        return "BoundedWildcardType{" +
+                "bound=" + bound +
+                ", boundaryKeyword=" + boundaryKeyword +
+                ", alias='" + getAlias() + '\'' +
+                '}';
     }
 }

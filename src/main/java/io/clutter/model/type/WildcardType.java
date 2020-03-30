@@ -13,7 +13,7 @@ public class WildcardType extends BoxedType {
     public static final WildcardType V = WildcardType.alias("V");
     public static final WildcardType R = WildcardType.alias("R");
 
-    protected final String alias;
+    private final String alias;
 
     private WildcardType(String alias) {
         super(Object.class);
