@@ -9,7 +9,7 @@ public class BoxedType implements Type {
     public static final BoxedType STRING = new BoxedType(String.class);
     private final Class<?> type;
 
-    BoxedType(Class<?> type) {
+    public BoxedType(Class<?> type) {
         this.type = type;
     }
 

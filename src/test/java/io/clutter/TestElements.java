@@ -44,7 +44,7 @@ public class TestElements {
     }
 
     public enum TestEnum {
-        FOO, BAR
+        FOO, BAR;
     }
 
     public @interface Aggregate {

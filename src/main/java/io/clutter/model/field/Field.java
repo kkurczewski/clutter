@@ -87,8 +87,8 @@ final public class Field {
         return visibility;
     }
 
-    public Set<FieldTrait> getTraits() {
-        return traits;
+    public List<FieldTrait> getTraits() {
+        return new ArrayList<>(traits);
     }
 
     public Optional<String> getValue() {

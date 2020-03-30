@@ -1,5 +1,6 @@
 package io.clutter.javax.factory;
 
+import io.clutter.javax.factory.annotation.AnnotationFactory;
 import io.clutter.javax.factory.types.WildcardTypeFactory;
 import io.clutter.model.constructor.Constructor;
 import io.clutter.model.constructor.modifiers.ConstructorVisibility;
@@ -19,7 +20,7 @@ final public class ConstructorFactory {
             throw new IllegalArgumentException(constructor.getKind().name());
         }
 
-        return new Constructor(ParamFactory.from(constructor))
+        return new Constructor(constructor.getSimpleName().toString(), ParamFactory.from(constructor))
                 .setAnnotations(AnnotationFactory.from(constructor))
                 .setBody()
                 .setGenericParameters(WildcardTypeFactory.from(constructor))

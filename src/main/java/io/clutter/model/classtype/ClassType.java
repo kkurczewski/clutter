@@ -115,6 +115,10 @@ final public class ClassType {
         return packageName;
     }
 
+    public String getSimpleName() {
+        return getFullyQualifiedName().substring(getPackage().length() + 1);
+    }
+
     public Optional<BoxedType> getSuperclass() {
         return Optional.ofNullable(superclass);
     }
@@ -127,8 +131,8 @@ final public class ClassType {
         return visibility;
     }
 
-    public Set<ClassTrait> getTraits() {
-        return traits;
+    public List<ClassTrait> getTraits() {
+        return new ArrayList<>(traits);
     }
 
     public Set<Constructor> getConstructors() {

@@ -1,5 +1,6 @@
 package io.clutter.javax.factory;
 
+import io.clutter.javax.factory.annotation.AnnotationFactory;
 import io.clutter.javax.factory.types.TypeFactory;
 import io.clutter.javax.factory.types.WildcardTypeFactory;
 import io.clutter.model.method.Method;

@@ -12,14 +12,11 @@ final public class FileGenerator {
         this.filer = filer;
     }
 
-    /**
-     * @throws UncheckedIOException when IO error occurs
-     */
     public void createSourceFile(JavaFile javaFile) {
-        try (var writer = filer.createSourceFile(javaFile.getFullQualifiedName()).openWriter()) {
+        try (var writer = filer.createSourceFile(javaFile.getFullyQualifiedName()).openWriter()) {
             javaFile.writeTo(writer);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

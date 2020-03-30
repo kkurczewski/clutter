@@ -1,9 +1,11 @@
 package io.clutter.model.annotation;
 
+import io.clutter.common.PrimitiveUtils;
 import io.clutter.common.Varargs;
 import io.clutter.model.annotation.param.AnnotationValue;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Proxy;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,13 +36,12 @@ final public class AnnotationType {
         return type;
     }
 
-    @Deprecated
     public Map<String, AnnotationValue> getParams() {
         return params;
     }
 
     public <T> Optional<T> getParam(String key) {
-        return Optional.ofNullable(params.get(key).getValue());
+        return Optional.ofNullable(params.get(key)).map(AnnotationValue::getValue);
     }
 
     @SafeVarargs
@@ -49,7 +50,7 @@ final public class AnnotationType {
     }
 
     /**
-     * Returns shallow copy of {@link Annotation}. Resulting object will return nulls for
+     * Returns proxy of {@link Annotation}. Resulting object will return nulls for
      * not initialized annotation params (unless default value provided) and is allowed
      * to return null for any non accessor methods.
      */
@@ -60,9 +61,16 @@ final public class AnnotationType {
                 new Class[]{type},
                 (proxy, method, args) -> {
                     if ("toString".equals(method.getName())) {
-                        return "Proxy{" + type + "}";
+                        return type.getSimpleName();
                     }
-                    return getParam(method.getName()).orElseGet(method::getDefaultValue);
+                    if ("annotationType".equals(method.getName())) {
+                        return type;
+                    }
+                    Object returnValue = getParam(method.getName()).orElseGet(method::getDefaultValue);
+                    if (returnValue.getClass() != PrimitiveUtils.toBoxed(method.getReturnType()) && !method.getReturnType().isAssignableFrom(returnValue.getClass())) {
+                        throw new AnnotationTypeMismatchException(method, returnValue.getClass().getCanonicalName());
+                    }
+                    return returnValue;
                 }
         );
     }

@@ -1,5 +1,6 @@
 package io.clutter.javax.factory.visitors;
 
+import io.clutter.common.PrimitiveUtils;
 import io.clutter.model.type.PrimitiveType;
 import io.clutter.model.type.Type;
 
@@ -9,7 +10,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import java.lang.reflect.Array;
 
-import static io.clutter.javax.factory.common.PrimitiveUtils.primitives;
 import static io.clutter.model.type.PrimitiveType.VOID;
 
 final public class TypeVisitor extends SimpleTypeVisitor7<Type, Void> {
@@ -18,7 +18,7 @@ final public class TypeVisitor extends SimpleTypeVisitor7<Type, Void> {
 
     @Override
     public Type visitPrimitive(javax.lang.model.type.PrimitiveType p, Void nothing) {
-        Class<?> type = primitives()
+        Class<?> type = PrimitiveUtils.primitives()
                 .stream()
                 .filter(clazz -> clazz.getSimpleName().equals(p.toString()))
                 .findFirst()

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 final public class InterfaceType {
 
     private final String fullyQualifiedName;
+    private final String packageName;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<BoxedType> interfaces = new LinkedHashSet<>();
@@ -20,6 +21,7 @@ final public class InterfaceType {
 
     public InterfaceType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
+        this.packageName = fullyQualifiedName.substring(0, Math.max(0, fullyQualifiedName.lastIndexOf('.')));
     }
 
     public InterfaceType setInterfaces(BoxedType... interfaces) {
@@ -59,6 +61,14 @@ final public class InterfaceType {
 
     public String getFullyQualifiedName() {
         return fullyQualifiedName;
+    }
+
+    public String getPackage() {
+        return packageName;
+    }
+
+    public String getSimpleName() {
+        return getFullyQualifiedName().substring(getPackage().length() + 1);
     }
 
     public Set<BoxedType> getInterfaces() {

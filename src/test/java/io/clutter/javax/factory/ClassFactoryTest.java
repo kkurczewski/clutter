@@ -73,7 +73,7 @@ class ClassFactoryTest {
                 .setAnnotations(BarClass.class)
                 .setGenericParameters(T)
                 .setFields(new Field("foo", INT))
-                .setConstructors(new Constructor(new Param("foo", INT))
+                .setConstructors(new Constructor("TestClass", new Param("foo", INT))
                         .setGenericParameters(U))
                 .setMethods(new Method("getFoo", INT)
                         .setGenericParameters(V)

@@ -118,8 +118,8 @@ final public class Method {
         return visibility;
     }
 
-    public Set<MethodTrait> getTraits() {
-        return traits;
+    public List<MethodTrait> getTraits() {
+        return new ArrayList<>(traits);
     }
 
     public Type getReturnType() {

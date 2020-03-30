@@ -1,14 +1,15 @@
-package io.clutter.javax.factory;
+package io.clutter.javax.factory.annotation;
 
 import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.javax.factory.types.TypeFactory;
-import io.clutter.javax.factory.visitors.AnnotationValueVisitor;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.annotation.param.AnnotationValue;
 
 import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.AnnotationMirror;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 
 final public class AnnotationFactory {
@@ -31,6 +32,28 @@ final public class AnnotationFactory {
                 .stream()
                 .map(AnnotationFactory::from)
                 .toArray(AnnotationType[]::new);
+    }
+
+    public static AnnotationType from(Annotation annotation) {
+        Class<? extends Annotation> type = annotation.annotationType();
+        LinkedHashMap<String, AnnotationValue> params = new LinkedHashMap<>();
+        for (Method method : annotation.annotationType().getDeclaredMethods()) {
+            var value = annotationValue(annotation, method);
+            if (value != null && value != method.getDefaultValue()) {
+                params.put(method.getName(), AnnotationValueFactory.ofRawObject(value));
+            }
+        }
+        return new AnnotationType(type, params);
+    }
+
+    private static Object annotationValue(Annotation annotation, Method method) {
+        Object argumentValue;
+        try {
+            argumentValue = method.invoke(annotation);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return argumentValue;
     }
 
     @SuppressWarnings("unchecked")

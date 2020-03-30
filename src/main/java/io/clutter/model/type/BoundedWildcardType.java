@@ -36,8 +36,7 @@ final public class BoundedWildcardType extends WildcardType {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         BoundedWildcardType that = (BoundedWildcardType) o;
-        return bound.equals(that.bound) &&
-                boundaryKeyword == that.boundaryKeyword;
+        return bound.equals(that.bound) && boundaryKeyword == that.boundaryKeyword;
     }
 
     @Override
@@ -47,10 +46,8 @@ final public class BoundedWildcardType extends WildcardType {
 
     @Override
     public String toString() {
-        return "BoundedWildcardType{" +
-                "bound=" + bound +
-                ", boundaryKeyword=" + boundaryKeyword +
-                ", alias='" + getAlias() + '\'' +
-                '}';
+        return String.format("BoundedWildcardType{bound=%s, boundaryKeyword=%s, alias='%s'}",
+                bound, boundaryKeyword, getAlias()
+        );
     }
 }

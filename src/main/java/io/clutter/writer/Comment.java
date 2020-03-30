@@ -6,15 +6,15 @@ import java.util.stream.Collectors;
 
 import static io.clutter.common.Varargs.concat;
 
-final public class Comments {
+final public class Comment {
 
     private List<String> lines;
 
-    public Comments(List<String> lines) {
+    public Comment(List<String> lines) {
         this.lines = lines;
     }
 
-    public static Comments javadoc(String comment, String... more) {
+    public static Comment javadoc(String comment, String... more) {
         List<String> lines = new LinkedList<>();
         lines.add("/**");
         concat(comment, more)
@@ -22,17 +22,17 @@ final public class Comments {
                 .map(" * "::concat)
                 .forEach(lines::add);
         lines.add(" */");
-        return new Comments(lines);
+        return new Comment(lines);
     }
 
-    public static Comments comment(String comment, String... more) {
-        return new Comments(concat(comment, more)
+    public static Comment comment(String comment, String... more) {
+        return new Comment(concat(comment, more)
                 .stream()
                 .map("// "::concat)
                 .collect(Collectors.toList()));
     }
 
-    public static Comments multiLineComment(String comment, String... more) {
+    public static Comment multiLineComment(String comment, String... more) {
         List<String> lines = new LinkedList<>();
         lines.add("/*");
         concat(comment, more)
@@ -40,7 +40,7 @@ final public class Comments {
                 .map(" "::concat)
                 .forEach(lines::add);
         lines.add(" */");
-        return new Comments(lines);
+        return new Comment(lines);
     }
 
     public List<String> getLines() {

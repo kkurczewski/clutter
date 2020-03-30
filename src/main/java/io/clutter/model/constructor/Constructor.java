@@ -14,6 +14,7 @@ import static io.clutter.model.constructor.modifiers.ConstructorVisibility.PUBLI
 final public class Constructor {
 
     private final LinkedHashSet<Param> params = new LinkedHashSet<>();
+    private final String className;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
@@ -23,7 +24,8 @@ final public class Constructor {
     /**
      * Creates constructor with default public visibility
      */
-    public Constructor(Param... params) {
+    public Constructor(String className, Param... params) {
+        this.className = className;
         Collections.addAll(this.params, params);
         this.visibility = PUBLIC;
     }
@@ -62,6 +64,10 @@ final public class Constructor {
         this.genericParameters.clear();
         Collections.addAll(this.genericParameters, genericParameters);
         return this;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public ConstructorVisibility getVisibility() {

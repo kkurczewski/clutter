@@ -24,7 +24,6 @@ import static com.google.testing.compile.Compiler.javac;
 import static com.google.testing.compile.JavaFileObjects.forSourceLines;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -61,7 +60,7 @@ class ConstructorFactoryTest {
 
         ExecutableElement constructor = extractConstructor(captor.getValue()).orElseThrow();
         Constructor created = ConstructorFactory.from(constructor);
-        Constructor expected = new Constructor(new Param("foo", int.class));
+        Constructor expected = new Constructor("TestClass", new Param("foo", int.class));
         assertThat(created).isEqualTo(expected);
     }
 

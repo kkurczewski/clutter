@@ -2,6 +2,7 @@ package io.clutter.javax.factory;
 
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
+import io.clutter.javax.factory.annotation.AnnotationFactory;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;

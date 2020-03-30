@@ -1,4 +1,4 @@
-package io.clutter.writer;
+package io.clutter.writer.printer;
 
 import io.clutter.model.type.Type;
 

@@ -1,6 +1,5 @@
-package io.clutter.javax.factory.visitors;
+package io.clutter.javax.factory.annotation;
 
-import io.clutter.javax.factory.AnnotationFactory;
 import io.clutter.javax.factory.types.TypeFactory;
 import io.clutter.model.annotation.param.AnnotationValue;
 
@@ -9,10 +8,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor7;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.util.List;
 
-public class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<AnnotationValue, Class<?>> {
+final public class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<AnnotationValue, Class<?>> {
 
     @Override
     public AnnotationValue visitType(TypeMirror t, Class<?> clazz) {
@@ -41,15 +39,7 @@ public class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<Annota
 
     @Override
     protected AnnotationValue defaultAction(Object o, Class<?> clazz) {
-        try {
-            // set value directly to avoid hassle with using regular methods
-            // but keep constructor hidden for regular usage
-            Constructor<AnnotationValue> constructor = AnnotationValue.class.getDeclaredConstructor(Object.class);
-            constructor.setAccessible(true);
-            return constructor.newInstance(o);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return AnnotationValueFactory.ofRawObject(o);
     }
 
     @SuppressWarnings("unchecked")

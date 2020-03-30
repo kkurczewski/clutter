@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CommentsTest {
+class CommentTest {
 
     @Test
     public void shouldCreateJavadoc() {
-        Comments comments = Comments.javadoc("foo", "bar", "baz");
-        assertThat(comments.getLines()).containsExactly(
+        Comment comment = Comment.javadoc("foo", "bar", "baz");
+        assertThat(comment.getLines()).containsExactly(
                 "/**",
                 " * foo",
                 " * bar",
@@ -20,8 +20,8 @@ class CommentsTest {
 
     @Test
     public void shouldCreateComment() {
-        Comments comments = Comments.comment("foo", "bar", "baz");
-        assertThat(comments.getLines()).containsExactly(
+        Comment comment = Comment.comment("foo", "bar", "baz");
+        assertThat(comment.getLines()).containsExactly(
                 "// foo",
                 "// bar",
                 "// baz"
@@ -30,8 +30,8 @@ class CommentsTest {
 
     @Test
     public void shouldCreateMultiLineComment() {
-        Comments comments = Comments.multiLineComment("foo", "bar", "baz");
-        assertThat(comments.getLines()).containsExactly(
+        Comment comment = Comment.multiLineComment("foo", "bar", "baz");
+        assertThat(comment.getLines()).containsExactly(
                 "/*",
                 " foo",
                 " bar",

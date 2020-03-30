@@ -6,10 +6,10 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.processor.validator.AnnotationValidatorBuilder;
 import io.clutter.processor.validator.TypeValidator;
-import io.clutter.writer.JavaFileGenerator;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
+import io.clutter.writer.printer.ClassTypeWriter;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -180,7 +180,12 @@ class ProcessingValidationTest {
     }
 
     private JavaFileObject javaFile(ClassType classType) {
-        return JavaFileObjects.forSourceLines(classType.getFullyQualifiedName(), new JavaFileGenerator().lines(classType));
+        return JavaFileObjects.forSourceLines(classType
+                .getFullyQualifiedName(), new ClassTypeWriter.Builder()
+                .build()
+                .toJavaFileBuilder(classType)
+                .build()
+                .getLines()
+        );
     }
-
 }
