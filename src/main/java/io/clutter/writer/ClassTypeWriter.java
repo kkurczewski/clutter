@@ -1,7 +1,7 @@
-package io.clutter.writer.printer;
+package io.clutter.writer;
 
 import io.clutter.model.classtype.ClassType;
-import io.clutter.writer.JavaFileBuilder;
+import io.clutter.writer.printer.*;
 
 import java.util.Collection;
 import java.util.LinkedList;

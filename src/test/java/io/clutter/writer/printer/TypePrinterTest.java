@@ -19,8 +19,8 @@ class TypePrinterTest {
         Type type = new ContainerType(
                 List.class,
                 new ContainerType(Map.class,
-                        new BoxedType(Integer.class),
-                        new BoxedType(Executable.class)
+                        BoxedType.of(Integer.class),
+                        BoxedType.of(Executable.class)
                 )
         );
 
@@ -38,8 +38,8 @@ class TypePrinterTest {
         Type type = new ContainerType(
                 List.class,
                 new ContainerType(Map.class,
-                        new BoxedType(Integer.class),
-                        new BoxedType(Executable.class)
+                        BoxedType.of(Integer.class),
+                        BoxedType.of(Executable.class)
                 )
         );
         TypePrinter printer = new TypePrinter();

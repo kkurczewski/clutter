@@ -10,7 +10,7 @@ import javax.lang.model.util.SimpleTypeVisitor7;
 
 import static io.clutter.model.type.WildcardType.ANY;
 
-public class WildcardTypeVisitor extends SimpleTypeVisitor7<WildcardType, Void> {
+final public class WildcardTypeVisitor extends SimpleTypeVisitor7<WildcardType, Void> {
 
     @Override
     public WildcardType visitWildcard(javax.lang.model.type.WildcardType w, Void nothing) {

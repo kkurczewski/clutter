@@ -7,7 +7,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.clutter.javax.factory.common.StringUtils.toPascalCase;
+import static io.clutter.common.StringUtils.toPascalCase;
 import static io.clutter.processor.validator.ValidationOutput.violation;
 import static java.lang.String.valueOf;
 

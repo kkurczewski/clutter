@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import static java.util.stream.Collectors.joining;
 
-final public class ParamPrinter {
+public class ParamPrinter {
 
     private final TypePrinter typePrinter;
 

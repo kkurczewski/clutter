@@ -7,7 +7,7 @@ import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
-import io.clutter.writer.printer.ClassTypeWriter;
+import io.clutter.writer.ClassTypeWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

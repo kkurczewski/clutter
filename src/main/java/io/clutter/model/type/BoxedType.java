@@ -9,11 +9,10 @@ public class BoxedType implements Type {
     public static final BoxedType STRING = new BoxedType(String.class);
     private final Class<?> type;
 
-    public BoxedType(Class<?> type) {
+    BoxedType(Class<?> type) {
         this.type = type;
     }
 
-    @Deprecated
     public static BoxedType of(Class<?> type) {
         return type.isPrimitive() ? PrimitiveType.of(type).boxed() : new BoxedType(type);
     }

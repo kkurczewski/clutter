@@ -6,12 +6,11 @@ import io.clutter.model.field.modifiers.FieldTrait;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static io.clutter.writer.printer.PrinterUtils.*;
 import static java.util.stream.Collectors.toList;
 
-final public class FieldPrinter {
+public class FieldPrinter {
 
     private static final String SEPARATOR = " ";
 

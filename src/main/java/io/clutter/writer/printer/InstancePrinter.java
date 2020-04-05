@@ -2,7 +2,7 @@ package io.clutter.writer.printer;
 
 import io.clutter.model.type.Type;
 
-final public class InstancePrinter {
+public class InstancePrinter {
 
     private TypePrinter typePrinter;
 

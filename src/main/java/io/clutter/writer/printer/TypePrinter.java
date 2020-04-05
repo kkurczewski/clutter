@@ -10,6 +10,7 @@ import static java.lang.String.format;
 public class TypePrinter {
 
     public static final String DEFAULT_IMPORT = "java.lang";
+
     private final Imports imports;
 
     TypePrinter() {
@@ -41,7 +42,7 @@ public class TypePrinter {
                 : enumerated.getClass().getCanonicalName() + '.' + enumerated.name();
     }
 
-    String printGenerics(Collection<? extends BoxedType> boxedType) {
+    public String printGenerics(Collection<? extends BoxedType> boxedType) {
         return boxedType.stream()
                 .map(this::print)
                 .reduce((first, second) -> first + ", " + second)

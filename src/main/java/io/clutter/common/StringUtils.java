@@ -1,4 +1,4 @@
-package io.clutter.javax.factory.common;
+package io.clutter.common;
 
 import java.util.stream.Collectors;
 

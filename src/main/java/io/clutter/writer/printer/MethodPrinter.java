@@ -6,19 +6,17 @@ import io.clutter.model.method.modifiers.MethodTrait;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.clutter.writer.printer.PrinterUtils.joinNonBlank;
 import static io.clutter.writer.printer.PrinterUtils.nested;
 
-final public class MethodPrinter {
+public class MethodPrinter {
 
     public static final String SEPARATOR = " ";
 
     private final TypePrinter typePrinter;
     private final AnnotationPrinter annotationPrinter;
-    private final List<String> lines = new LinkedList<>();
     private final ParamPrinter paramPrinter;
 
     public MethodPrinter(TypePrinter typePrinter, AnnotationPrinter annotationPrinter, ParamPrinter paramPrinter) {
@@ -31,7 +29,10 @@ final public class MethodPrinter {
         this(typePrinter, new AnnotationPrinter(typePrinter), new ParamPrinter(typePrinter));
     }
 
+    @SuppressWarnings("CollectionAddAllCanBeReplacedWithConstructor")
     public List<String> print(Method method) {
+        List<String> lines = new LinkedList<>();
+
         lines.addAll(annotations(method));
         if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
             lines.add(methodDeclaration(method) + "(" + paramPrinter.print(method.getParams()) + ");");

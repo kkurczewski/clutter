@@ -1,8 +1,8 @@
-package io.clutter.javax.factory.common;
+package io.clutter.common;
 
 import java.util.function.Function;
 
-import static io.clutter.javax.factory.common.StringUtils.toPascalCase;
+import static io.clutter.common.StringUtils.toPascalCase;
 import static java.lang.String.format;
 
 final public class NamingConventions {

@@ -1,6 +1,5 @@
 package io.clutter.writer.printer;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,8 +32,7 @@ final public class PrinterUtils {
 
         return lines
                 .stream()
-                .filter(not(String::isBlank))
-                .map("\t"::concat)
+                .map(line -> line.isBlank() ? line : "\t" + line)
                 .collect(toList());
     }
 }

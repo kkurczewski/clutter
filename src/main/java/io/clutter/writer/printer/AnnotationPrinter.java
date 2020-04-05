@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 
-final public class AnnotationPrinter {
+public class AnnotationPrinter {
 
     private final TypePrinter typePrinter;
 
