@@ -32,6 +32,8 @@ public class TypePrinter {
             return ((WildcardType) type).getAlias();
         } else if (type instanceof BoxedType) {
             return print(type.getType());
+        } else if (type instanceof DynamicType) {
+            return ((DynamicType) type).getName();
         }
         return type.getType().getSimpleName();
     }
