@@ -15,6 +15,8 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
+import java.util.Map;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
@@ -27,7 +29,7 @@ import static org.mockito.Mockito.verify;
 class BasicProcessingTest {
 
     @Captor
-    ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +56,7 @@ class BasicProcessingTest {
         assertThat(captor.getValue()
                 .get(TestElements.BarClass.class)
                 .stream()
-                .map(String::valueOf))
+                .map(ClassType::getFullyQualifiedName))
                 .containsExactlyInAnyOrder("io.clutter.FirstBarClass", "io.clutter.SecondBarClass");
     }
 
@@ -78,12 +80,12 @@ class BasicProcessingTest {
         assertThat(captor.getValue()
                 .get(TestElements.BarClass.class)
                 .stream()
-                .map(String::valueOf))
+                .map(ClassType::getFullyQualifiedName))
                 .containsExactlyInAnyOrder("io.clutter.FirstBarClass", "io.clutter.SecondBarClass");
         assertThat(captor.getValue()
                 .get(TestElements.FooClass.class)
                 .stream()
-                .map(String::valueOf))
+                .map(ClassType::getFullyQualifiedName))
                 .containsExactlyInAnyOrder("io.clutter.SomeFooClass");
     }
 

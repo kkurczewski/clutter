@@ -8,11 +8,11 @@ final public class FileGenerator {
 
     private final Filer filer;
 
-    public FileGenerator(Filer filer) {
+    FileGenerator(Filer filer) {
         this.filer = filer;
     }
 
-    public void createSourceFile(JavaFile javaFile) {
+    public void writeSourceFile(JavaFile javaFile) {
         try (var writer = filer.createSourceFile(javaFile.getFullyQualifiedName()).openWriter()) {
             javaFile.writeTo(writer);
         } catch (IOException e) {

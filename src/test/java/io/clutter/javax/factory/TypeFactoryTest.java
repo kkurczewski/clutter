@@ -1,13 +1,13 @@
 package io.clutter.javax.factory;
 
+import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements.BarClass;
-import io.clutter.javax.extractor.TypeExtractor;
-import io.clutter.javax.factory.types.TypeFactory;
+import io.clutter.model.classtype.ClassType;
+import io.clutter.model.field.Field;
 import io.clutter.model.type.ContainerType;
 import io.clutter.model.type.Type;
-import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +16,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -42,7 +42,7 @@ public class TypeFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     public void setUp() {
@@ -79,11 +79,11 @@ public class TypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        Type type = extractField(captor.getValue()).orElseThrow();
+        Type type = extractFirstField(captor.getValue()).orElseThrow();
         assertThat(type.getType()).isEqualTo(clazz);
     }
 
@@ -111,11 +111,11 @@ public class TypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        Type type = extractField(captor.getValue()).orElseThrow();
+        Type type = extractFirstField(captor.getValue()).orElseThrow();
         assertThat(type.getClass()).isEqualTo(ContainerType.class);
         assertThat(type.getType()).isEqualTo(List.class);
     }
@@ -144,27 +144,23 @@ public class TypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        Type type = extractField(captor.getValue()).orElseThrow();
-        assertThat(type.getClass()).isEqualTo(ContainerType.class);
-        assertThat(type.getType()).isEqualTo(Map.class);
+        Type fieldType = extractFirstField(captor.getValue()).orElseThrow();
+
+        assertThat(fieldType).isInstanceOf(ContainerType.class);
+        assertThat(fieldType.getType()).isEqualTo(Map.class);
     }
 
-    private Optional<Type> extractField(ProcessorAggregate aggregate) {
+    private Optional<Type> extractFirstField(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                // get annotated elements
                 .get(BarClass.class)
                 .stream()
-                // get fields
-                .map(TypeExtractor::new)
-                .map(TypeExtractor::extractFields)
+                .map(ClassType::getFields)
                 .flatMap(Collection::stream)
                 .findFirst()
-                .map(VariableElement::asType)
-                // extract type
-                .map(TypeFactory::from);
+                .map(Field::getType);
     }
 }

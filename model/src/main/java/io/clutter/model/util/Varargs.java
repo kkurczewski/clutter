@@ -1,4 +1,4 @@
-package io.clutter.common;
+package io.clutter.model.util;
 
 import java.util.Collections;
 import java.util.LinkedList;

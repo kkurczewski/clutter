@@ -1,4 +1,4 @@
-package io.clutter.common;
+package io.clutter.model.util;
 
 import java.util.HashSet;
 import java.util.Map;

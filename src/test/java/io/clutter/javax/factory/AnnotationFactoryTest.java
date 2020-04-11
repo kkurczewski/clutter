@@ -2,9 +2,8 @@ package io.clutter.javax.factory;
 
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.javax.factory.annotation.AnnotationFactory;
 import io.clutter.model.annotation.AnnotationType;
-import io.clutter.processor.ProcessorAggregate;
+import io.clutter.model.classtype.ClassType;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,10 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import javax.annotation.Nonnull;
-import javax.lang.model.element.Element;
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,7 +34,7 @@ class AnnotationFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     public void setUp() {
@@ -136,16 +136,12 @@ class AnnotationFactoryTest {
         assertThat(reflect.annotationArray()).isEmpty();
     }
 
-    private Optional<AnnotationType> extractAnnotation(ProcessorAggregate aggregate) {
+    private Optional<AnnotationType> extractAnnotation(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                // get annotated elements
                 .get(Aggregate.class)
                 .stream()
-                // get annotations
-                .map(Element::getAnnotationMirrors)
+                .map(ClassType::getAnnotations)
                 .flatMap(Collection::stream)
-                .findFirst()
-                // extract annotation type
-                .map(AnnotationFactory::from);
+                .findFirst();
     }
 }

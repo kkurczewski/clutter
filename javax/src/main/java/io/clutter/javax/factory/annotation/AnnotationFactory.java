@@ -7,10 +7,12 @@ import io.clutter.model.annotation.param.AnnotationValue;
 
 import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 final public class AnnotationFactory {
 

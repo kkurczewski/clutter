@@ -1,14 +1,14 @@
 package io.clutter.processor;
 
+import io.clutter.javax.factory.ClassFactory;
+import io.clutter.javax.factory.types.BoxedTypeFactory;
+import io.clutter.model.classtype.ClassType;
 import io.clutter.processor.exception.AnnotationProcessorException;
 import io.clutter.processor.validator.TypeValidator;
 import io.clutter.processor.validator.exception.ValidationException;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.lang.annotation.Annotation;
@@ -18,11 +18,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static io.clutter.javax.extractor.Filters.CLASS;
+import static io.clutter.javax.extractor.Filters.INTERFACE;
 import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-public class SimpleProcessor extends AbstractProcessor {
+/**
+ * TODO
+ */
+public class SimpleProcessor extends AbstractSimpleProcessor {
 
     private static final String ANNOTATION_WILDCARD = "*";
 
@@ -51,14 +56,12 @@ public class SimpleProcessor extends AbstractProcessor {
     }
 
     /**
-     * Provides {@link ProcessorAggregate} with annotated classes for processing
+     * Provides map with annotated classes for processing
      * and {@link FileGenerator} for generating new files.
      * <br>
-     * Use {@link SimpleProcessor#printError(String)}, {@link SimpleProcessor#printError(String, Element)} or {@link SimpleProcessor#getMessager()} to report errors to console.
-     * <br>
-     * This method provides simplified implementation of {@link javax.annotation.processing.Processor#process(Set, RoundEnvironment)}
+     * Use {@link SimpleProcessor#printError(String)}, {@link SimpleProcessor#printWarn(String)} or {@link SimpleProcessor#printInfo(String)} to log on console.
      */
-    public void process(ProcessorAggregate elements, FileGenerator fileGenerator) {
+    public void process(Map<Class<? extends Annotation>, Set<ClassType>> aggregate, FileGenerator fileGenerator) {
     }
 
     /**
@@ -78,7 +81,7 @@ public class SimpleProcessor extends AbstractProcessor {
 
         try {
             validate(annotations, roundEnv);
-            process(new ProcessorAggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
+            process(aggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
         } catch (AnnotationProcessorException e) {
             printError(e.getMessage());
         }
@@ -95,26 +98,16 @@ public class SimpleProcessor extends AbstractProcessor {
         return sourceVersion;
     }
 
-    final protected Messager getMessager() {
-        return super.processingEnv.getMessager();
-    }
-
-    /**
-     * Provides simple API to report errors to console.
-     * <br>
-     * For fine-grained control use {@link SimpleProcessor#getMessager()}
-     */
-    final protected void printError(String message, Element element) {
-        getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
-    }
-
-    /**
-     * Provides simple API to report errors to console.
-     * <br>
-     * For fine-grained control use {@link SimpleProcessor#getMessager()}
-     */
     final protected void printError(String message) {
-        getMessager().printMessage(Diagnostic.Kind.ERROR, message);
+        super.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message);
+    }
+
+    final protected void printWarn(String message) {
+        super.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
+    }
+
+    final protected void printInfo(String message) {
+        super.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
     }
 
     private void validate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -141,5 +134,26 @@ public class SimpleProcessor extends AbstractProcessor {
         if (!nonEmptyViolations.isEmpty()) {
             throw new ValidationException(violations);
         }
+    }
+
+    private Map<Class<? extends Annotation>, Set<ClassType>> aggregate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        return annotations
+                .stream()
+                .collect(toMap(
+                        this::getAnnotationType,
+                        annotation -> roundEnv
+                                .getElementsAnnotatedWith(annotation)
+                                .stream()
+                                .filter(CLASS.or(INTERFACE))
+                                .map(TypeElement.class::cast)
+                                .map(ClassFactory::from)
+                                .collect(toSet())));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends Annotation> getAnnotationType(TypeElement annotation) {
+        return (Class<? extends Annotation>) BoxedTypeFactory
+                .from(annotation.asType())
+                .getType();
     }
 }

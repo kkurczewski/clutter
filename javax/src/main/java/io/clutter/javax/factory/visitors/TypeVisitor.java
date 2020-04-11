@@ -1,8 +1,8 @@
 package io.clutter.javax.factory.visitors;
 
-import io.clutter.common.PrimitiveUtils;
 import io.clutter.model.type.PrimitiveType;
 import io.clutter.model.type.Type;
+import io.clutter.model.util.PrimitiveUtils;
 
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.NoType;

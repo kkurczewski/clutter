@@ -1,11 +1,10 @@
 package io.clutter.javax.extractor;
 
-import io.clutter.common.Varargs;
-
 import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
+import static io.clutter.model.util.Varargs.concat;
 import static javax.lang.model.type.TypeKind.VOID;
 
 /**
@@ -31,7 +30,7 @@ final public class Filters {
 
     @SafeVarargs
     public static Predicate<Element> isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return element -> Varargs.concat(annotation, more)
+        return element -> concat(annotation, more)
                 .stream()
                 .anyMatch(a -> element.getAnnotation(a) != null);
     }

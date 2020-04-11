@@ -1,8 +1,8 @@
 package io.clutter.writer.printer;
 
-import io.clutter.javax.factory.annotation.AnnotationFactory;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.annotation.param.AnnotationValue;
+import io.clutter.javax.factory.annotation.AnnotationFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;

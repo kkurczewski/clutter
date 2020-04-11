@@ -1,12 +1,12 @@
 package io.clutter.javax.factory;
 
+import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements;
-import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
 import io.clutter.model.field.modifiers.FieldVisibility;
-import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import javax.lang.model.element.VariableElement;
-import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,7 +34,7 @@ class FieldTypeFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ class FieldTypeFactoryTest {
 
     @Test
     void buildFieldFromVariableElement() {
-        JavaFileObject inputFile = forSourceLines(
+        var inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
                 "@io.clutter.TestElements.BarClass",
@@ -53,25 +53,21 @@ class FieldTypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
 
-        VariableElement field = extractField(captor.getValue()).orElseThrow();
-        Field created = FieldFactory.from(field);
+        Optional<Field> field = extractFirstField(captor.getValue());
         Field expected = new Field("foo", int.class).setVisibility(FieldVisibility.PRIVATE);
-        assertThat(created).isEqualTo(expected);
+        assertThat(field).hasValue(expected);
     }
 
-    private Optional<? extends VariableElement> extractField(ProcessorAggregate aggregate) {
+    private Optional<Field> extractFirstField(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                // get annotated elements
                 .get(TestElements.BarClass.class)
                 .stream()
-                // get fields
-                .map(TypeExtractor::new)
-                .map(TypeExtractor::extractFields)
+                .map(ClassType::getFields)
                 .flatMap(Collection::stream)
                 .findFirst();
     }

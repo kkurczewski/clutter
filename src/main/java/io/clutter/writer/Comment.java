@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.clutter.common.Varargs.concat;
+import static io.clutter.model.util.Varargs.concat;
 
 final public class Comment {
 

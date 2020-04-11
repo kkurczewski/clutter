@@ -1,5 +1,6 @@
 package io.clutter.javax.factory;
 
+import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements.BarClass;
@@ -8,7 +9,6 @@ import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
 import io.clutter.model.param.Param;
-import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,10 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import javax.annotation.Nonnull;
-import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
@@ -37,7 +39,7 @@ class ClassFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     void setUp() {
@@ -59,15 +61,11 @@ class ClassFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        TypeElement typeElement = captor.getValue()
-                .get(BarClass.class)
-                .stream()
-                .findFirst()
-                .orElseThrow();
+        Optional<ClassType> classType = extractFirstClass(captor.getValue());
 
         ClassType expected = new ClassType("com.test.TestClass")
                 .setAnnotations(BarClass.class)
@@ -80,6 +78,13 @@ class ClassFactoryTest {
                         .setAnnotations(Nonnull.class)
                 );
 
-        assertThat(ClassFactory.from(typeElement)).isEqualTo(expected);
+        assertThat(classType).hasValue(expected);
+    }
+
+    private Optional<ClassType> extractFirstClass(Map<Class<? extends Annotation>, Set<ClassType>> value) {
+        return value
+                .get(BarClass.class)
+                .stream()
+                .findFirst();
     }
 }

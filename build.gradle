@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
@@ -11,6 +12,10 @@ repositories {
 }
 
 dependencies {
+
+    implementation project(":javax")
+    api project(":model")
+
     testImplementation 'com.google.testing.compile:compile-testing:0.18'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
     testImplementation 'org.assertj:assertj-core:3.11.1'

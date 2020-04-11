@@ -1,16 +1,15 @@
 package io.clutter.model.annotation;
 
-import io.clutter.common.PrimitiveUtils;
-import io.clutter.common.Varargs;
 import io.clutter.model.annotation.param.AnnotationValue;
+import io.clutter.model.util.PrimitiveUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Proxy;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static io.clutter.model.util.PrimitiveUtils.*;
+import static io.clutter.model.util.Varargs.concat;
 import static java.util.Objects.hash;
 
 final public class AnnotationType {
@@ -46,7 +45,7 @@ final public class AnnotationType {
 
     @SafeVarargs
     final public boolean isInstanceOf(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return Varargs.concat(annotation, more).stream().anyMatch(type::equals);
+        return concat(annotation, more).stream().anyMatch(type::equals);
     }
 
     /**
@@ -67,7 +66,7 @@ final public class AnnotationType {
                         return type;
                     }
                     Object returnValue = getParam(method.getName()).orElseGet(method::getDefaultValue);
-                    if (returnValue.getClass() != PrimitiveUtils.toBoxed(method.getReturnType()) && !method.getReturnType().isAssignableFrom(returnValue.getClass())) {
+                    if (returnValue.getClass() != toBoxed(method.getReturnType()) && !method.getReturnType().isAssignableFrom(returnValue.getClass())) {
                         throw new AnnotationTypeMismatchException(method, returnValue.getClass().getCanonicalName());
                     }
                     return returnValue;

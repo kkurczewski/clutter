@@ -1,13 +1,13 @@
 package io.clutter.javax.factory;
 
+import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements;
-import io.clutter.javax.extractor.TypeExtractor;
+import io.clutter.model.classtype.ClassType;
 import io.clutter.model.method.Method;
 import io.clutter.model.method.modifiers.MethodVisibility;
 import io.clutter.model.param.Param;
-import io.clutter.processor.ProcessorAggregate;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ class MethodFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     public void setUp() {
@@ -54,26 +55,21 @@ class MethodFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
 
-        ExecutableElement method = extractMethods(captor.getValue()).orElseThrow();
-        Method created = MethodFactory.from(method);
         Method expected = new Method("foo", int.class, new Param("l", long.class))
                 .setVisibility(MethodVisibility.PUBLIC);
-        assertThat(created).isEqualTo(expected);
+        assertThat(extractFirstMethod(captor.getValue())).hasValue(expected);
     }
 
-    private Optional<ExecutableElement> extractMethods(ProcessorAggregate aggregate) {
+    private Optional<Method> extractFirstMethod(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                // get annotated elements
                 .get(TestElements.BarClass.class)
                 .stream()
-                // get methods
-                .map(TypeExtractor::new)
-                .map(TypeExtractor::extractMethods)
+                .map(ClassType::getMethods)
                 .flatMap(Collection::stream)
                 .findFirst();
     }

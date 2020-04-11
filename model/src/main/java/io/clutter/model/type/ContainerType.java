@@ -1,8 +1,8 @@
 package io.clutter.model.type;
 
-import io.clutter.common.Varargs;
-
 import java.util.*;
+
+import static io.clutter.model.util.Varargs.concat;
 
 final public class ContainerType extends BoxedType {
 
@@ -15,13 +15,12 @@ final public class ContainerType extends BoxedType {
 
     @Deprecated
     public static ContainerType of(Class<?> container, BoxedType type, BoxedType... more) {
-        return new ContainerType(container, Varargs.concat(type, more).toArray(BoxedType[]::new));
+        return new ContainerType(container, concat(type, more).toArray(BoxedType[]::new));
     }
 
     @Deprecated
     public static ContainerType of(Class<?> container, Class<?> type, Class<?>... more) {
-        return new ContainerType(container, Varargs
-                .concat(type, more)
+        return new ContainerType(container, concat(type, more)
                 .stream()
                 .map(BoxedType::of)
                 .toArray(BoxedType[]::new));

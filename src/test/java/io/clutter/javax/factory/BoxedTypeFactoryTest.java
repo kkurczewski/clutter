@@ -1,13 +1,13 @@
 package io.clutter.javax.factory;
 
+import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import io.clutter.TestElements.BarClass;
-import io.clutter.javax.extractor.TypeExtractor;
-import io.clutter.javax.factory.types.BoxedTypeFactory;
-import io.clutter.model.type.BoxedType;
+import io.clutter.model.classtype.ClassType;
+import io.clutter.model.field.Field;
 import io.clutter.model.type.ContainerType;
-import io.clutter.processor.ProcessorAggregate;
+import io.clutter.model.type.Type;
 import io.clutter.processor.SimpleProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +16,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -43,7 +43,7 @@ public class BoxedTypeFactoryTest {
     private Compiler compiler;
 
     @Captor
-    private ArgumentCaptor<ProcessorAggregate> captor;
+    ArgumentCaptor<Map<Class<? extends Annotation>, Set<ClassType>>> captor;
 
     @BeforeEach
     public void setUp() {
@@ -77,11 +77,12 @@ public class BoxedTypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
+        Type boxedType = extractField(captor.getValue()).orElseThrow();
+
         assertThat(boxedType.getType()).isEqualTo(clazz);
     }
 
@@ -109,11 +110,12 @@ public class BoxedTypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
+        Type boxedType = extractField(captor.getValue()).orElseThrow();
+
         assertThat(boxedType.getClass()).isEqualTo(ContainerType.class);
         assertThat(boxedType.getType()).isEqualTo(List.class);
     }
@@ -142,53 +144,23 @@ public class BoxedTypeFactoryTest {
                 "}"
         );
 
-        var compilation = compiler.compile(inputFile);
+        Compilation compilation = compiler.compile(inputFile);
         CompilationSubject.assertThat(compilation).succeeded();
 
         verify(simpleProcessor).process(captor.capture(), any());
-        BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
+        Type boxedType = extractField(captor.getValue()).orElseThrow();
+
         assertThat(boxedType.getClass()).isEqualTo(ContainerType.class);
         assertThat(boxedType.getType()).isEqualTo(Map.class);
     }
 
-    @ParameterizedTest(name = "given {0}")
-    @ValueSource(classes = {
-            int.class,
-            int[].class,
-            int[][].class,
-    })
-    public void throwIfPrimitivePassed(Class<?> clazz) {
-        JavaFileObject inputFile = forSourceLines(
-                "com.test.TestClass",
-                "package com.test;",
-                "@io.clutter.TestElements.BarClass",
-                "public class TestClass {",
-                "   private {} f;".replace("{}", clazz.getCanonicalName()),
-                "}"
-        );
-
-        var compilation = compiler.compile(inputFile);
-        CompilationSubject.assertThat(compilation).succeeded();
-
-        verify(simpleProcessor).process(captor.capture(), any());
-        assertThrows(UnsupportedOperationException.class, () -> {
-            BoxedType boxedType = extractField(captor.getValue()).orElseThrow();
-            assertThat(boxedType.getType()).isEqualTo(Map.class);
-        });
-    }
-
-    private Optional<BoxedType> extractField(ProcessorAggregate aggregate) {
+    private Optional<Type> extractField(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                // get annotated elements
                 .get(BarClass.class)
                 .stream()
-                // get fields
-                .map(TypeExtractor::new)
-                .map(TypeExtractor::extractFields)
+                .map(ClassType::getFields)
                 .flatMap(Collection::stream)
-                .findFirst()
-                .map(VariableElement::asType)
-                // extract type
-                .map(BoxedTypeFactory::from);
+                .map(Field::getType)
+                .findFirst();
     }
 }

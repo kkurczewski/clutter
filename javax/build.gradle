@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'io.clutter'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":model")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
