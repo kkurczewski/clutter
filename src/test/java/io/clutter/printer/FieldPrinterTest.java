@@ -1,6 +1,9 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.field.Field;
+import io.clutter.printer.AutoImportingTypePrinter;
+import io.clutter.printer.FieldPrinter;
+import io.clutter.printer.TypePrinter;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nonnull;

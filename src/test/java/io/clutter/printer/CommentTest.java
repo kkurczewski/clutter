@@ -1,5 +1,6 @@
-package io.clutter.writer;
+package io.clutter.printer;
 
+import io.clutter.model.file.Comment;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

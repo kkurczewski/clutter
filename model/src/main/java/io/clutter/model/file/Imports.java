@@ -1,4 +1,4 @@
-package io.clutter.writer;
+package io.clutter.model.file;
 
 import java.util.HashSet;
 import java.util.LinkedList;

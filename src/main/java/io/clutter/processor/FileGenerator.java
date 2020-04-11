@@ -1,5 +1,7 @@
 package io.clutter.processor;
 
+import io.clutter.model.file.JavaFile;
+
 import javax.annotation.processing.Filer;
 import java.io.IOException;
 import java.io.UncheckedIOException;

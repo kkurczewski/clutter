@@ -1,9 +1,12 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.method.Method;
 import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.param.Param;
 import io.clutter.model.type.ContainerType;
+import io.clutter.printer.AutoImportingTypePrinter;
+import io.clutter.printer.MethodPrinter;
+import io.clutter.printer.TypePrinter;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nonnull;

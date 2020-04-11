@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.method.Method;
 import io.clutter.model.method.modifiers.MethodTrait;
@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.clutter.writer.printer.PrinterUtils.joinNonBlank;
-import static io.clutter.writer.printer.PrinterUtils.nested;
+import static io.clutter.printer.PrinterUtils.joinNonBlank;
+import static io.clutter.printer.PrinterUtils.nested;
 
-public class MethodPrinter {
+final class MethodPrinter {
 
     public static final String SEPARATOR = " ";
 

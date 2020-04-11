@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.param.Param;
 
@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import static java.util.stream.Collectors.joining;
 
-public class ParamPrinter {
+final class ParamPrinter {
 
     private final TypePrinter typePrinter;
 

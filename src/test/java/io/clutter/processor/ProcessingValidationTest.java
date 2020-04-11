@@ -4,12 +4,12 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import io.clutter.processor.validator.AnnotationValidatorBuilder;
-import io.clutter.processor.validator.TypeValidator;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
+import io.clutter.model.file.JavaFileBuilder;
 import io.clutter.model.method.Method;
-import io.clutter.writer.ClassTypeWriter;
+import io.clutter.processor.validator.AnnotationValidatorBuilder;
+import io.clutter.processor.validator.TypeValidator;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;
@@ -181,9 +181,7 @@ class ProcessingValidationTest {
 
     private JavaFileObject javaFile(ClassType classType) {
         return JavaFileObjects.forSourceLines(classType
-                .getFullyQualifiedName(), new ClassTypeWriter.Builder()
-                .build()
-                .toJavaFileBuilder(classType)
+                .getFullyQualifiedName(), JavaFileBuilder.from(classType)
                 .build()
                 .getLines()
         );

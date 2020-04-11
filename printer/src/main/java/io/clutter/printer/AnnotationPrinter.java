@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.annotation.param.AnnotationValue;
@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 
-public class AnnotationPrinter {
+final class AnnotationPrinter {
 
     private final TypePrinter typePrinter;
 

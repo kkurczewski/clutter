@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.field.Field;
 import io.clutter.model.field.modifiers.FieldTrait;
@@ -7,10 +7,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.clutter.writer.printer.PrinterUtils.*;
+import static io.clutter.printer.PrinterUtils.*;
 import static java.util.stream.Collectors.toList;
 
-public class FieldPrinter {
+final class FieldPrinter {
 
     private static final String SEPARATOR = " ";
 

@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.annotation.param.AnnotationValue;
@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.clutter.writer.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum;
+import static io.clutter.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AnnotationPrinterTest {
@@ -149,9 +149,9 @@ class AnnotationPrinterTest {
         AnnotationType annotationType = new AnnotationType(EnumAnnotation.class, params);
         List<String> lines = annotationPrinter.print(annotationType);
 
-        assertThat(lines).containsExactly("@io.clutter.writer.printer.AnnotationPrinterTest.EnumAnnotation(" +
-                "value = io.clutter.writer.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.FOO, " +
-                "values = {io.clutter.writer.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.BAR, io.clutter.writer.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.BAZ})"
+        assertThat(lines).containsExactly("@io.clutter.printer.AnnotationPrinterTest.EnumAnnotation(" +
+                "value = io.clutter.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.FOO, " +
+                "values = {io.clutter.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.BAR, io.clutter.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum.BAZ})"
         );
     }
 

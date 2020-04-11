@@ -1,9 +1,9 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.ContainerType;
 import io.clutter.model.type.Type;
-import io.clutter.writer.Imports;
+import io.clutter.model.file.Imports;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Executable;

@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 
-final public class PrinterUtils {
+final class PrinterUtils {
 
     private PrinterUtils() {
     }
@@ -15,8 +15,8 @@ final public class PrinterUtils {
     /**
      * Joins non blank strings using given separator
      */
-    public static <T> String joinNonBlank(List<T> traits, String separator) {
-        return traits.stream()
+    public static <T> String joinNonBlank(List<T> elements, String separator) {
+        return elements.stream()
                 .map(String::valueOf)
                 .filter(not(String::isBlank))
                 .reduce((first, second) -> first + separator + second)

@@ -1,6 +1,8 @@
-package io.clutter.writer;
+package io.clutter.model.file;
 
-import io.clutter.processor.JavaFile;
+import io.clutter.model.classtype.ClassType;
+import io.clutter.printer.AutoImportingTypePrinter;
+import io.clutter.printer.ClassPrinter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-public final class JavaFileBuilder {
+final public class JavaFileBuilder {
 
     private final String packageName;
     private final String fullyQualifiedName;
@@ -17,11 +19,24 @@ public final class JavaFileBuilder {
 
     private Comment comment;
 
-    public JavaFileBuilder(String packageName, String fullyQualifiedName, Imports imports, List<String> body) {
+    private JavaFileBuilder(String packageName, String fullyQualifiedName, Imports imports, List<String> body) {
         this.packageName = requireNonNull(packageName);
         this.fullyQualifiedName = requireNonNull(fullyQualifiedName);
         this.imports = requireNonNull(imports);
         this.body = requireNonNull(body);
+    }
+
+    public static JavaFileBuilder from(ClassType classType) {
+        var typePrinter = new AutoImportingTypePrinter();
+        var classPrinter = new ClassPrinter(typePrinter);
+        var body = classPrinter.print(classType);
+
+        return new JavaFileBuilder(
+                classType.getPackage(),
+                classType.getFullyQualifiedName(),
+                typePrinter.getImports(),
+                body
+        );
     }
 
     public JavaFileBuilder addImport(Class<?> clazz) {

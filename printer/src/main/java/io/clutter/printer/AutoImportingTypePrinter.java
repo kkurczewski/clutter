@@ -1,8 +1,8 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
-import io.clutter.writer.Imports;
+import io.clutter.model.file.Imports;
 
-public class AutoImportingTypePrinter extends TypePrinter {
+public final class AutoImportingTypePrinter extends TypePrinter {
 
     private Imports imports = new Imports();
 

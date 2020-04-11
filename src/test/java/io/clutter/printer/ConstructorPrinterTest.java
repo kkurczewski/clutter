@@ -1,8 +1,11 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.constructor.Constructor;
 import io.clutter.model.param.Param;
 import io.clutter.model.type.ContainerType;
+import io.clutter.printer.AutoImportingTypePrinter;
+import io.clutter.printer.ConstructorPrinter;
+import io.clutter.printer.TypePrinter;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nonnull;

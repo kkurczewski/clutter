@@ -29,11 +29,10 @@ final public class ClassFactory {
             throw new IllegalArgumentException(classType.getKind().name());
         }
 
-        var className = classType.getQualifiedName().toString();
         var modifiers = classType.getModifiers();
         var extractor = new TypeExtractor(classType);
         var type = BoxedTypeFactory.from(classType.getSuperclass());
-        return new ClassType(className)
+        return new ClassType(classType.getQualifiedName().toString())
                 .setAnnotations(AnnotationFactory.from(classType))
                 .setGenericParameters(generics(classType))
                 .setVisibility(visibility(modifiers))

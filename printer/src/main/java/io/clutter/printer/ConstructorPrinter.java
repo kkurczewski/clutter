@@ -1,4 +1,4 @@
-package io.clutter.writer.printer;
+package io.clutter.printer;
 
 import io.clutter.model.constructor.Constructor;
 
@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.clutter.writer.printer.PrinterUtils.joinNonBlank;
-import static io.clutter.writer.printer.PrinterUtils.nested;
+import static io.clutter.printer.PrinterUtils.joinNonBlank;
+import static io.clutter.printer.PrinterUtils.nested;
 import static java.util.stream.Collectors.toList;
 
-public class ConstructorPrinter {
+final class ConstructorPrinter {
 
     public static final String SEPARATOR = " ";
 

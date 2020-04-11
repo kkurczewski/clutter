@@ -1,4 +1,4 @@
-package io.clutter.processor;
+package io.clutter.model.file;
 
 import java.io.IOException;
 import java.io.Writer;

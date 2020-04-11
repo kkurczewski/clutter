@@ -10,7 +10,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor7;
 import java.lang.reflect.Array;
 import java.util.List;
 
-final public class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<AnnotationValue, Class<?>> {
+final class AnnotationValueVisitor extends SimpleAnnotationValueVisitor7<AnnotationValue, Class<?>> {
 
     @Override
     public AnnotationValue visitType(TypeMirror t, Class<?> clazz) {
