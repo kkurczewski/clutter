@@ -3,14 +3,8 @@ package io.clutter.processor;
 import io.clutter.javax.factory.ClassFactory;
 import io.clutter.javax.factory.types.BoxedTypeFactory;
 import io.clutter.model.classtype.ClassType;
-import io.clutter.processor.exception.AnnotationProcessorException;
-import io.clutter.processor.validator.TypeValidator;
-import io.clutter.processor.validator.exception.ValidationException;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Completion;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -18,7 +12,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +19,25 @@ import java.util.stream.Stream;
 
 import static io.clutter.javax.extractor.Filters.CLASS;
 import static io.clutter.javax.extractor.Filters.INTERFACE;
-import static java.lang.String.valueOf;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.*;
 
 /**
- * TODO
+ * Simple implementation of {@link Processor}.<br>
+ * <br>
+ * <p>
+ * In order to enable it create file under path (take care with directories):
+ * <pre>
+ *     src/resources/META-INF/services/javax.annotation.processing.Processor
+ * </pre>
+ * with content equal to canonical name of {@link Processor} instance, e.g.
+ * <pre>
+ *     io.clutter.processor.SimpleProcessor
+ * </pre>
+ * You may need to subclass this class and provide custom behaviour
+ * {@see SimpleProcessor#process(Map, FileGenerator)} method
+ * </p>
+ * @see SimpleProcessor#process(Map, FileGenerator)
  */
 public class SimpleProcessor extends AbstractProcessor {
 
@@ -39,17 +45,10 @@ public class SimpleProcessor extends AbstractProcessor {
 
     private final SourceVersion sourceVersion;
     private final Set<String> annotationTypes;
-    private final TypeValidator validator;
 
     @SafeVarargs
     public SimpleProcessor(SourceVersion version, Class<? extends Annotation>... annotations) {
-        this(version, null, annotations);
-    }
-
-    @SafeVarargs
-    public SimpleProcessor(SourceVersion version, TypeValidator validator, Class<? extends Annotation>... annotations) {
         this.sourceVersion = Objects.requireNonNull(version, "Version may not be null");
-        this.validator = validator;
         Objects.requireNonNull(annotations, "Annotations may not be null");
 
         if (annotations.length > 0) {
@@ -64,10 +63,11 @@ public class SimpleProcessor extends AbstractProcessor {
     /**
      * Provides map with annotated classes for processing
      * and {@link FileGenerator} for generating new files.
-     * <br>
-     * Use {@link SimpleProcessor#printError(String)}, {@link SimpleProcessor#printWarn(String)} or {@link SimpleProcessor#printInfo(String)} to log on console.
+     * <br><br>
+     * Use {@link SimpleProcessor#logError(String)}, {@link SimpleProcessor#logWarn(String)} or {@link SimpleProcessor#logInfo(String)} to log on console.
      */
     public void process(Map<Class<? extends Annotation>, Set<ClassType>> aggregate, FileGenerator fileGenerator) {
+        logInfo(format("Found %s files annotated with one of following annotations: %s", aggregate.size(), aggregate.keySet().stream().map(Class::getCanonicalName).collect(joining(", "))));
     }
 
     /**
@@ -86,10 +86,10 @@ public class SimpleProcessor extends AbstractProcessor {
         }
 
         try {
-            validate(annotations, roundEnv);
             process(aggregate(annotations, roundEnv), new FileGenerator(processingEnv.getFiler()));
-        } catch (AnnotationProcessorException e) {
-            printError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logError("Annotation processing failed: " + e);
         }
         return claim();
     }
@@ -124,42 +124,16 @@ public class SimpleProcessor extends AbstractProcessor {
         return super.isInitialized();
     }
 
-    final protected void printError(String message) {
+    final protected void logError(String message) {
         super.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message);
     }
 
-    final protected void printWarn(String message) {
+    final protected void logWarn(String message) {
         super.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
     }
 
-    final protected void printInfo(String message) {
+    final protected void logInfo(String message) {
         super.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
-    }
-
-    private void validate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (validator == null) {
-            return;
-        }
-
-        var violations = annotations
-                .stream()
-                .map(roundEnv::getElementsAnnotatedWith)
-                .flatMap(Collection::stream)
-                .filter(TypeElement.class::isInstance)
-                .map(TypeElement.class::cast)
-                .collect(toMap(type -> valueOf(type.getQualifiedName()), validator::validate));
-
-        var nonEmptyViolations = violations
-                .entrySet()
-                .stream()
-                .filter(entry -> !entry.getValue().isEmpty())
-                .collect(toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue));
-
-        if (!nonEmptyViolations.isEmpty()) {
-            throw new ValidationException(violations);
-        }
     }
 
     private Map<Class<? extends Annotation>, Set<ClassType>> aggregate(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

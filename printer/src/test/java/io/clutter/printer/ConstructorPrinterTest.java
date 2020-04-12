@@ -11,7 +11,7 @@ import static io.clutter.model.type.PrimitiveType.INT;
 import static io.clutter.model.type.WildcardType.T;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConstructorPrinterTest {
+public class ConstructorPrinterTest {
 
     @Test
     void printConstructor() {

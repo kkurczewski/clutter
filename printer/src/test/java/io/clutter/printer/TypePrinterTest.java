@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TypePrinterTest {
+public class TypePrinterTest {
 
     @Test
     public void shouldPrintType() {

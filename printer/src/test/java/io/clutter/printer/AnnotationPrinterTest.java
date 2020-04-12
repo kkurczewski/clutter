@@ -11,7 +11,7 @@ import java.util.Map;
 import static io.clutter.printer.AnnotationPrinterTest.EnumAnnotation.TestEnum;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AnnotationPrinterTest {
+public class AnnotationPrinterTest {
 
     @SuppressWarnings("unused")
     private @interface PrimitiveAnnotation {

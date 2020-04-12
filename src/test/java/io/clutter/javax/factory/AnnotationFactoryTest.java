@@ -11,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import javax.annotation.Nonnull;
 import javax.tools.JavaFileObject;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -21,14 +20,43 @@ import java.util.Set;
 
 import static com.google.testing.compile.Compiler.javac;
 import static com.google.testing.compile.JavaFileObjects.forSourceLines;
-import static io.clutter.TestElements.*;
 import static javax.lang.model.SourceVersion.RELEASE_11;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class AnnotationFactoryTest {
+public class AnnotationFactoryTest {
+
+    public @interface TestAnnotation {
+
+    }
+
+    public enum TestEnum {
+        FOO, BAR
+    }
+
+    public @interface Aggregate {
+        int intValue();
+
+        String stringValue();
+
+        Class<?> classValue();
+
+        TestEnum enumValue();
+
+        TestAnnotation annotationValue();
+
+        int[] intArray();
+
+        String[] stringArray();
+
+        Class<?>[] classArray();
+
+        TestEnum[] enumArray();
+
+        TestAnnotation[] annotationArray();
+    }
 
     private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, Aggregate.class));
     private Compiler compiler;
@@ -47,27 +75,27 @@ class AnnotationFactoryTest {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
-                "import io.clutter.TestElements.*;",
+                "import io.clutter.javax.factory.AnnotationFactoryTest.*;",
                 "import javax.annotation.Nonnull;",
                 "@Aggregate(",
                 "   intValue=123,",
                 "   stringValue=\"foo\",",
-                "   classValue=BarElement.class,",
+                "   classValue=Integer.class,",
                 "   enumValue=TestEnum.FOO,",
-                "   annotationValue=@FooClass,",
+                "   annotationValue=@TestAnnotation,",
                 "   intArray={456, 789},",
                 "   stringArray={\"bar\", \"baz\"},",
                 "   classArray={",
-                "      BarElement.class,",
-                "      Nonnull.class",
+                "      String.class,",
+                "      Object.class",
                 "   },",
                 "   enumArray={",
                 "      TestEnum.FOO,",
                 "      TestEnum.BAR",
                 "   },",
                 "   annotationArray={",
-                "      @FooClass,",
-                "      @FooClass",
+                "      @TestAnnotation,",
+                "      @TestAnnotation",
                 "   }",
                 ")",
                 "public class TestClass {}"
@@ -83,15 +111,15 @@ class AnnotationFactoryTest {
 
         assertThat(reflect.intValue()).isEqualTo(123);
         assertThat(reflect.stringValue()).isEqualTo("foo");
-        assertThat(reflect.classValue()).isEqualTo(BarElement.class);
+        assertThat(reflect.classValue()).isEqualTo(Integer.class);
         assertThat(reflect.enumValue()).isEqualTo(TestEnum.FOO);
-        assertThat(reflect.annotationValue()).isInstanceOf(FooClass.class);
+        assertThat(reflect.annotationValue()).isInstanceOf(TestAnnotation.class);
 
         assertThat(reflect.intArray()).contains(456, 789);
         assertThat(reflect.stringArray()).contains("bar", "baz");
-        assertThat(reflect.classArray()).contains(BarElement.class, Nonnull.class);
+        assertThat(reflect.classArray()).contains(String.class, Object.class);
         assertThat(reflect.enumArray()).contains(TestEnum.FOO, TestEnum.BAR);
-        assertThat(reflect.annotationArray()).isInstanceOf(FooClass[].class).hasSize(2);
+        assertThat(reflect.annotationArray()).isInstanceOf(TestAnnotation[].class).hasSize(2);
     }
 
     @Test
@@ -99,13 +127,13 @@ class AnnotationFactoryTest {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
-                "import io.clutter.TestElements.*;",
-                "@io.clutter.TestElements.Aggregate(",
+                "import io.clutter.javax.factory.AnnotationFactoryTest.*;",
+                "@io.clutter.javax.factory.AnnotationFactoryTest.Aggregate(",
                 "   intValue=123,",
                 "   stringValue=\"foo\",",
-                "   classValue=BarElement.class,",
+                "   classValue=Integer.class,",
                 "   enumValue=TestEnum.FOO,",
-                "   annotationValue=@FooClass,",
+                "   annotationValue=@TestAnnotation,",
                 "   intArray={},",
                 "   stringArray={},",
                 "   classArray={},",
@@ -125,9 +153,9 @@ class AnnotationFactoryTest {
 
         assertThat(reflect.intValue()).isEqualTo(123);
         assertThat(reflect.stringValue()).isEqualTo("foo");
-        assertThat(reflect.classValue()).isEqualTo(BarElement.class);
+        assertThat(reflect.classValue()).isEqualTo(Integer.class);
         assertThat(reflect.enumValue()).isEqualTo(TestEnum.FOO);
-        assertThat(reflect.annotationValue()).isInstanceOf(FooClass.class);
+        assertThat(reflect.annotationValue()).isInstanceOf(TestAnnotation.class);
 
         assertThat(reflect.intArray()).isEmpty();
         assertThat(reflect.stringArray()).isEmpty();

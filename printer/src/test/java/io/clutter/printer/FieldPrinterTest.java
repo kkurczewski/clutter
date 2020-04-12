@@ -8,7 +8,7 @@ import java.util.List;
 import static io.clutter.model.type.PrimitiveType.INT;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FieldPrinterTest {
+public class FieldPrinterTest {
 
     @Test
     void printField() {

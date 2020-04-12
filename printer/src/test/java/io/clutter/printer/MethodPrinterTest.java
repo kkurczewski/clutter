@@ -12,7 +12,7 @@ import static io.clutter.model.type.PrimitiveType.INT;
 import static io.clutter.model.type.WildcardType.T;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MethodPrinterTest {
+public class MethodPrinterTest {
 
     @Test
     void printRegularMethod() {

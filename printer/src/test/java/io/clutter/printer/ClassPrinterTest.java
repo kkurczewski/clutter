@@ -11,7 +11,7 @@ import java.util.List;
 import static io.clutter.model.constructor.modifiers.ConstructorVisibility.PRIVATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ClassPrinterTest {
+public class ClassPrinterTest {
 
     @Test
     public void shouldBuildJavaFile() {

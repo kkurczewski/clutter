@@ -3,7 +3,6 @@ package io.clutter.javax.factory;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.TestElements.BarClass;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
@@ -33,9 +32,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class ClassFactoryTest {
+public class ClassFactoryTest {
 
-    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, BarClass.class));
+    public @interface TestAnnotation {
+
+    }
+
+    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotation.class));
     private Compiler compiler;
 
     @Captor
@@ -52,7 +55,7 @@ class ClassFactoryTest {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
-                "@io.clutter.TestElements.BarClass",
+                "@io.clutter.javax.factory.ClassFactoryTest.TestAnnotation",
                 "public class TestClass<T> {",
                 "   private int foo;",
                 "   public <U> TestClass(int foo) {}",
@@ -68,7 +71,7 @@ class ClassFactoryTest {
         Optional<ClassType> classType = extractFirstClass(captor.getValue());
 
         ClassType expected = new ClassType("com.test.TestClass")
-                .setAnnotations(BarClass.class)
+                .setAnnotations(TestAnnotation.class)
                 .setGenericParameters(T)
                 .setFields(new Field("foo", INT))
                 .setConstructors(new Constructor("TestClass", new Param("foo", INT))
@@ -83,7 +86,7 @@ class ClassFactoryTest {
 
     private Optional<ClassType> extractFirstClass(Map<Class<? extends Annotation>, Set<ClassType>> value) {
         return value
-                .get(BarClass.class)
+                .get(TestAnnotation.class)
                 .stream()
                 .findFirst();
     }

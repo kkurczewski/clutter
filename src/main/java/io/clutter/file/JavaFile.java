@@ -8,6 +8,10 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @see JavaFileFactory
+ * @see io.clutter.processor.FileGenerator
+ */
 final public class JavaFile {
 
     private final String fullyQualifiedName;

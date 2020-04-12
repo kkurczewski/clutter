@@ -3,7 +3,6 @@ package io.clutter.javax.factory;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.TestElements;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
 import io.clutter.model.field.modifiers.FieldVisibility;
@@ -28,9 +27,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class FieldTypeFactoryTest {
+public class FieldTypeFactoryTest {
 
-    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestElements.BarClass.class));
+    public @interface TestAnnotation {
+
+    }
+
+    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotation.class));
     private Compiler compiler;
 
     @Captor
@@ -47,7 +50,7 @@ class FieldTypeFactoryTest {
         var inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
-                "@io.clutter.TestElements.BarClass",
+                "@io.clutter.javax.factory.FieldTypeFactoryTest.TestAnnotation",
                 "public class TestClass {",
                 "   private int foo;",
                 "}"
@@ -65,7 +68,7 @@ class FieldTypeFactoryTest {
 
     private Optional<Field> extractFirstField(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                .get(TestElements.BarClass.class)
+                .get(TestAnnotation.class)
                 .stream()
                 .map(ClassType::getFields)
                 .flatMap(Collection::stream)

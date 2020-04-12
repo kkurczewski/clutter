@@ -3,10 +3,7 @@ package io.clutter.javax.factory.visitors;
 import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.ContainerType;
 
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.*;
 import javax.lang.model.util.SimpleTypeVisitor7;
 import java.lang.reflect.Array;
 import java.util.List;
@@ -55,6 +52,9 @@ final public class BoxedTypeVisitor extends SimpleTypeVisitor7<BoxedType, Void> 
 
     @Override
     protected BoxedType defaultAction(TypeMirror e, Void nothing) {
-        throw new UnsupportedOperationException(e.getKind().toString());
+        if (e.getKind() == TypeKind.ERROR) {
+            throw new IllegalArgumentException("Could not resolve: " + e.toString());
+        }
+        throw new UnsupportedOperationException("Type not supported: " + e.getKind().toString());
     }
 }

@@ -3,7 +3,6 @@ package io.clutter.javax.factory;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
-import io.clutter.TestElements.BarClass;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
 import io.clutter.model.type.ContainerType;
@@ -32,6 +31,10 @@ import static org.mockito.Mockito.verify;
 
 public class BoxedTypeFactoryTest {
 
+    public @interface TestAnnotation {
+
+    }
+
     public static class NestedTestClass {
 
         public static class DoubleNestedTestClass {
@@ -39,7 +42,7 @@ public class BoxedTypeFactoryTest {
         }
     }
 
-    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, BarClass.class));
+    private final SimpleProcessor simpleProcessor = spy(new SimpleProcessor(RELEASE_11, TestAnnotation.class));
     private Compiler compiler;
 
     @Captor
@@ -71,7 +74,7 @@ public class BoxedTypeFactoryTest {
         JavaFileObject inputFile = forSourceLines(
                 "com.test.TestClass",
                 "package com.test;",
-                "@io.clutter.TestElements.BarClass",
+                "@io.clutter.javax.factory.BoxedTypeFactoryTest.TestAnnotation",
                 "public class TestClass {",
                 "   private {} f;".replace("{}", clazz.getCanonicalName()),
                 "}"
@@ -104,7 +107,7 @@ public class BoxedTypeFactoryTest {
                 "com.test.TestClass",
                 "package com.test;",
                 "import java.util.List;",
-                "@io.clutter.TestElements.BarClass",
+                "@io.clutter.javax.factory.BoxedTypeFactoryTest.TestAnnotation",
                 "public class TestClass<T, U> {",
                 "   private {} f;".replace("{}", generic),
                 "}"
@@ -138,7 +141,7 @@ public class BoxedTypeFactoryTest {
                 "com.test.TestClass",
                 "package com.test;",
                 "import java.util.Map;",
-                "@io.clutter.TestElements.BarClass",
+                "@io.clutter.javax.factory.BoxedTypeFactoryTest.TestAnnotation",
                 "public class TestClass<T, U> {",
                 "   private {} f;".replace("{}", generic),
                 "}"
@@ -156,7 +159,7 @@ public class BoxedTypeFactoryTest {
 
     private Optional<Type> extractField(Map<Class<? extends Annotation>, Set<ClassType>> aggregate) {
         return aggregate
-                .get(BarClass.class)
+                .get(TestAnnotation.class)
                 .stream()
                 .map(ClassType::getFields)
                 .flatMap(Collection::stream)
