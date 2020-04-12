@@ -23,12 +23,10 @@ class ClassPrinterTest {
                         .setVisibility(PRIVATE))
                 .setMethods(new Method("getFoo", int.class));
 
-        List<String> lines = new ClassPrinter(new AutoImportingTypePrinter()).print(classType);
+        TypePrinter typePrinter = new AutoImportingTypePrinter();
+        List<String> lines = new ClassPrinter(typePrinter).print(classType);
 
-        assertThat(lines).containsExactly("package test;",
-                "",
-                "import io.clutter.TestElements.BarClass;",
-                "",
+        assertThat(lines).containsExactly(
                 "@BarClass",
                 "public class InputClass {",
                 "",
@@ -39,6 +37,7 @@ class ClassPrinterTest {
                 "",
                 "\tpublic int getFoo() {",
                 "\t}",
-                "}");
+                "}"
+        );
     }
 }

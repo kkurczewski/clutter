@@ -1,6 +1,6 @@
 package io.clutter.processor;
 
-import io.clutter.model.file.JavaFile;
+import io.clutter.file.JavaFile;
 
 import javax.annotation.processing.Filer;
 import java.io.IOException;

@@ -4,9 +4,9 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
+import io.clutter.file.JavaFileFactory;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
-import io.clutter.model.file.JavaFileBuilder;
 import io.clutter.model.method.Method;
 import io.clutter.processor.validator.AnnotationValidatorBuilder;
 import io.clutter.processor.validator.TypeValidator;
@@ -181,8 +181,8 @@ class ProcessingValidationTest {
 
     private JavaFileObject javaFile(ClassType classType) {
         return JavaFileObjects.forSourceLines(classType
-                .getFullyQualifiedName(), JavaFileBuilder.from(classType)
-                .build()
+                .getFullyQualifiedName(), new JavaFileFactory()
+                .withoutImports(classType)
                 .getLines()
         );
     }

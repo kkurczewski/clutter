@@ -5,10 +5,9 @@ import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import io.clutter.TestElements;
+import io.clutter.file.JavaFileFactory;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.field.Field;
-import io.clutter.model.file.JavaFileBuilder;
-import io.clutter.printer.ClassPrinter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -108,8 +107,8 @@ class BasicProcessingTest {
 
     private JavaFileObject javaFile(ClassType classType) {
         return JavaFileObjects.forSourceLines(classType
-                .getFullyQualifiedName(), JavaFileBuilder.from(classType)
-                .build()
+                .getFullyQualifiedName(), new JavaFileFactory()
+                .withoutImports(classType)
                 .getLines()
         );
     }
