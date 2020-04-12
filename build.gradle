@@ -4,34 +4,46 @@ plugins {
     id 'maven-publish'
 }
 
-group 'io.clutter'
-version '0.1.0'
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(":javax")
     implementation project(":printer")
 
     api project(":model")
 
-    testImplementation 'com.google.testing.compile:compile-testing:0.18'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
-    testImplementation 'org.assertj:assertj-core:3.11.1'
-    testImplementation 'org.mockito:mockito-core:3.2.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.0'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+
+    testImplementation 'org.mockito:mockito-core:3.2.4'
+    testImplementation 'com.google.testing.compile:compile-testing:0.18'
 }
 
-test {
-    useJUnitPlatform()
-}
+allprojects {
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+    apply {
+        plugin 'java'
+        plugin 'java-library'
+        plugin 'maven-publish'
+
+        sourceCompatibility = 11
+    }
+
+    group 'io.clutter'
+    version '0.1.0'
+
+    repositories {
+        mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
         }
     }
 }

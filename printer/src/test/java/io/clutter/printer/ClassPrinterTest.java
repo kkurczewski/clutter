@@ -1,6 +1,5 @@
 package io.clutter.printer;
 
-import io.clutter.TestElements;
 import io.clutter.model.classtype.ClassType;
 import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
@@ -17,7 +16,7 @@ class ClassPrinterTest {
     @Test
     public void shouldBuildJavaFile() {
         ClassType classType = new ClassType("test.InputClass")
-                .setAnnotations(TestElements.BarClass.class)
+                .setAnnotations(SafeVarargs.class)
                 .setFields(new Field("foo", int.class))
                 .setConstructors(new Constructor("InputClass")
                         .setVisibility(PRIVATE))
@@ -27,7 +26,7 @@ class ClassPrinterTest {
         List<String> lines = new ClassPrinter(typePrinter).print(classType);
 
         assertThat(lines).containsExactly(
-                "@BarClass",
+                "@SafeVarargs",
                 "public class InputClass {",
                 "",
                 "\tprivate int foo;",

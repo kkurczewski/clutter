@@ -4,7 +4,6 @@ import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.annotation.param.AnnotationValue;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ class AnnotationPrinterTest {
 
     @SuppressWarnings("unused")
     @interface WrapperAnnotation {
-        Nonnull value();
+        SafeVarargs value();
 
         SuppressWarnings[] values();
     }
@@ -58,10 +57,10 @@ class AnnotationPrinterTest {
         TypePrinter typePrinter = new AutoImportingTypePrinter();
         AnnotationPrinter annotationPrinter = new AnnotationPrinter(typePrinter);
 
-        AnnotationType annotationType = new AnnotationType(Nonnull.class);
+        AnnotationType annotationType = new AnnotationType(SafeVarargs.class);
         List<String> lines = annotationPrinter.print(annotationType);
 
-        assertThat(lines).containsExactly("@Nonnull");
+        assertThat(lines).containsExactly("@SafeVarargs");
     }
 
     @Test
@@ -196,7 +195,7 @@ class AnnotationPrinterTest {
         AnnotationPrinter annotationPrinter = new AnnotationPrinter(typePrinter);
 
         LinkedHashMap<String, AnnotationValue> params = new LinkedHashMap<>();
-        params.put("value", AnnotationValue.ofAnnotation(new AnnotationType(Nonnull.class).reflect()));
+        params.put("value", AnnotationValue.ofAnnotation(new AnnotationType(SafeVarargs.class).reflect()));
         params.put("values", AnnotationValue.ofAnnotationArray(
                 new AnnotationType(SuppressWarnings.class,
                         new LinkedHashMap<>(Map.of("value", AnnotationValue.ofStringArray("all")))).reflect()
@@ -206,7 +205,7 @@ class AnnotationPrinterTest {
         List<String> lines = annotationPrinter.print(annotationType);
 
         assertThat(lines).containsExactly("@WrapperAnnotation(" +
-                "value = @Nonnull, " +
+                "value = @SafeVarargs, " +
                 "values = {@SuppressWarnings(value = {\"all\"})})"
         );
     }

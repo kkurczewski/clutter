@@ -1,12 +1,8 @@
 package io.clutter.printer;
 
 import io.clutter.model.field.Field;
-import io.clutter.printer.AutoImportingTypePrinter;
-import io.clutter.printer.FieldPrinter;
-import io.clutter.printer.TypePrinter;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import static io.clutter.model.type.PrimitiveType.INT;
@@ -19,10 +15,10 @@ class FieldPrinterTest {
         TypePrinter typePrinter = new AutoImportingTypePrinter();
         FieldPrinter fieldPrinter = new FieldPrinter(typePrinter);
 
-        Field field = new Field("foo", INT).setAnnotations(Nonnull.class);
+        Field field = new Field("foo", INT).setAnnotations(SafeVarargs.class);
 
         List<String> lines = fieldPrinter.print(field);
-        assertThat(lines).containsExactly("@Nonnull", "private int foo;");
+        assertThat(lines).containsExactly("@SafeVarargs", "private int foo;");
     }
 
     @Test
@@ -31,10 +27,10 @@ class FieldPrinterTest {
         FieldPrinter fieldPrinter = new FieldPrinter(typePrinter);
 
         Field field = new Field("foo", INT)
-                .setAnnotations(Nonnull.class)
+                .setAnnotations(SafeVarargs.class)
                 .setValue("1");
 
         List<String> lines = fieldPrinter.print(field);
-        assertThat(lines).containsExactly("@Nonnull", "private int foo = 1;");
+        assertThat(lines).containsExactly("@SafeVarargs", "private int foo = 1;");
     }
 }

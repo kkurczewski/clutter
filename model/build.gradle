@@ -1,14 +1,2 @@
-plugins {
-    id 'java'
-}
-
-group 'io.clutter'
-
-sourceCompatibility = 11
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
 }
