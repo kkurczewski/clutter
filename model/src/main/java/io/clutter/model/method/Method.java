@@ -4,9 +4,9 @@ import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.modifiers.MethodTrait;
 import io.clutter.model.method.modifiers.MethodVisibility;
-import io.clutter.model.param.Param;
+import io.clutter.model.param.Argument;
 import io.clutter.model.type.Type;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.type.GenericType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -19,11 +19,11 @@ import static java.lang.String.format;
 final public class Method {
 
     private final String name;
-    private final LinkedHashSet<Param> params = new LinkedHashSet<>();
+    private final LinkedHashSet<Argument> params = new LinkedHashSet<>();
     private final Type returnType;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
+    private final LinkedHashSet<GenericType> genericParameters = new LinkedHashSet<>();
     private final LinkedHashSet<MethodTrait> traits = new LinkedHashSet<>();
     private final List<String> body = new LinkedList<>();
 
@@ -32,7 +32,7 @@ final public class Method {
     /**
      * Creates method with default public visibility
      */
-    public Method(String name, Type returnType, Param... params) {
+    public Method(String name, Type returnType, Argument... params) {
         this.name = name;
         this.returnType = returnType;
         this.visibility = MethodVisibility.PUBLIC;
@@ -42,14 +42,14 @@ final public class Method {
     /**
      * Creates method with default public visibility
      */
-    public Method(String name, Class<?> returnType, Param... params) {
+    public Method(String name, Class<?> returnType, Argument... params) {
         this(name, Type.of(returnType), params);
     }
 
     /**
      * Creates method with default void return type and public visibility
      */
-    public Method(String name, Param... params) {
+    public Method(String name, Argument... params) {
         this(name, VOID, params);
     }
 
@@ -66,7 +66,7 @@ final public class Method {
      */
     public static Method setter(Field field, Function<String, String> setterNaming) {
         String fieldName = field.getName();
-        return new Method(setterNaming.apply(fieldName), new Param(fieldName, field.getType()))
+        return new Method(setterNaming.apply(fieldName), new Argument(fieldName, field.getType()))
                 .setBody(format("this.%s = %s;", fieldName, fieldName));
     }
 
@@ -104,7 +104,7 @@ final public class Method {
         return setAnnotations(Stream.of(annotations).map(AnnotationType::new).toArray(AnnotationType[]::new));
     }
 
-    public Method setGenericParameters(WildcardType... genericParameters) {
+    public Method setGenericParameters(GenericType... genericParameters) {
         this.genericParameters.clear();
         Collections.addAll(this.genericParameters, genericParameters);
         return this;
@@ -126,7 +126,7 @@ final public class Method {
         return returnType;
     }
 
-    public Set<Param> getParams() {
+    public Set<Argument> getParams() {
         return params;
     }
 
@@ -134,7 +134,7 @@ final public class Method {
         return body;
     }
 
-    public Set<WildcardType> getGenericParameters() {
+    public Set<GenericType> getGenericParameters() {
         return genericParameters;
     }
 

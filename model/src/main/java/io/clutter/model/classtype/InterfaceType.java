@@ -3,7 +3,7 @@ package io.clutter.model.classtype;
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.method.Method;
 import io.clutter.model.type.BoxedType;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.type.GenericType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -17,7 +17,7 @@ final public class InterfaceType {
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final LinkedHashSet<BoxedType> interfaces = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
+    private final LinkedHashSet<GenericType> genericParameters = new LinkedHashSet<>();
 
     public InterfaceType(String fullyQualifiedName) {
         this.fullyQualifiedName = fullyQualifiedName;
@@ -53,7 +53,7 @@ final public class InterfaceType {
         return this;
     }
 
-    public InterfaceType setGenericParameters(WildcardType genericParameters) {
+    public InterfaceType setGenericParameters(GenericType genericParameters) {
         this.genericParameters.clear();
         Collections.addAll(this.genericParameters, genericParameters);
         return this;
@@ -79,7 +79,7 @@ final public class InterfaceType {
         return methods;
     }
 
-    public Set<WildcardType> getGenericParameters() {
+    public Set<GenericType> getGenericParameters() {
         return genericParameters;
     }
 

@@ -11,7 +11,7 @@ import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
 import io.clutter.model.type.BoxedType;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.type.GenericType;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -72,12 +72,12 @@ final public class ClassFactory {
                 .toArray(BoxedType[]::new);
     }
 
-    private static WildcardType[] generics(TypeElement typeElement) {
+    private static GenericType[] generics(TypeElement typeElement) {
         return typeElement.getTypeParameters()
                 .stream()
                 .map(Element::asType)
                 .map(WildcardTypeFactory::from)
-                .toArray(WildcardType[]::new);
+                .toArray(GenericType[]::new);
     }
 
     private static ClassTrait[] traits(Set<Modifier> modifiers) {

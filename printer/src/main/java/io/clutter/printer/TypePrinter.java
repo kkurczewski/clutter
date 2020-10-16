@@ -1,11 +1,10 @@
 package io.clutter.printer;
 
-import io.clutter.model.type.*;
 import io.clutter.model.file.Imports;
+import io.clutter.model.type.BoxedType;
+import io.clutter.model.type.Type;
 
 import java.util.Collection;
-
-import static java.lang.String.format;
 
 public class TypePrinter {
 
@@ -22,19 +21,19 @@ public class TypePrinter {
     }
 
     public <T extends Type> String print(T type) {
-        if (type instanceof ContainerType) {
-            var genericValues = ((ContainerType) type).genericValues();
-            return print(type.getType()) + printGenerics(genericValues);
-        } else if (type instanceof BoundedWildcardType) {
-            var wildcard = (BoundedWildcardType) type;
-            return format("%s %s %s", wildcard.getAlias(), wildcard.getBoundaryKeyword(), print(wildcard.getBound()));
-        } else if (type instanceof WildcardType) {
-            return ((WildcardType) type).getAlias();
-        } else if (type instanceof BoxedType) {
-            return print(type.getType());
-        } else if (type instanceof DynamicType) {
-            return ((DynamicType) type).getName();
-        }
+//        if (type instanceof ContainerType) {
+//            var genericValues = ((ContainerType) type).genericValues();
+//            return print(type.getType()) + printGenerics(genericValues);
+//        } else if (type instanceof BoundedWildcardType) {
+//            var wildcard = (BoundedWildcardType) type;
+//            return format("%s %s %s", wildcard.getAlias(), wildcard.getBoundaryKeyword(), print(wildcard.getBound()));
+//        } else if (type instanceof WildcardType) {
+//            return ((WildcardType) type).getAlias();
+//        } else if (type instanceof BoxedType) {
+//            return print(type.getType());
+//        } else if (type instanceof DynamicType) {
+//            return ((DynamicType) type).getName();
+//        }
         return type.getType().getSimpleName();
     }
 

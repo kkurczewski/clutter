@@ -4,17 +4,17 @@ import io.clutter.model.type.Type;
 
 import java.util.Objects;
 
-final public class Param {
+final public class Argument {
 
     private final String name;
     private final Type value;
 
-    public Param(String name, Type value) {
+    public Argument(String name, Type value) {
         this.name = name;
         this.value = value;
     }
 
-    public Param(String name, Class<?> type) {
+    public Argument(String name, Class<?> type) {
         this(name, Type.of(type));
     }
 
@@ -30,7 +30,7 @@ final public class Param {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Param param = (Param) o;
+        Argument param = (Argument) o;
         return name.equals(param.name);
     }
 

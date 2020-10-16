@@ -1,8 +1,8 @@
-package io.clutter.model.type;
+package io.clutter.model.z.model.type;
 
 import java.util.Objects;
 
-final public class BoundedWildcardType extends WildcardType {
+final public class BoundedGenericType extends GenericType {
 
     public enum BoundaryType {
         EXTENDS, SUPER;
@@ -16,7 +16,7 @@ final public class BoundedWildcardType extends WildcardType {
     private final BoxedType bound;
     private final BoundaryType boundaryKeyword;
 
-    protected BoundedWildcardType(String alias, BoundaryType boundaryKeyword, BoxedType bound) {
+    protected BoundedGenericType(String alias, BoundaryType boundaryKeyword, BoxedType bound) {
         super(alias, bound.getType());
         this.boundaryKeyword = boundaryKeyword;
         this.bound = bound;
@@ -35,7 +35,7 @@ final public class BoundedWildcardType extends WildcardType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        BoundedWildcardType that = (BoundedWildcardType) o;
+        BoundedGenericType that = (BoundedGenericType) o;
         return bound.equals(that.bound) && boundaryKeyword == that.boundaryKeyword;
     }
 

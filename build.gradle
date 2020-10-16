@@ -10,11 +10,6 @@ dependencies {
 
     api project(":model")
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.0'
-    testImplementation 'org.assertj:assertj-core:3.11.1'
-
-    testImplementation 'org.mockito:mockito-core:3.2.4'
     testImplementation 'com.google.testing.compile:compile-testing:0.18'
 }
 
@@ -30,6 +25,13 @@ allprojects {
 
     group 'io.clutter'
     version '0.1.0'
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.0'
+        testImplementation 'org.assertj:assertj-core:3.11.1'
+        testImplementation 'org.mockito:mockito-core:3.2.4'
+    }
 
     repositories {
         mavenCentral()

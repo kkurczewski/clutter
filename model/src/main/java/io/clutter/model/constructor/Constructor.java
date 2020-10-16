@@ -2,8 +2,8 @@ package io.clutter.model.constructor;
 
 import io.clutter.model.annotation.AnnotationType;
 import io.clutter.model.constructor.modifiers.ConstructorVisibility;
-import io.clutter.model.param.Param;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.param.Argument;
+import io.clutter.model.type.GenericType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -13,18 +13,18 @@ import static io.clutter.model.constructor.modifiers.ConstructorVisibility.PUBLI
 
 final public class Constructor {
 
-    private final LinkedHashSet<Param> params = new LinkedHashSet<>();
+    private final LinkedHashSet<Argument> params = new LinkedHashSet<>();
     private final String className;
 
     private final List<AnnotationType> annotations = new LinkedList<>();
     private final List<String> body = new LinkedList<>();
-    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
+    private final LinkedHashSet<GenericType> genericParameters = new LinkedHashSet<>();
     private ConstructorVisibility visibility;
 
     /**
      * Creates constructor with default public visibility
      */
-    public Constructor(String className, Param... params) {
+    public Constructor(String className, Argument... params) {
         this.className = className;
         Collections.addAll(this.params, params);
         this.visibility = PUBLIC;
@@ -60,7 +60,7 @@ final public class Constructor {
         return this;
     }
 
-    public Constructor setGenericParameters(WildcardType... genericParameters) {
+    public Constructor setGenericParameters(GenericType... genericParameters) {
         this.genericParameters.clear();
         Collections.addAll(this.genericParameters, genericParameters);
         return this;
@@ -74,7 +74,7 @@ final public class Constructor {
         return visibility;
     }
 
-    public Set<Param> getParams() {
+    public Set<Argument> getParams() {
         return params;
     }
 
@@ -82,7 +82,7 @@ final public class Constructor {
         return body;
     }
 
-    public Set<WildcardType> getGenericParameters() {
+    public Set<GenericType> getGenericParameters() {
         return genericParameters;
     }
 

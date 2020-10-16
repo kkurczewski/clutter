@@ -7,7 +7,7 @@ import io.clutter.model.constructor.Constructor;
 import io.clutter.model.field.Field;
 import io.clutter.model.method.Method;
 import io.clutter.model.type.BoxedType;
-import io.clutter.model.type.WildcardType;
+import io.clutter.model.type.GenericType;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -24,7 +24,7 @@ final public class ClassType {
     private final LinkedHashSet<Field> fields = new LinkedHashSet<>();
     private final LinkedHashSet<Method> methods = new LinkedHashSet<>();
     private final LinkedHashSet<ClassTrait> traits = new LinkedHashSet<>();
-    private final LinkedHashSet<WildcardType> genericParameters = new LinkedHashSet<>();
+    private final LinkedHashSet<GenericType> genericParameters = new LinkedHashSet<>();
 
     private BoxedType superclass;
     private ClassVisibility visibility;
@@ -101,7 +101,7 @@ final public class ClassType {
         return this;
     }
 
-    public ClassType setGenericParameters(WildcardType... genericParameters) {
+    public ClassType setGenericParameters(GenericType... genericParameters) {
         this.genericParameters.clear();
         Collections.addAll(this.genericParameters, genericParameters);
         return this;
@@ -147,7 +147,7 @@ final public class ClassType {
         return methods;
     }
 
-    public Set<WildcardType> getGenericParameters() {
+    public Set<GenericType> getGenericParameters() {
         return genericParameters;
     }
 

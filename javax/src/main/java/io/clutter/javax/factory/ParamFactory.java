@@ -1,7 +1,7 @@
 package io.clutter.javax.factory;
 
 import io.clutter.javax.factory.types.TypeFactory;
-import io.clutter.model.param.Param;
+import io.clutter.model.param.Argument;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -10,14 +10,14 @@ import static java.lang.String.valueOf;
 
 final public class ParamFactory {
 
-    public static Param[] from(ExecutableElement executableElement) {
+    public static Argument[] from(ExecutableElement executableElement) {
         return executableElement.getParameters()
                 .stream()
                 .map(ParamFactory::from)
-                .toArray(Param[]::new);
+                .toArray(Argument[]::new);
     }
 
-    private static Param from(VariableElement field) {
-        return new Param(valueOf(field.getSimpleName()), TypeFactory.from(field.asType()));
+    private static Argument from(VariableElement field) {
+        return new Argument(valueOf(field.getSimpleName()), TypeFactory.from(field.asType()));
     }
 }

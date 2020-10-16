@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.clutter.printer.PrinterUtils.joinNonBlank;
 import static io.clutter.printer.PrinterUtils.nested;
 import static java.util.stream.Collectors.toList;
 
@@ -29,11 +28,11 @@ final class ConstructorPrinter {
         List<String> lines = new LinkedList<>();
 
         lines.addAll(annotations(constructor));
-        lines.add(joinNonBlank(List.of(
-                constructor.getVisibility().toString(),
-                typePrinter.printGenerics(constructor.getGenericParameters()),
-                constructor.getClassName() + "(" + paramPrinter.print(constructor.getParams()) + ") {"
-        ), SEPARATOR));
+//        lines.add(joinNonBlank(List.of(
+//                constructor.getVisibility().toString(),
+//                typePrinter.printGenerics(constructor.getGenericParameters()),
+//                constructor.getClassName() + "(" + paramPrinter.print(constructor.getParams()) + ") {"
+//        ), SEPARATOR));
 
         lines.addAll(body(constructor));
         lines.add("}");

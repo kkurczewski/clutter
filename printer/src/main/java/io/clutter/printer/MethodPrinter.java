@@ -1,7 +1,6 @@
 package io.clutter.printer;
 
 import io.clutter.model.method.Method;
-import io.clutter.model.method.modifiers.MethodTrait;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,13 +33,13 @@ final class MethodPrinter {
         List<String> lines = new LinkedList<>();
 
         lines.addAll(annotations(method));
-        if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
-            lines.add(methodDeclaration(method) + "(" + paramPrinter.print(method.getParams()) + ");");
-        } else {
-            lines.add(methodDeclaration(method) + "(" + paramPrinter.print(method.getParams()) + ") {");
-            lines.addAll(body(method));
-            lines.add("}");
-        }
+//        if (method.getTraits().contains(MethodTrait.ABSTRACT)) {
+//            lines.add(methodDeclaration(method) + "(" + paramPrinter.print(method.getParams()) + ");");
+//        } else {
+//            lines.add(methodDeclaration(method) + "(" + paramPrinter.print(method.getParams()) + ") {");
+//            lines.addAll(body(method));
+//            lines.add("}");
+//        }
         return lines;
     }
 
