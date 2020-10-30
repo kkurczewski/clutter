@@ -29,4 +29,8 @@ final public class DynamicType implements Type {
             super("Type with alias `" + name + "` is dynamic, can't return Class instance!");
         }
     }
+
+    public <T> T accept(TypeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

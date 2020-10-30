@@ -1,50 +1,52 @@
 package io.clutter.printer;
 
-import io.clutter.model.type.BoxedType;
 import io.clutter.model.type.ContainerType;
-import io.clutter.model.type.Type;
-import io.clutter.model.file.Imports;
+import io.clutter.model.type.GenericType;
+import io.clutter.model.type.PrimitiveType;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Executable;
 import java.util.List;
-import java.util.Map;
 
+import static io.clutter.model.type.BoxedType.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TypePrinterTest {
 
+    private final PackagePrinter clazzPrinter = new PackagePrinter();
+
     @Test
-    public void shouldPrintType() {
-        Type type = new ContainerType(
-                List.class,
-                new ContainerType(Map.class,
-                        BoxedType.of(Integer.class),
-                        BoxedType.of(Executable.class)
-                )
-        );
-
-        Imports imports = new Imports();
-        imports.addImport(Executable.class);
-        imports.addImport(List.class);
-        imports.addImport(Map.class);
-
-        TypePrinter printer = new TypePrinter(imports);
-        assertThat(printer.print(type)).isEqualTo("List<Map<Integer, Executable>>");
+    void shouldPrintContainerType() {
+        var typePrinter = new TypePrinter(clazzPrinter);
+        assertThat(typePrinter.visit(ContainerType.listOf(Integer.class)))
+            .isEqualTo("java.util.List<Integer>");
     }
 
     @Test
-    public void shouldPrintTypeWithCanonicalNameButJavaLang() {
-        Type type = new ContainerType(
-                List.class,
-                new ContainerType(Map.class,
-                        BoxedType.of(Integer.class),
-                        BoxedType.of(Executable.class)
-                )
-        );
-        TypePrinter printer = new TypePrinter();
-        assertThat(printer.print(type)).isEqualTo(
-                "java.util.List<java.util.Map<Integer, java.lang.reflect.Executable>>"
-        );
+    void shouldPrintContainerTypeWithMoreArguments() {
+        var typePrinter = new TypePrinter(clazzPrinter);
+        assertThat(typePrinter.visit(ContainerType.genericOf(List.class, STRING, STRING, STRING)))
+            .isEqualTo("java.util.List<String, String, String>");
+    }
+
+    @Test
+    void shouldPrintNestedContainerType() {
+        var typePrinter = new TypePrinter(clazzPrinter);
+        var containerType = ContainerType.listOf(Integer.class);
+        assertThat(typePrinter.visit(ContainerType.listOf(containerType)))
+            .isEqualTo("java.util.List<java.util.List<Integer>>");
+    }
+
+    @Test
+    void shouldPrintGenericType() {
+        var typePrinter = new TypePrinter(clazzPrinter);
+        assertThat(typePrinter.visit(GenericType.T.extend(String.class)))
+            .isEqualTo("T extends String");
+    }
+
+    @Test
+    void shouldPrintPrimitiveValue() {
+        var typePrinter = new TypePrinter(clazzPrinter);
+        assertThat(typePrinter.visit(PrimitiveType.DOUBLE))
+            .isEqualTo("double");
     }
 }

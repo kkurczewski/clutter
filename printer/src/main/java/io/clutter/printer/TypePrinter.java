@@ -1,71 +1,47 @@
 package io.clutter.printer;
 
-import io.clutter.model.file.Imports;
-import io.clutter.model.type.BoxedType;
-import io.clutter.model.type.Type;
+import io.clutter.model.type.*;
 
-import java.util.Collection;
+import static java.util.stream.Collectors.joining;
 
-public class TypePrinter {
+final public class TypePrinter implements TypeVisitor<String> {
 
-    public static final String DEFAULT_IMPORT = "java.lang";
+    private final PackagePrinter packagePrinter;
 
-    private final Imports imports;
-
-    TypePrinter() {
-        this.imports = new Imports();
+    public TypePrinter(PackagePrinter packagePrinter) {
+        this.packagePrinter = packagePrinter;
     }
 
-    public TypePrinter(Imports imports) {
-        this.imports = imports;
+    @Override
+    public String visit(ContainerType type) {
+        return packagePrinter.printClass(type.getType()) + type.genericValues()
+            .stream()
+            .map(genericType -> genericType.accept(this))
+            .collect(joining(", ", "<", ">"));
     }
 
-    public <T extends Type> String print(T type) {
-//        if (type instanceof ContainerType) {
-//            var genericValues = ((ContainerType) type).genericValues();
-//            return print(type.getType()) + printGenerics(genericValues);
-//        } else if (type instanceof BoundedWildcardType) {
-//            var wildcard = (BoundedWildcardType) type;
-//            return format("%s %s %s", wildcard.getAlias(), wildcard.getBoundaryKeyword(), print(wildcard.getBound()));
-//        } else if (type instanceof WildcardType) {
-//            return ((WildcardType) type).getAlias();
-//        } else if (type instanceof BoxedType) {
-//            return print(type.getType());
-//        } else if (type instanceof DynamicType) {
-//            return ((DynamicType) type).getName();
-//        }
-        return type.getType().getSimpleName();
+    @Override
+    public String visit(DynamicType type) {
+        return type.getName();
     }
 
-    <T extends Enum<?>> String print(T enumerated) {
-        return useSimpleName(enumerated.getClass())
-                ? enumerated.name()
-                : enumerated.getClass().getCanonicalName() + '.' + enumerated.name();
+    @Override
+    public String visit(BoundedGenericType type) {
+        return String.join(
+            " ",
+            type.getAlias(),
+            type.getBoundaryKeyword().name().toLowerCase(),
+            visit(type.getBound())
+        );
     }
 
-    public String printGenerics(Collection<? extends BoxedType> boxedType) {
-        return boxedType.stream()
-                .map(this::print)
-                .reduce((first, second) -> first + ", " + second)
-                .map(type -> "<" + type + ">")
-                .orElse("");
+    @Override
+    public String visit(GenericType type) {
+        return type.getAlias();
     }
 
-    String print(Class<?> clazz) {
-        var rawClass = clazz;
-        while (rawClass.isArray()) {
-            rawClass = rawClass.getComponentType();
-        }
-        return rawClass.isPrimitive() || rawClass.getPackageName().equals(DEFAULT_IMPORT) || useSimpleName(rawClass)
-                ? clazz.getSimpleName()
-                : clazz.getCanonicalName();
-    }
-
-    public Imports getImports() {
-        return imports;
-    }
-
-    protected boolean useSimpleName(Class<?> clazz) {
-        return imports.contains(clazz);
+    @Override
+    public String fallback(Type type) {
+        return packagePrinter.printClass(type.getType());
     }
 }

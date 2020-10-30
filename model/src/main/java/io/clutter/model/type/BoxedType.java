@@ -2,7 +2,7 @@ package io.clutter.model.type;
 
 import java.util.Objects;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 public class BoxedType implements Type {
 
@@ -20,6 +20,10 @@ public class BoxedType implements Type {
     @Override
     public Class<?> getType() {
         return type;
+    }
+
+    public <T> T accept(TypeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

@@ -10,4 +10,6 @@ public interface Type {
     }
 
     Class<?> getType();
+
+    <T> T accept(TypeVisitor<T> type);
 }

@@ -45,6 +45,10 @@ final public class PrimitiveType implements Type {
         return BoxedType.of(boxed);
     }
 
+    public <T> T accept(TypeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

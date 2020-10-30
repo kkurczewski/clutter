@@ -1,54 +1,71 @@
 package io.clutter.printer;
 
-import io.clutter.model.constructor.Constructor;
+import io.clutter.model.common.Expression;
+import io.clutter.model.common.Visibility;
+import io.clutter.model.ctor.Constructor;
+import io.clutter.model.type.GenericType;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static io.clutter.printer.PrinterUtils.nested;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toCollection;
 
-final class ConstructorPrinter {
-
-    public static final String SEPARATOR = " ";
+final public class ConstructorPrinter {
 
     private final TypePrinter typePrinter;
     private final AnnotationPrinter annotationPrinter;
-    private final ParamPrinter paramPrinter;
 
-    public ConstructorPrinter(TypePrinter typePrinter) {
-        this.typePrinter = typePrinter;
-        this.annotationPrinter = new AnnotationPrinter(typePrinter);
-        this.paramPrinter = new ParamPrinter(typePrinter);
+    public ConstructorPrinter() {
+        var packagePrinter = new PackagePrinter();
+        this.typePrinter = new TypePrinter(packagePrinter);
+        this.annotationPrinter = new AnnotationPrinter();
     }
 
-    @SuppressWarnings("CollectionAddAllCanBeReplacedWithConstructor")
-    public List<String> print(Constructor constructor) {
-        List<String> lines = new LinkedList<>();
+    public List<String> print(Constructor constructor, String className) {
+        var annotations = annotationPrinter.print(constructor.getAnnotations());
+        var visibility = visibility(constructor.getVisibility());
 
-        lines.addAll(annotations(constructor));
-//        lines.add(joinNonBlank(List.of(
-//                constructor.getVisibility().toString(),
-//                typePrinter.printGenerics(constructor.getGenericParameters()),
-//                constructor.getClassName() + "(" + paramPrinter.print(constructor.getParams()) + ") {"
-//        ), SEPARATOR));
+        var genericTypes = constructor.getGenericTypes();
+        var generics = !genericTypes.isEmpty()
+            ? genericTypes.stream().map(GenericType::toString).collect(joining(", ", "<", ">"))
+            : "";
 
-        lines.addAll(body(constructor));
-        lines.add("}");
+        var arguments = constructor
+            .getArguments()
+            .stream()
+            .map(argument -> argument.getValue().accept(typePrinter) + " " + argument.getName())
+            .collect(joining(", ", className + "(", ")"));
+        var bodyContent = printBody(constructor.getBody());
+
+        var header = Stream.of(visibility, generics, arguments)
+            .filter(headerPart -> !headerPart.isBlank())
+            .collect(joining(" "));
+
+        var lines = new LinkedList<>(annotations);
+        lines.add(header + bodyContent.removeFirst());
+        lines.addAll(bodyContent);
 
         return lines;
     }
 
-    private List<String> annotations(Constructor constructor) {
-        return constructor.getAnnotations()
-                .stream()
-                .map(annotationPrinter::print)
-                .flatMap(Collection::stream)
-                .collect(toList());
+    private String visibility(Visibility visibility) {
+        if (visibility != null) {
+            return visibility.name().toLowerCase();
+        }
+        return "";
     }
 
-    private List<String> body(Constructor constructor) {
-        return nested(lines -> lines.addAll(constructor.getBody()));
+    private LinkedList<String> printBody(List<Expression> expressions) {
+        var lines = expressions
+            .stream()
+            .map(Expression::asString)
+            .collect(toCollection(LinkedList::new));
+
+        lines.addFirst(" {");
+        lines.addLast("}");
+
+        return lines;
     }
 }

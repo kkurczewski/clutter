@@ -1,78 +1,96 @@
 package io.clutter.model.field;
 
-import io.clutter.model.annotation.AnnotationType;
-import io.clutter.model.field.modifiers.FieldTrait;
-import io.clutter.model.field.modifiers.FieldVisibility;
+import io.clutter.model.annotation.AnnotationT;
+import io.clutter.model.common.Expression;
+import io.clutter.model.common.Trait;
+import io.clutter.model.common.Visibility;
 import io.clutter.model.type.Type;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static io.clutter.model.field.modifiers.FieldTrait.FINAL;
-import static io.clutter.model.field.modifiers.FieldTrait.STATIC;
-import static io.clutter.model.field.modifiers.FieldVisibility.PUBLIC;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 final public class Field {
 
-    private final String name;
-    private final Type type;
+    private final List<AnnotationT> annotations = new LinkedList<>();
+    private final List<Trait> traits = new LinkedList<>();
 
-    private final List<AnnotationType> annotations = new ArrayList<>();
-    private final LinkedHashSet<FieldTrait> traits = new LinkedHashSet<>();
-    private FieldVisibility visibility;
-    private String value;
+    private Visibility visibility;
+    private String name;
+    private Type type;
+    private Expression expression;
 
-    /**
-     * Creates field with default private visibility
-     */
-    public Field(String name, Type type) {
+    private Field(
+        List<AnnotationT> annotations,
+        Visibility visibility,
+        List<Trait> traits,
+        String name,
+        Type type,
+        Expression expression
+    ) {
+        this.annotations.addAll(annotations);
+        this.visibility = visibility;
+        this.traits.addAll(traits);
         this.name = name;
         this.type = type;
-        this.visibility = FieldVisibility.PRIVATE;
+        this.expression = expression;
     }
 
-    public Field(String name, Class<?> type) {
-        this(name, Type.of(type));
+    public Field() {
     }
 
-    /**
-     * Creates public static final variable with given raw value
-     */
-    public static Field constant(String key, String value) {
-        return new Field(key, Type.of(value.getClass()))
-                .setValue(value)
-                .setVisibility(PUBLIC)
-                .setTraits(STATIC, FINAL);
+    public static Field copyOf(Field field) {
+        return new Field(
+            field.annotations,
+            field.visibility,
+            field.traits,
+            field.name,
+            field.type,
+            field.expression
+        );
     }
 
-    public Field setVisibility(FieldVisibility visibility) {
+    public Field setAnnotations(Consumer<List<AnnotationT>> mutation) {
+        mutation.accept(annotations);
+        return this;
+    }
+
+    public Field setVisibility(Visibility visibility) {
         this.visibility = visibility;
         return this;
     }
 
-    public Field setTraits(FieldTrait... traits) {
-        this.traits.clear();
-        Collections.addAll(this.traits, traits);
+    public Field setTraits(Consumer<List<Trait>> mutation) {
+        mutation.accept(traits);
         return this;
     }
 
-    public Field setAnnotations(AnnotationType... annotations) {
-        this.annotations.clear();
-        Collections.addAll(this.annotations, annotations);
+    public Field setName(String name) {
+        this.name = name;
         return this;
     }
 
-    @SafeVarargs
-    final public Field setAnnotations(Class<? extends Annotation>... annotations) {
-        return setAnnotations(Stream.of(annotations)
-                .map(AnnotationType::new)
-                .toArray(AnnotationType[]::new));
+    public Field setType(Type type) {
+        this.type = type;
+        return this;
     }
 
-    public Field setValue(String rawExpression) {
-        this.value = rawExpression;
+    public Field setExpression(Expression expression) {
+        this.expression = expression;
         return this;
+    }
+
+    public List<AnnotationT> getAnnotations() {
+        return List.copyOf(annotations);
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public List<Trait> getTraits() {
+        return List.copyOf(traits);
     }
 
     public String getName() {
@@ -83,32 +101,12 @@ final public class Field {
         return type;
     }
 
-    public FieldVisibility getVisibility() {
-        return visibility;
+    public Expression getExpression() {
+        return expression;
     }
 
-    public List<FieldTrait> getTraits() {
-        return new ArrayList<>(traits);
-    }
-
-    public Optional<String> getValue() {
-        return Optional.ofNullable(value);
-    }
-
-    public List<AnnotationType> getAnnotations() {
-        return annotations;
-    }
-
-    public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotation) {
-        return annotations.stream()
-                .filter(annotationType -> annotationType.isInstanceOf(annotation))
-                .findFirst()
-                .map(AnnotationType::reflect);
-    }
-
-    @SafeVarargs
-    final public boolean isAnnotated(Class<? extends Annotation> annotation, Class<? extends Annotation>... more) {
-        return getAnnotations().stream().anyMatch(it -> it.isInstanceOf(annotation, more));
+    public <T> T accept(FieldVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     @Override
@@ -116,28 +114,28 @@ final public class Field {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Field field = (Field) o;
-        return name.equals(field.name) &&
-                type.equals(field.type) &&
-                annotations.equals(field.annotations) &&
-                traits.equals(field.traits) &&
-                visibility == field.visibility &&
-                Objects.equals(value, field.value);
+        return annotations.equals(field.annotations) &&
+            traits.equals(field.traits) &&
+            visibility == field.visibility &&
+            name.equals(field.name) &&
+            type.equals(field.type) &&
+            Objects.equals(expression, field.expression);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, type);
     }
 
     @Override
     public String toString() {
         return "Field{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", annotations=" + annotations +
-                ", traits=" + traits +
-                ", visibility=" + visibility +
-                ", value='" + value + '\'' +
-                '}';
+            "annotations=" + annotations +
+            ", traits=" + traits +
+            ", visibility=" + visibility +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            ", expression=" + expression +
+            '}';
     }
 }

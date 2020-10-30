@@ -2,8 +2,6 @@ package io.clutter.model.type;
 
 import java.util.*;
 
-import static io.clutter.model.util.Varargs.concat;
-
 final public class ContainerType extends BoxedType {
 
     private final List<? extends BoxedType> genericValues;
@@ -21,9 +19,9 @@ final public class ContainerType extends BoxedType {
     @Deprecated
     public static ContainerType of(Class<?> container, Class<?> type, Class<?>... more) {
         return new ContainerType(container, concat(type, more)
-                .stream()
-                .map(BoxedType::of)
-                .toArray(BoxedType[]::new));
+            .stream()
+            .map(BoxedType::of)
+            .toArray(BoxedType[]::new));
     }
 
     public static ContainerType listOf(BoxedType type) {
@@ -59,6 +57,11 @@ final public class ContainerType extends BoxedType {
     }
 
     @Override
+    public <T> T accept(TypeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -72,4 +75,11 @@ final public class ContainerType extends BoxedType {
         return Objects.hash(super.hashCode(), genericValues);
     }
 
+    @SafeVarargs
+    private static <T> List<T> concat(T value, T... more) {
+        var values = new LinkedList<T>();
+        values.add(value);
+        Collections.addAll(values, more);
+        return values;
+    }
 }
